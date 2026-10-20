@@ -150,14 +150,10 @@ async function performSearch(e) {
       else throw new Error('not ok');
     } catch(err) {
       try {
-        const res = await fetch('/Clarified Dashboard/db.json');
+        const res = await fetch('/dashboard/db.json').catch(() => fetch('/Clarified%20Dashboard/db.json'));
         const db = await res.json();
         articles = (db.articles || []).filter(a => a.status === 'published');
-      } catch(e) {
-        const res = await fetch('/Clarified%20Dashboard/db.json');
-        const db = await res.json();
-        articles = (db.articles || []).filter(a => a.status === 'published');
-      }
+      } catch(e) {}
     }
 
     const matches = articles.filter(a => a.status === 'published' && (

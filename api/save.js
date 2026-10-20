@@ -51,9 +51,9 @@ export default async function handler(req, res) {
             .replace(/(^-|-$)/g, '');
 
         // 1. Fetch current db.json from GitHub
-        const dbFile = await getFileContent(GITHUB_OWNER, GITHUB_REPO, 'Clarified Dashboard/db.json', GITHUB_BRANCH, GITHUB_TOKEN);
+        const dbFile = await getFileContent(GITHUB_OWNER, GITHUB_REPO, 'dashboard/db.json', GITHUB_BRANCH, GITHUB_TOKEN);
         if (!dbFile) {
-            return res.status(500).json({ error: 'Could not find Clarified Dashboard/db.json in the GitHub repository.' });
+            return res.status(500).json({ error: 'Could not find dashboard/db.json in the GitHub repository.' });
         }
 
         const db = JSON.parse(dbFile.content);
@@ -133,13 +133,13 @@ export default async function handler(req, res) {
 
         // Add updated db.json to commit
         filesToCommit.push({
-            path: 'Clarified Dashboard/db.json',
+            path: 'dashboard/db.json',
             content: JSON.stringify(db, null, 2)
         });
 
         // 4. Fetch templates to regenerate HTML files
         const aboutFile = await getFileContent(GITHUB_OWNER, GITHUB_REPO, 'about.html', GITHUB_BRANCH, GITHUB_TOKEN);
-        const indexTplFile = await getFileContent(GITHUB_OWNER, GITHUB_REPO, 'Clarified Dashboard/index-template.html', GITHUB_BRANCH, GITHUB_TOKEN);
+        const indexTplFile = await getFileContent(GITHUB_OWNER, GITHUB_REPO, 'dashboard/index-template.html', GITHUB_BRANCH, GITHUB_TOKEN);
 
         const published = db.articles
             .filter(a => a.status === 'published')

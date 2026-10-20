@@ -6,7 +6,10 @@ export default function handler(req, res) {
     res.setHeader('Cache-Control', 's-maxage=1, stale-while-revalidate');
 
     try {
-        const dbPath = path.join(process.cwd(), 'Clarified Dashboard', 'db.json');
+        let dbPath = path.join(process.cwd(), 'dashboard', 'db.json');
+        if (!fs.existsSync(dbPath)) {
+            dbPath = path.join(process.cwd(), 'Clarified Dashboard', 'db.json');
+        }
         if (fs.existsSync(dbPath)) {
             const db = JSON.parse(fs.readFileSync(dbPath, 'utf8'));
             const articles = (db.articles || []).sort((a, b) => b.date - a.date);

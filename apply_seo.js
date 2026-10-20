@@ -1,7 +1,7 @@
 const fs = require('fs');
 const path = require('path');
 
-const DASHBOARD_DIR = path.join(__dirname, 'Clarified Dashboard');
+const DASHBOARD_DIR = path.join(__dirname, 'dashboard');
 const EDITOR_PATH = path.join(DASHBOARD_DIR, 'editor.html');
 const SERVER_PATH = path.join(DASHBOARD_DIR, 'server.js');
 

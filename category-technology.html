@@ -114,7 +114,7 @@
               if (res.ok) articles = await res.json();
               else throw new Error('not ok');
             } catch(e) {
-              const res = await fetch('/Clarified Dashboard/db.json').catch(() => fetch('/Clarified%20Dashboard/db.json'));
+              const res = await fetch('/dashboard/db.json').catch(() => fetch('/Clarified%20Dashboard/db.json'));
               const db = await res.json();
               articles = (db.articles || []).filter(a => a.status === 'published');
             }

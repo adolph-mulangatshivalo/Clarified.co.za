@@ -228,7 +228,7 @@ function showAlert(msg, isError = true) {
 }
 
 if (!isConfigured) {
-    showAlert("Setup Notice: To activate Firebase Authentication, paste your Firebase web config into 'Clarified Dashboard/firebase-config.js'.", false);
+    showAlert("Setup Notice: To activate Firebase Authentication, paste your Firebase web config into 'dashboard/firebase-config.js'.", false);
 }
 
 let auth = null;
@@ -273,7 +273,7 @@ async function checkAuthAndRedirect(user) {
 window.handleEmailLogin = async function(e) {
     e.preventDefault();
     if (!isConfigured) {
-        alert("Please configure your Firebase credentials in 'Clarified Dashboard/firebase-config.js' first.");
+        alert("Please configure your Firebase credentials in 'dashboard/firebase-config.js' first.");
         return;
     }
 
@@ -300,7 +300,7 @@ window.handleEmailLogin = async function(e) {
 
 window.handleGoogleLogin = async function() {
     if (!isConfigured) {
-        alert("Please configure your Firebase credentials in 'Clarified Dashboard/firebase-config.js' first.");
+        alert("Please configure your Firebase credentials in 'dashboard/firebase-config.js' first.");
         return;
     }
 

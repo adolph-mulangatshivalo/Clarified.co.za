@@ -36,8 +36,8 @@ export default async function handler(req, res) {
         const data = typeof req.body === 'string' ? JSON.parse(req.body) : req.body;
         if (!data.id) return res.status(400).json({ error: 'Article ID is required' });
 
-        const dbFile = await getFileContent(GITHUB_OWNER, GITHUB_REPO, 'Clarified Dashboard/db.json', GITHUB_BRANCH, GITHUB_TOKEN);
-        if (!dbFile) return res.status(500).json({ error: 'Could not find db.json' });
+        const dbFile = await getFileContent(GITHUB_OWNER, GITHUB_REPO, 'dashboard/db.json', GITHUB_BRANCH, GITHUB_TOKEN);
+        if (!dbFile) return res.status(500).json({ error: 'Could not find dashboard/db.json in repository.' });
 
         const db = JSON.parse(dbFile.content);
         const article = (db.articles || []).find(a => String(a.id) === String(data.id));
@@ -50,7 +50,7 @@ export default async function handler(req, res) {
 
         const filesToCommit = [
             {
-                path: 'Clarified Dashboard/db.json',
+                path: 'dashboard/db.json',
                 content: JSON.stringify(db, null, 2)
             }
         ];

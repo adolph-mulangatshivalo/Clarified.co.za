@@ -17,7 +17,9 @@ const { execSync } = require('child_process');
 const crypto = require('crypto');
 
 const PROJECT_ROOT = path.resolve(__dirname, '..');
-const DB_PATH = path.join(PROJECT_ROOT, 'Clarified Dashboard', 'db.json');
+const DB_PATH = fs.existsSync(path.join(PROJECT_ROOT, 'dashboard', 'db.json'))
+    ? path.join(PROJECT_ROOT, 'dashboard', 'db.json')
+    : path.join(PROJECT_ROOT, 'Clarified Dashboard', 'db.json');
 const ARTICLES_DIR = path.join(PROJECT_ROOT, 'articles');
 const ABOUT_TEMPLATE = path.join(PROJECT_ROOT, 'about.html');
 
@@ -509,7 +511,7 @@ function handlePublishArticle(params) {
         downgradedToDraft: Boolean(downgradeReason),
         downgradeReason,
         url: `https://clarified.co.za/articles/${articleDraft.slug}.html`,
-        localPath: actualStatus === 'published' ? `articles/${articleDraft.slug}.html` : 'Saved in Clarified Dashboard/db.json (Draft)',
+        localPath: actualStatus === 'published' ? `articles/${articleDraft.slug}.html` : 'Saved in dashboard/db.json (Draft)',
         qualityGate,
         duplicateReport,
         deployment: gitResult
