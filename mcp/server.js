@@ -14,6 +14,7 @@
 const fs = require('fs');
 const path = require('path');
 const { execSync } = require('child_process');
+const crypto = require('crypto');
 
 const PROJECT_ROOT = path.resolve(__dirname, '..');
 const DB_PATH = path.join(PROJECT_ROOT, 'Clarified Dashboard', 'db.json');
@@ -627,7 +628,177 @@ function handleDeleteArticle(params) {
     };
 }
 
+// ── Google Search Console Integration ─────────────────────────────────────────
+function findGscCredentials() {
+    const candidates = [
+        path.join(PROJECT_ROOT, 'clarigit-ce50e-65aea355061b.json'),
+        path.join(PROJECT_ROOT, 'mcp', 'gsc-key.json')
+    ];
+    for (const f of candidates) {
+        if (fs.existsSync(f)) {
+            try { return JSON.parse(fs.readFileSync(f, 'utf8')); } catch (e) {}
+        }
+    }
+    const rootFiles = fs.readdirSync(PROJECT_ROOT);
+    for (const f of rootFiles) {
+        if (f.startsWith('clarigit-') && f.endsWith('.json')) {
+            try { return JSON.parse(fs.readFileSync(path.join(PROJECT_ROOT, f), 'utf8')); } catch (e) {}
+        }
+    }
+    return null;
+}
+
+function base64url(str) {
+    return Buffer.from(str).toString('base64').replace(/=/g, '').replace(/\+/g, '-').replace(/\//g, '_');
+}
+
+async function getGscAccessToken(creds) {
+    const now = Math.floor(Date.now() / 1000);
+    const header = base64url(JSON.stringify({ alg: 'RS256', typ: 'JWT' }));
+    const claimSet = base64url(JSON.stringify({
+        iss: creds.client_email,
+        scope: 'https://www.googleapis.com/auth/webmasters.readonly',
+        aud: 'https://oauth2.googleapis.com/token',
+        exp: now + 3600,
+        iat: now
+    }));
+
+    const signatureInput = header + '.' + claimSet;
+    const signer = crypto.createSign('RSA-SHA256');
+    signer.update(signatureInput);
+    const signature = signer.sign(creds.private_key, 'base64').replace(/=/g, '').replace(/\+/g, '-').replace(/\//g, '_');
+
+    const jwt = signatureInput + '.' + signature;
+
+    const res = await fetch('https://oauth2.googleapis.com/token', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+        body: 'grant_type=' + encodeURIComponent('urn:ietf:params:oauth:grant-type:jwt-bearer') + '&assertion=' + encodeURIComponent(jwt)
+    });
+
+    const data = await res.json();
+    if (!data.access_token) {
+        throw new Error(data.error_description || data.error || 'Failed to authenticate service account with Google OAuth.');
+    }
+    return data.access_token;
+}
+
+async function handleGetSearchAnalytics(params = {}) {
+    const creds = findGscCredentials();
+    if (!creds) {
+        throw new Error('Google Search Console service account JSON key not found in project root. Make sure your clarigit-*.json key file is present.');
+    }
+
+    const {
+        dimension = 'query',
+        days = 28,
+        limit = 20,
+        siteUrl = 'https://clarified.co.za/'
+    } = params;
+
+    const token = await getGscAccessToken(creds);
+    const endDate = new Date().toISOString().split('T')[0];
+    const startDate = new Date(Date.now() - (days * 24 * 60 * 60 * 1000)).toISOString().split('T')[0];
+
+    const endpoint = `https://www.googleapis.com/webmasters/v3/sites/${encodeURIComponent(siteUrl)}/searchAnalytics/query`;
+    const res = await fetch(endpoint, {
+        method: 'POST',
+        headers: {
+            'Authorization': `Bearer ${token}`,
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+            startDate,
+            endDate,
+            dimensions: [dimension],
+            rowLimit: limit
+        })
+    });
+
+    const data = await res.json();
+    if (!res.ok) {
+        throw new Error(`Google Search Console API error (${res.status}): ${data.error?.message || JSON.stringify(data)}`);
+    }
+
+    const rows = (data.rows || []).map(r => ({
+        [dimension]: r.keys[0],
+        clicks: r.clicks,
+        impressions: r.impressions,
+        ctr: `${(r.ctr * 100).toFixed(2)}%`,
+        avgPosition: Number(r.position.toFixed(1))
+    }));
+
+    return {
+        siteUrl,
+        dateRange: `${startDate} to ${endDate}`,
+        totalResults: rows.length,
+        data: rows
+    };
+}
+
+async function handleGetContentOpportunities(params = {}) {
+    const creds = findGscCredentials();
+    if (!creds) {
+        throw new Error('Google Search Console credentials not found.');
+    }
+
+    const { days = 28, siteUrl = 'https://clarified.co.za/' } = params;
+    const token = await getGscAccessToken(creds);
+    const endDate = new Date().toISOString().split('T')[0];
+    const startDate = new Date(Date.now() - (days * 24 * 60 * 60 * 1000)).toISOString().split('T')[0];
+
+    const endpoint = `https://www.googleapis.com/webmasters/v3/sites/${encodeURIComponent(siteUrl)}/searchAnalytics/query`;
+    const res = await fetch(endpoint, {
+        method: 'POST',
+        headers: {
+            'Authorization': `Bearer ${token}`,
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+            startDate,
+            endDate,
+            dimensions: ['query'],
+            rowLimit: 100
+        })
+    });
+
+    const data = await res.json();
+    const rows = data.rows || [];
+
+    const lowCtr = rows
+        .filter(r => r.impressions >= 15 && r.ctr < 0.04)
+        .map(r => ({
+            query: r.keys[0],
+            impressions: r.impressions,
+            clicks: r.clicks,
+            ctr: `${(r.ctr * 100).toFixed(2)}%`,
+            position: Number(r.position.toFixed(1)),
+            recommendation: 'Rewrite SEO Title and Meta Description to boost CTR. Google is displaying your article, but users are clicking competitors.'
+        }))
+        .slice(0, 10);
+
+    const strikingDistance = rows
+        .filter(r => r.position >= 8 && r.position <= 20)
+        .map(r => ({
+            query: r.keys[0],
+            impressions: r.impressions,
+            clicks: r.clicks,
+            position: Number(r.position.toFixed(1)),
+            recommendation: 'Add dedicated H2 subheading or paragraph addressing this specific keyword, and add internal links pointing to the article to push it into Top 5.'
+        }))
+        .slice(0, 10);
+
+    return {
+        siteUrl,
+        period: `Last ${days} days`,
+        summary: `Found ${lowCtr.length} low-CTR opportunities and ${strikingDistance.length} striking-distance keywords.`,
+        lowCtrOpportunities: lowCtr,
+        strikingDistanceKeywords: strikingDistance
+    };
+}
+
 // ── MCP Tool Definitions ─────────────────────────────────────────────────────
+
 const TOOLS = [
     {
         name: 'validate_article_quality',
@@ -751,6 +922,30 @@ const TOOLS = [
             },
             required: ['id', 'confirm']
         }
+    },
+    {
+        name: 'get_search_analytics',
+        description: 'Pull live Google Search Console performance metrics (clicks, impressions, CTR, average SERP position) for queries, pages, or countries.',
+        inputSchema: {
+            type: 'object',
+            properties: {
+                dimension: { type: 'string', enum: ['query', 'page', 'country', 'device'], default: 'query' },
+                days: { type: 'number', default: 28, description: 'Number of past days to query' },
+                limit: { type: 'number', default: 20 },
+                siteUrl: { type: 'string', default: 'https://clarified.co.za/' }
+            }
+        }
+    },
+    {
+        name: 'get_content_opportunities',
+        description: 'Audit live Google Search Console data to uncover click-magnet opportunities (high impressions, low CTR) and striking-distance keywords (ranking positions 8-20) to guide content updates.',
+        inputSchema: {
+            type: 'object',
+            properties: {
+                days: { type: 'number', default: 28 },
+                siteUrl: { type: 'string', default: 'https://clarified.co.za/' }
+            }
+        }
     }
 ];
 
@@ -799,7 +994,7 @@ process.stdin.on('data', chunk => {
     }
 });
 
-function handleRpc(req) {
+async function handleRpc(req) {
     const { id, method, params } = req;
 
     if (method === 'initialize') {
@@ -848,6 +1043,12 @@ function handleRpc(req) {
                     break;
                 case 'delete_article':
                     resultData = handleDeleteArticle(args);
+                    break;
+                case 'get_search_analytics':
+                    resultData = await handleGetSearchAnalytics(args);
+                    break;
+                case 'get_content_opportunities':
+                    resultData = await handleGetContentOpportunities(args);
                     break;
                 default:
                     sendError(id, -32601, `Tool not found: ${name}`);
