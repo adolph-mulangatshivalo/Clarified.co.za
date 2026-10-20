@@ -306,13 +306,23 @@ window.handleGoogleLogin = async function() {
     }
 
     const provider = new GoogleAuthProvider();
+    provider.setCustomParameters({ prompt: 'select_account' });
+
     try {
         const cred = await signInWithPopup(auth, provider);
         checkAuthAndRedirect(cred.user);
     } catch(err) {
-        if (err.code !== 'auth/popup-closed-by-user') {
-            showAlert(err.message, true);
+        if (err.code === 'auth/popup-closed-by-user') return;
+
+        let msg = err.message;
+        if (err.code === 'auth/unauthorized-domain') {
+            msg = "Domain Not Authorized: Add '" + window.location.hostname + "' to Firebase Console -> Authentication -> Settings -> Authorized Domains.";
+        } else if (err.code === 'auth/operation-not-allowed') {
+            msg = "Google Sign-In is disabled: Enable 'Google' under Firebase Console -> Authentication -> Sign-in method.";
+        } else if (err.code === 'auth/popup-blocked') {
+            msg = "Browser blocked the Google popup. Please allow popups for this site or use email & password.";
         }
+        showAlert(msg, true);
     }
 };
 
