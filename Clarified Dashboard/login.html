@@ -1,0 +1,326 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sign In — Clarified Dashboard</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Space+Grotesk:wght@600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="css/dashboard.css">
+    <style>
+        body {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+            background: #f7fafc;
+            padding: 20px;
+            box-sizing: border-box;
+            font-family: 'DM Sans', sans-serif;
+            margin: 0;
+        }
+        .login-card {
+            background: #ffffff;
+            border: 1px solid var(--line, #e2e8f0);
+            border-radius: 14px;
+            box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.05), 0 8px 10px -6px rgba(0, 0, 0, 0.03);
+            width: 100%;
+            max-width: 420px;
+            padding: 36px 32px;
+            box-sizing: border-box;
+        }
+        .login-brand {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 24px;
+            text-decoration: none;
+            color: inherit;
+        }
+        .login-brand img {
+            width: 36px;
+            height: 36px;
+            border-radius: 8px;
+            border: 1px solid var(--line, #e2e8f0);
+        }
+        .login-brand div {
+            font-size: 16px;
+            font-family: 'Space Grotesk', sans-serif;
+        }
+        .login-title {
+            font-size: 24px;
+            font-weight: 700;
+            font-family: 'Space Grotesk', sans-serif;
+            color: var(--ink, #1a202c);
+            margin: 0 0 8px 0;
+        }
+        .login-desc {
+            font-size: 14px;
+            color: var(--muted, #718096);
+            margin: 0 0 24px 0;
+            line-height: 1.5;
+        }
+        .form-group {
+            margin-bottom: 18px;
+        }
+        .form-group label {
+            display: block;
+            font-size: 13px;
+            font-weight: 600;
+            color: #4a5568;
+            margin-bottom: 6px;
+        }
+        .form-input {
+            width: 100%;
+            padding: 12px 14px;
+            border: 1px solid var(--line, #e2e8f0);
+            border-radius: 8px;
+            font-size: 14px;
+            outline: none;
+            box-sizing: border-box;
+            font-family: inherit;
+            transition: border-color 0.15s;
+        }
+        .form-input:focus {
+            border-color: var(--cyan-dark, #0ea5e9);
+        }
+        .btn-submit {
+            width: 100%;
+            padding: 12px 16px;
+            background: var(--ink, #1a202c);
+            color: #fff;
+            border: none;
+            border-radius: 8px;
+            font-size: 15px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background 0.15s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        }
+        .btn-submit:hover {
+            background: #2d3748;
+        }
+        .btn-submit:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+        }
+        .btn-google {
+            width: 100%;
+            padding: 11px 16px;
+            background: #ffffff;
+            color: #2d3748;
+            border: 1px solid #cbd5e0;
+            border-radius: 8px;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background 0.15s, border-color 0.15s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            margin-top: 12px;
+        }
+        .btn-google:hover {
+            background: #f8fafc;
+            border-color: #a0aec0;
+        }
+        .divider {
+            display: flex;
+            align-items: center;
+            text-align: center;
+            margin: 20px 0;
+            color: #a0aec0;
+            font-size: 12px;
+            font-weight: 600;
+            text-transform: uppercase;
+        }
+        .divider::before, .divider::after {
+            content: '';
+            flex: 1;
+            border-bottom: 1px solid var(--line, #e2e8f0);
+        }
+        .divider:not(:empty)::before { margin-right: .75em; }
+        .divider:not(:empty)::after { margin-left: .75em; }
+        .alert {
+            padding: 12px 14px;
+            border-radius: 8px;
+            font-size: 13px;
+            margin-bottom: 18px;
+            display: none;
+            line-height: 1.4;
+        }
+        .alert-error {
+            background: rgba(229, 62, 62, 0.1);
+            color: #c53030;
+            border: 1px solid rgba(229, 62, 62, 0.2);
+        }
+        .alert-info {
+            background: rgba(14, 165, 233, 0.1);
+            color: #0369a1;
+            border: 1px solid rgba(14, 165, 233, 0.2);
+        }
+    </style>
+</head>
+<body>
+
+<div class="login-card">
+    <a href="/" class="login-brand">
+        <img src="../images/cropped-WhatsApp-Image-2026-08-17-at-12.53.05-32x32.jpeg" alt="Logo">
+        <div><span>Clarified </span><b>South Africa</b></div>
+    </a>
+
+    <h1 class="login-title">Dashboard Login</h1>
+    <p class="login-desc">Sign in with your authorized administrator account to manage articles and site content.</p>
+
+    <div id="alert-box" class="alert"></div>
+
+    <form id="login-form" onsubmit="handleEmailLogin(event)">
+        <div class="form-group">
+            <label for="email">Email Address</label>
+            <input type="email" id="email" class="form-input" placeholder="admin@clarified.co.za" required autocomplete="email">
+        </div>
+
+        <div class="form-group">
+            <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px;">
+                <label for="password" style="margin-bottom:0;">Password</label>
+                <a href="#" onclick="handleForgotPassword(); return false;" style="font-size:12px;color:var(--cyan-dark,#0ea5e9);text-decoration:none;">Forgot?</a>
+            </div>
+            <input type="password" id="password" class="form-input" placeholder="••••••••••••" required autocomplete="current-password">
+        </div>
+
+        <button type="submit" id="submit-btn" class="btn-submit">
+            <span>Sign In</span>
+        </button>
+    </form>
+
+    <div class="divider">or</div>
+
+    <button type="button" id="google-btn" class="btn-google" onclick="handleGoogleLogin()">
+        <svg viewBox="0 0 24 24" width="18" height="18"><path fill="#4285F4" d="M23.745 12.27c0-.7-.06-1.4-.19-2.07H12v4.51h6.6c-.29 1.52-1.14 2.82-2.4 3.68v3.05h3.88c2.27-2.09 3.66-5.17 3.66-9.17z"/><path fill="#34A853" d="M12 24c3.24 0 5.95-1.08 7.93-2.91l-3.88-3.05c-1.08.72-2.45 1.16-4.05 1.16-3.12 0-5.77-2.1-6.72-4.93H1.25v3.15C3.27 21.39 7.35 24 12 24z"/><path fill="#FBBC05" d="M5.28 14.27c-.25-.72-.38-1.49-.38-2.27s.13-1.55.38-2.27V6.58H1.25C.45 8.18 0 9.99 0 12s.45 3.82 1.25 5.42l4.03-3.15z"/><path fill="#EA4335" d="M12 4.75c1.77 0 3.35.61 4.6 1.8l3.42-3.42C17.95 1.19 15.24 0 12 0 7.35 0 3.27 2.61 1.25 6.58l4.03 3.15c.95-2.83 3.6-4.98 6.72-4.98z"/></svg>
+        <span>Sign in with Google</span>
+    </button>
+</div>
+
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
+import { 
+    getAuth, 
+    signInWithEmailAndPassword, 
+    signInWithPopup, 
+    GoogleAuthProvider, 
+    sendPasswordResetEmail,
+    onAuthStateChanged 
+} from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
+import { firebaseConfig, ALLOWED_ADMIN_EMAILS } from "./firebase-config.js";
+
+const isConfigured = firebaseConfig.apiKey && !firebaseConfig.apiKey.includes("YOUR_API_KEY");
+
+const alertBox = document.getElementById('alert-box');
+function showAlert(msg, isError = true) {
+    alertBox.textContent = msg;
+    alertBox.className = isError ? 'alert alert-error' : 'alert alert-info';
+    alertBox.style.display = 'block';
+}
+
+if (!isConfigured) {
+    showAlert("Setup Notice: To activate Firebase Authentication, paste your Firebase web config into 'Clarified Dashboard/firebase-config.js'.", false);
+}
+
+let auth = null;
+if (isConfigured) {
+    const app = initializeApp(firebaseConfig);
+    auth = getAuth(app);
+
+    // If user is already authenticated and authorized, redirect straight to index
+    onAuthStateChanged(auth, user => {
+        if (user) {
+            checkAuthAndRedirect(user);
+        }
+    });
+}
+
+function checkAuthAndRedirect(user) {
+    if (Array.isArray(ALLOWED_ADMIN_EMAILS) && ALLOWED_ADMIN_EMAILS.length > 0) {
+        const userEmail = (user.email || '').toLowerCase();
+        const isAllowed = ALLOWED_ADMIN_EMAILS.some(e => e.toLowerCase() === userEmail);
+        if (!isAllowed) {
+            showAlert(`Access Denied: ${user.email} is not listed in ALLOWED_ADMIN_EMAILS.`, true);
+            auth.signOut();
+            return;
+        }
+    }
+
+    const params = new URLSearchParams(window.location.search);
+    const returnUrl = params.get('returnUrl') || 'index.html';
+    window.location.replace(returnUrl);
+}
+
+window.handleEmailLogin = async function(e) {
+    e.preventDefault();
+    if (!isConfigured) {
+        alert("Please configure your Firebase credentials in 'Clarified Dashboard/firebase-config.js' first.");
+        return;
+    }
+
+    const email = document.getElementById('email').value.trim();
+    const pass  = document.getElementById('password').value;
+    const btn   = document.getElementById('submit-btn');
+
+    btn.disabled = true;
+    btn.innerHTML = 'Signing in…';
+
+    try {
+        const cred = await signInWithEmailAndPassword(auth, email, pass);
+        checkAuthAndRedirect(cred.user);
+    } catch(err) {
+        let message = err.message;
+        if (err.code === 'auth/invalid-credential' || err.code === 'auth/wrong-password' || err.code === 'auth/user-not-found') {
+            message = 'Invalid email or password.';
+        }
+        showAlert(message, true);
+        btn.disabled = false;
+        btn.innerHTML = '<span>Sign In</span>';
+    }
+};
+
+window.handleGoogleLogin = async function() {
+    if (!isConfigured) {
+        alert("Please configure your Firebase credentials in 'Clarified Dashboard/firebase-config.js' first.");
+        return;
+    }
+
+    const provider = new GoogleAuthProvider();
+    try {
+        const cred = await signInWithPopup(auth, provider);
+        checkAuthAndRedirect(cred.user);
+    } catch(err) {
+        if (err.code !== 'auth/popup-closed-by-user') {
+            showAlert(err.message, true);
+        }
+    }
+};
+
+window.handleForgotPassword = async function() {
+    const email = document.getElementById('email').value.trim();
+    if (!email) {
+        alert('Please enter your email address in the field first.');
+        return;
+    }
+    if (!isConfigured) return;
+
+    try {
+        await sendPasswordResetEmail(auth, email);
+        showAlert(`Password reset email sent to ${email}.`, false);
+    } catch(err) {
+        showAlert(err.message, true);
+    }
+};
+</script>
+
+</body>
+</html>

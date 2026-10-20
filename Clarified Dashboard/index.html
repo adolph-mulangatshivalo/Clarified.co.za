@@ -1,0 +1,244 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard — Clarified</title>
+    <link rel="stylesheet" href="css/dashboard.css">
+    <script type="module" src="auth-guard.js"></script>
+</head>
+<body>
+
+<aside class="sidebar">
+    <a href="index.html" class="brand">
+        <img src="../images/cropped-WhatsApp-Image-2026-08-17-at-12.53.05-32x32.jpeg" alt="Logo" style="width:32px;height:32px;border-radius:6px;border:1px solid var(--line);">
+        <div><span>Clarified </span><b>South Africa</b></div>
+    </a>
+    <nav class="nav-menu">
+
+        <details class="nav-group" open>
+            <summary class="nav-item active">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7"></rect><rect x="14" y="3" width="7" height="7"></rect><rect x="14" y="14" width="7" height="7"></rect><rect x="3" y="14" width="7" height="7"></rect></svg>
+                <span>Overview</span>
+                <svg class="chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"></polyline></svg>
+            </summary>
+            <div class="nav-sub">
+                <a href="index.html" class="nav-sub-item active">Dashboard</a>
+            </div>
+        </details>
+
+        <details class="nav-group">
+            <summary class="nav-item">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line><polyline points="10 9 9 9 8 9"></polyline></svg>
+                <span>Articles</span>
+                <svg class="chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"></polyline></svg>
+            </summary>
+            <div class="nav-sub">
+                <a href="articles.html" class="nav-sub-item">All Articles</a>
+                <a href="editor.html" class="nav-sub-item">New Article</a>
+                <a href="articles.html?filter=draft" class="nav-sub-item">Drafts</a>
+                <a href="articles.html?filter=scheduled" class="nav-sub-item">Scheduled</a>
+            </div>
+        </details>
+
+        <details class="nav-group">
+            <summary class="nav-item">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"></path></svg>
+                <span>Categories</span>
+                <svg class="chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"></polyline></svg>
+            </summary>
+            <div class="nav-sub">
+                <a href="articles.html?cat=South+Africa" class="nav-sub-item">SA</a>
+                <a href="articles.html?cat=World" class="nav-sub-item">World</a>
+                <a href="articles.html?cat=Technology" class="nav-sub-item">Tech</a>
+                <a href="articles.html?cat=Business" class="nav-sub-item">Business</a>
+                <a href="articles.html?cat=Sport" class="nav-sub-item">Sport</a>
+                <a href="articles.html?cat=Education" class="nav-sub-item">Education</a>
+                <a href="articles.html?cat=GenZ+%26+Youth" class="nav-sub-item">Youth</a>
+                <a href="articles.html?cat=Africa+News" class="nav-sub-item">Africa</a>
+                <a href="articles.html?cat=Lifestyle" class="nav-sub-item">Lifestyle</a>
+                <a href="articles.html?cat=Automotive" class="nav-sub-item">Auto</a>
+            </div>
+        </details>
+
+        <details class="nav-group">
+            <summary class="nav-item">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="20" x2="18" y2="10"></line><line x1="12" y1="20" x2="12" y2="4"></line><line x1="6" y1="20" x2="6" y2="14"></line></svg>
+                <span>Analytics</span>
+                <svg class="chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"></polyline></svg>
+            </summary>
+            <div class="nav-sub">
+                <a href="articles.html" class="nav-sub-item">Popular Articles</a>
+            </div>
+        </details>
+
+        <details class="nav-group">
+            <summary class="nav-item">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"></circle><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path></svg>
+                <span>Settings</span>
+                <svg class="chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"></polyline></svg>
+            </summary>
+            <div class="nav-sub">
+                <a href="#" class="nav-sub-item">Site Information</a>
+                <a href="#" class="nav-sub-item">Social Links</a>
+            </div>
+        </details>
+
+    </nav>
+
+    <div style="padding: 16px; border-top: 1px solid var(--line); margin-top: auto;">
+        <a href="/" target="_blank" class="nav-sub-item" style="display:flex;align-items:center;gap:8px;color:var(--muted);">
+            <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"></path><polyline points="15 3 21 3 21 9"></polyline><line x1="10" y1="14" x2="21" y2="3"></line></svg>
+            View live site
+        </a>
+    </div>
+</aside>
+
+<main class="main-wrapper">
+    <header class="topbar">
+        <div class="topbar-title">Dashboard Overview</div>
+        <div class="user-profile">
+            <a href="editor.html" class="btn btn-primary">
+                <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
+                New Article
+            </a>
+            <div class="avatar">A</div>
+        </div>
+    </header>
+
+    <div class="content">
+
+        <!-- Stats -->
+        <div class="stats-grid">
+            <div class="stat-card">
+                <div class="stat-icon">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline></svg>
+                </div>
+                <div class="stat-details">
+                    <h4>Total Articles</h4>
+                    <h2 id="stat-total">—</h2>
+                </div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-icon" style="color:#10B981;background:rgba(16,185,129,0.1);">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path><circle cx="12" cy="12" r="3"></circle></svg>
+                </div>
+                <div class="stat-details">
+                    <h4>Published</h4>
+                    <h2 id="stat-published">—</h2>
+                </div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-icon" style="color:#F59E0B;background:rgba(245,158,11,0.1);">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 20h9"></path><path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"></path></svg>
+                </div>
+                <div class="stat-details">
+                    <h4>Drafts</h4>
+                    <h2 id="stat-drafts">—</h2>
+                </div>
+            </div>
+        </div>
+
+        <!-- Recent Articles -->
+        <div class="panel">
+            <div class="panel-header">
+                <h2 class="panel-title">Recent Articles</h2>
+                <a href="articles.html" class="btn btn-outline" style="font-size:13px;">View all</a>
+            </div>
+            <div class="table-wrapper">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Title</th>
+                            <th>Category</th>
+                            <th>Author</th>
+                            <th>Date</th>
+                            <th>Status</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody id="recent-tbody">
+                        <tr><td colspan="6" class="empty-state">Loading...</td></tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+    </div>
+</main>
+
+<script>
+async function loadDashboard() {
+    try {
+        let stats, articles;
+        try {
+            const [statsRes, articlesRes] = await Promise.all([
+                fetch('/api/stats'),
+                fetch('/api/articles')
+            ]);
+            stats    = await statsRes.json();
+            articles = await articlesRes.json();
+        } catch(e) {
+            const res = await fetch('db.json');
+            const db = await res.json();
+            articles = db.articles || [];
+            stats = {
+                total: articles.length,
+                published: articles.filter(a => a.status === 'published').length,
+                drafts: articles.filter(a => a.status === 'draft').length
+            };
+        }
+
+        document.getElementById('stat-total').textContent     = stats.total;
+        document.getElementById('stat-published').textContent = stats.published;
+        document.getElementById('stat-drafts').textContent    = stats.drafts;
+
+        const tbody = document.getElementById('recent-tbody');
+        if (articles.length === 0) {
+            tbody.innerHTML = '<tr><td colspan="6" class="empty-state">No articles yet. <a href="editor.html">Write your first one →</a></td></tr>';
+            return;
+        }
+
+        tbody.innerHTML = articles.slice(0, 8).map(a => {
+            const date = new Date(a.date).toLocaleDateString('en-ZA');
+            const statusStyle = a.status === 'published'
+                ? 'color:#10B981;background:rgba(16,185,129,0.1);'
+                : 'color:#F59E0B;background:rgba(245,158,11,0.1);';
+            const slug = a.slug || (a.title || '').toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, '');
+            return `<tr>
+                <td><strong><a href="editor.html?id=${a.id}" style="color:inherit;text-decoration:none;">${a.title}</a></strong></td>
+                <td><span style="background:var(--soft);padding:3px 8px;border-radius:4px;font-size:12px;font-weight:600;">${a.category || '—'}</span></td>
+                <td>${a.author}</td>
+                <td style="color:var(--muted);font-size:13px;">${date}</td>
+                <td><span style="${statusStyle}padding:3px 10px;border-radius:20px;font-size:12px;font-weight:700;text-transform:capitalize;">${a.status}</span></td>
+                <td style="white-space:nowrap;">
+                    <a href="/articles/${slug}.html" target="_blank" class="btn btn-outline" style="padding:5px 9px;font-size:12px;margin-right:4px;" title="View article on site">View</a>
+                    <a href="editor.html?id=${a.id}" class="btn btn-outline" style="padding:5px 9px;font-size:12px;margin-right:4px;">Edit</a>
+                    <button onclick="del('${a.id}')" class="btn" style="padding:5px 9px;font-size:12px;color:var(--danger);border:1px solid var(--danger);background:transparent;">Delete</button>
+                </td>
+            </tr>`;
+        }).join('');
+    } catch(e) {
+        document.getElementById('stat-total').textContent     = 'ERR';
+        document.getElementById('stat-published').textContent = 'ERR';
+        document.getElementById('stat-drafts').textContent    = 'ERR';
+        console.error(e);
+    }
+}
+
+async function del(id) {
+    if (!confirm('Delete this article? This cannot be undone.')) return;
+    try {
+        const res = await fetch('/api/delete', { method:'POST', body: JSON.stringify({id}), headers:{'Content-Type':'application/json'} });
+        if (!res.ok) throw new Error('Delete failed');
+        loadDashboard();
+    } catch(e) {
+        alert('Could not delete article. Make sure server.js is running.');
+    }
+}
+
+loadDashboard();
+</script>
+
+</body>
+</html>

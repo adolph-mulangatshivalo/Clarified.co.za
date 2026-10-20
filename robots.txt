@@ -1,0 +1,3 @@
+User-agent: *
+Allow: /
+Sitemap: https://clarified.co.za/sitemap.xml

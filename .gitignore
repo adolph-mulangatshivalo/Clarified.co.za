@@ -1,0 +1,15 @@
+# OS Files
+.DS_Store
+Thumbs.db
+
+# Backup files
+*.bak
+db.json.bak
+
+# Logs
+*.log
+
+# Environment variables
+.env
+.env.local
+.env.*.local
