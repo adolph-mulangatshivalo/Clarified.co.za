@@ -1,15 +1,20 @@
 #!/usr/bin/env node
 /**
  * Clarified.co.za Model Context Protocol (MCP) Server
- * Enables AI assistants (Antigravity, Claude, etc.) to publish, edit, SEO-optimize,
- * and manage articles directly from chat.
+ * Production-Grade Editorial AI Engine
+ *
+ * Core Capabilities:
+ * 1. Safe, Reversible Publishing (Draft-First & Git/Vercel Sync)
+ * 2. Pre-Flight Quality Gate (Blocks broken links, thin content, missing alt tags)
+ * 3. Duplicate Content & Keyword Cannibalization Detector
+ * 4. Verified Internal Linking Engine
+ * 5. Full SEO & Structured Data Management
  */
 
 const fs = require('fs');
 const path = require('path');
 const { execSync } = require('child_process');
 
-// Determine root paths
 const PROJECT_ROOT = path.resolve(__dirname, '..');
 const DB_PATH = path.join(PROJECT_ROOT, 'Clarified Dashboard', 'db.json');
 const ARTICLES_DIR = path.join(PROJECT_ROOT, 'articles');
@@ -185,7 +190,7 @@ ${absoluteImg ? `<meta name="twitter:image" content="${absoluteImg}">` : ''}`;
         fs.writeFileSync(path.join(ARTICLES_DIR, `${slug}.html`), out, 'utf8');
     });
 
-    // Generate sitemap.xml
+    // Update sitemap.xml
     const sitemapUrls = [
         'https://clarified.co.za/',
         'https://clarified.co.za/about.html',
@@ -216,6 +221,202 @@ function syncToGit(commitMessage) {
     }
 }
 
+// ── Quality Gate Validator ───────────────────────────────────────────────────
+function runQualityGate(article, existingArticles = [], isNew = false) {
+    const criticalErrors = [];
+    const warnings = [];
+
+    const {
+        title = '',
+        content = '',
+        slug = '',
+        seoTitle = '',
+        metaDesc = '',
+        featuredImage = '',
+        imgAlt = '',
+        id = null
+    } = article;
+
+    // 1. Slug check
+    if (!slug) {
+        criticalErrors.push('Missing URL slug.');
+    } else if (isNew && existingArticles.some(a => a.slug === slug)) {
+        criticalErrors.push(`Duplicate slug detected: "${slug}" is already in use by an existing article.`);
+    }
+
+    // 2. Title & SEO Title checks
+    if (!title || title.trim().length < 5) {
+        criticalErrors.push('Title is missing or too short (minimum 5 characters).');
+    }
+    const finalSeoTitle = seoTitle || title;
+    if (finalSeoTitle.length > 60) {
+        warnings.push(`SEO Title is ${finalSeoTitle.length} characters (Google recommended limit is 60). It will be truncated in search results.`);
+    }
+
+    // 3. Meta Description checks
+    if (!metaDesc || metaDesc.trim().length === 0) {
+        criticalErrors.push('Meta description is required for indexing and search engine snippets.');
+    } else if (metaDesc.length > 160) {
+        warnings.push(`Meta description is ${metaDesc.length} characters (recommended maximum is 160).`);
+    }
+
+    // 4. Content depth & word count
+    const words = content.replace(/<[^>]+>/g, ' ').split(/\s+/).filter(Boolean);
+    if (words.length < 200) {
+        criticalErrors.push(`Thin content: Article has only ${words.length} words. Clarified requires at least 250 words to avoid low-quality search penalties.`);
+    } else if (words.length < 400) {
+        warnings.push(`Article is relatively short (${words.length} words). Deep-dive articles perform best in search results.`);
+    }
+
+    // 5. Heading hierarchy
+    if (!/<h2/i.test(content)) {
+        warnings.push('Article lacks <h2> subheadings. Structured subheadings improve readability and user retention.');
+    }
+    if (/<h1/i.test(content)) {
+        warnings.push('Found <h1> tags in article body. Pages must have only one <h1> (the main title). Use <h2> or <h3>.');
+    }
+
+    // 6. Image & Alt text validation
+    if (featuredImage && (!imgAlt || imgAlt.trim().length === 0)) {
+        warnings.push('Featured image is set but missing descriptive "imgAlt" text. Alt text is essential for Google Image search and accessibility.');
+    }
+
+    // 7. Internal Link Integrity: Verify that all Clarified internal links actually exist
+    const internalLinkRegex = /href=["'](?:\/articles\/|https?:\/\/clarified\.co\.za\/articles\/)([a-zA-Z0-9_-]+)\.html["']/gi;
+    let match;
+    const checkedSlugs = new Set();
+    while ((match = internalLinkRegex.exec(content)) !== null) {
+        const targetSlug = match[1];
+        if (!checkedSlugs.has(targetSlug)) {
+            checkedSlugs.add(targetSlug);
+            const exists = existingArticles.some(a => a.slug === targetSlug);
+            if (!exists) {
+                criticalErrors.push(`Broken internal link: Found link to "/articles/${targetSlug}.html", but no article with that slug exists.`);
+            }
+        }
+    }
+
+    // 8. Insecure links check
+    if (/href=["']http:\/\//i.test(content)) {
+        warnings.push('Found insecure "http://" links. Use secure "https://" destinations whenever possible.');
+    }
+
+    const passed = criticalErrors.length === 0;
+
+    return {
+        passed,
+        canPublish: passed,
+        criticalErrors,
+        warnings,
+        wordCount: words.length,
+        readingTime: Math.max(1, Math.round(words.length / 200))
+    };
+}
+
+// ── Duplicate Content & Keyword Cannibalization Detector ────────────────────
+function detectDuplicates(proposedTitle, proposedFocusKw = '', proposedSlug = '') {
+    const db = getDB();
+    const articles = db.articles || [];
+    const normalizedKw = (proposedFocusKw || '').toLowerCase().trim();
+    const targetSlug = proposedSlug || generateSlug(proposedTitle);
+
+    // Stop words to remove from title similarity
+    const stopWords = new Set(['the', 'and', 'for', 'with', 'how', 'what', 'why', 'in', 'of', 'on', 'at', 'to', 'a', 'is', 'are', 'that', 'this', 'south', 'africa']);
+    const getWords = text => (text || '').toLowerCase().replace(/[^a-z0-9\s]/g, '').split(/\s+/).filter(w => w.length > 2 && !stopWords.has(w));
+
+    const proposedWords = new Set(getWords(proposedTitle));
+
+    const conflicts = [];
+
+    articles.forEach(a => {
+        let conflictType = null;
+        let score = 0;
+
+        // Check exact slug collision
+        if (a.slug === targetSlug) {
+            conflictType = 'EXACT_SLUG_COLLISION';
+            score = 100;
+        }
+
+        // Check focus keyword clash
+        if (normalizedKw && a.focusKw && a.focusKw.toLowerCase().trim() === normalizedKw) {
+            conflictType = conflictType || 'KEYWORD_CANNIBALIZATION';
+            score = Math.max(score, 90);
+        }
+
+        // Check title word overlap (Jaccard similarity)
+        const existingWords = getWords(a.title);
+        const overlap = existingWords.filter(w => proposedWords.has(w));
+        const unionSize = new Set([...proposedWords, ...existingWords]).size;
+        const jaccard = unionSize > 0 ? (overlap.length / unionSize) * 100 : 0;
+
+        if (jaccard > 45 && !conflictType) {
+            conflictType = 'TOPIC_OVERLAP';
+            score = Math.round(jaccard);
+        }
+
+        if (conflictType) {
+            conflicts.push({
+                id: a.id,
+                title: a.title,
+                slug: a.slug,
+                url: `https://clarified.co.za/articles/${a.slug}.html`,
+                focusKw: a.focusKw || 'None',
+                conflictType,
+                similarityScore: `${score}%`,
+                recommendation: score >= 80 
+                    ? `Consider updating article "${a.title}" instead of creating a competing page.`
+                    : `Ensure this article covers a distinct angle from "${a.title}".`
+            });
+        }
+    });
+
+    return {
+        hasConflicts: conflicts.length > 0,
+        conflictCount: conflicts.length,
+        conflicts: conflicts.sort((a, b) => parseInt(b.similarityScore) - parseInt(a.similarityScore))
+    };
+}
+
+// ── Verified Internal Linking Engine ─────────────────────────────────────────
+function suggestInternalLinks(content, currentSlug = '') {
+    const db = getDB();
+    const articles = (db.articles || []).filter(a => a.status === 'published' && a.slug !== currentSlug);
+    const suggestions = [];
+    const textLower = content.toLowerCase();
+
+    articles.forEach(a => {
+        const candidates = [];
+        if (a.focusKw && a.focusKw.length > 3) candidates.push(a.focusKw);
+        // Also candidate title fragments (e.g. "highest paying engineering jobs", "k53 driving test")
+        const cleanTitle = a.title.replace(/[:\-–—].*$/, '').trim();
+        if (cleanTitle.length > 10) candidates.push(cleanTitle);
+
+        for (const candidate of candidates) {
+            const pattern = candidate.toLowerCase();
+            if (textLower.includes(pattern)) {
+                // Ensure link isn't already inside the content
+                const alreadyLinked = content.includes(a.slug);
+                if (!alreadyLinked) {
+                    suggestions.push({
+                        anchorText: candidate,
+                        destinationTitle: a.title,
+                        destinationSlug: a.slug,
+                        destinationUrl: `/articles/${a.slug}.html`,
+                        absoluteUrl: `https://clarified.co.za/articles/${a.slug}.html`
+                    });
+                    break;
+                }
+            }
+        }
+    });
+
+    return {
+        totalSuggestions: suggestions.length,
+        suggestions
+    };
+}
+
 // ── Tool Handlers ────────────────────────────────────────────────────────────
 function handlePublishArticle(params) {
     const {
@@ -227,11 +428,12 @@ function handlePublishArticle(params) {
         author = 'Clarified Editorial',
         featuredImage = '',
         imgAlt = '',
-        status = 'published',
+        status = 'draft', // Default is safe draft mode
         seoTitle = '',
         metaDesc = '',
         focusKw = '',
-        slug: userSlug
+        slug: userSlug,
+        forcePublish = false
     } = params;
 
     if (!title || !content) {
@@ -240,12 +442,14 @@ function handlePublishArticle(params) {
 
     const db = getDB();
     const finalSlug = userSlug ? generateSlug(userSlug) : generateSlug(title);
+    const isNew = !db.articles.some(a => a.slug === finalSlug);
     const id = Date.now();
-    const cleanExcerpt = excerpt || content.replace(/<[^>]+>/g, '').substring(0, 150) + '…';
+
+    const cleanExcerpt = excerpt || content.replace(/<[^>]+>/g, '').substring(0, 150).trim() + '…';
     const finalSeoTitle = seoTitle || (title.length > 60 ? title.substring(0, 57) + '…' : title);
     const finalMetaDesc = metaDesc || (cleanExcerpt.length > 160 ? cleanExcerpt.substring(0, 157) + '…' : cleanExcerpt);
 
-    const article = {
+    const articleDraft = {
         id,
         title,
         content,
@@ -259,41 +463,60 @@ function handlePublishArticle(params) {
         focusKw,
         imgAlt: imgAlt || title,
         featuredImage,
-        status,
+        status: status,
         date: id
     };
 
+    // 1. Run Pre-Flight Quality Gate
+    const qualityGate = runQualityGate(articleDraft, db.articles, isNew);
+
+    // If publishing live was requested but quality gate failed (and not forced), downgrade to draft
+    let actualStatus = status;
+    let downgradeReason = null;
+    if (status === 'published' && !qualityGate.canPublish && !forcePublish) {
+        actualStatus = 'draft';
+        articleDraft.status = 'draft';
+        downgradeReason = 'Quality Gate blocked live publication due to critical errors. Saved safely as draft.';
+    }
+
+    // 2. Check for Duplicate / Cannibalization
+    const duplicateReport = detectDuplicates(title, focusKw, finalSlug);
+
+    // 3. Save to database
     const existingIdx = db.articles.findIndex(a => a.slug === finalSlug);
     if (existingIdx >= 0) {
-        db.articles[existingIdx] = { ...db.articles[existingIdx], ...article, id: db.articles[existingIdx].id };
+        db.articles[existingIdx] = { ...db.articles[existingIdx], ...articleDraft, id: db.articles[existingIdx].id };
     } else {
-        db.articles.unshift(article);
+        db.articles.unshift(articleDraft);
     }
 
     saveDB(db);
-    regenerateSite();
 
-    const gitResult = syncToGit(`Publish article: ${title}`);
+    // Regenerate static pages if published
+    if (actualStatus === 'published') {
+        regenerateSite();
+    }
+
+    const gitResult = syncToGit(`[CMS] ${actualStatus === 'published' ? 'Publish' : 'Draft'}: ${title}`);
 
     return {
         success: true,
-        id: article.id,
-        title: article.title,
-        slug: article.slug,
-        status: article.status,
-        url: `https://clarified.co.za/articles/${article.slug}.html`,
-        localPath: `articles/${article.slug}.html`,
-        seo: {
-            titleLength: finalSeoTitle.length,
-            metaDescLength: finalMetaDesc.length,
-            focusKw: focusKw || 'None specified'
-        },
+        id: articleDraft.id,
+        title: articleDraft.title,
+        slug: articleDraft.slug,
+        status: actualStatus,
+        downgradedToDraft: Boolean(downgradeReason),
+        downgradeReason,
+        url: `https://clarified.co.za/articles/${articleDraft.slug}.html`,
+        localPath: actualStatus === 'published' ? `articles/${articleDraft.slug}.html` : 'Saved in Clarified Dashboard/db.json (Draft)',
+        qualityGate,
+        duplicateReport,
         deployment: gitResult
     };
 }
 
 function handleEditArticle(params) {
-    const { id, slug, ...updates } = params;
+    const { id, slug, forcePublish = false, ...updates } = params;
     if (!id && !slug) {
         throw new Error('Please specify an "id" or "slug" to locate the article to edit.');
     }
@@ -306,20 +529,31 @@ function handleEditArticle(params) {
     }
 
     const current = db.articles[idx];
-    if (updates.title && !updates.slug && !current.slug) {
-        updates.slug = generateSlug(updates.title);
+    const updatedArticle = { ...current, ...updates };
+
+    // Run quality gate if being published
+    let qualityGate = null;
+    if (updatedArticle.status === 'published') {
+        qualityGate = runQualityGate(updatedArticle, db.articles.filter((_, i) => i !== idx), false);
+        if (!qualityGate.canPublish && !forcePublish) {
+            updatedArticle.status = 'draft';
+        }
     }
 
-    db.articles[idx] = { ...current, ...updates };
+    db.articles[idx] = updatedArticle;
     saveDB(db);
-    regenerateSite();
 
-    const gitResult = syncToGit(`Update article: ${db.articles[idx].title}`);
+    if (updatedArticle.status === 'published') {
+        regenerateSite();
+    }
+
+    const gitResult = syncToGit(`[CMS] Update article: ${updatedArticle.title}`);
 
     return {
         success: true,
-        article: db.articles[idx],
-        url: `https://clarified.co.za/articles/${db.articles[idx].slug}.html`,
+        article: updatedArticle,
+        qualityGate,
+        url: `https://clarified.co.za/articles/${updatedArticle.slug}.html`,
         deployment: gitResult
     };
 }
@@ -359,8 +593,16 @@ function handleGetArticle(params) {
 }
 
 function handleDeleteArticle(params) {
-    const { id } = params;
+    const { id, confirm: userConfirmed } = params;
     if (!id) throw new Error('Article ID is required to delete.');
+
+    if (!userConfirmed) {
+        return {
+            success: false,
+            blocked: true,
+            message: 'Safety Guard: Deletion is a destructive action. Pass "confirm: true" in arguments to proceed with permanent deletion.'
+        };
+    }
 
     const db = getDB();
     const idx = db.articles.findIndex(a => String(a.id) === String(id));
@@ -375,96 +617,109 @@ function handleDeleteArticle(params) {
     }
 
     regenerateSite();
-    const gitResult = syncToGit(`Delete article: ${removed.title}`);
+    const gitResult = syncToGit(`[CMS] Delete article: ${removed.title}`);
 
     return {
         success: true,
         deleted: removed.title,
+        slug: removed.slug,
         deployment: gitResult
     };
 }
 
-function handleCheckSEO(params) {
-    const { title = '', content = '', focusKw = '', seoTitle = '', metaDesc = '' } = params;
-    const textOnly = content.replace(/<[^>]+>/g, ' ').toLowerCase();
-    const kw = (focusKw || '').toLowerCase().trim();
-
-    const checks = [
-        { name: 'Title presence', pass: title.length > 5, message: title.length > 5 ? 'Title is descriptive.' : 'Title is too short.' },
-        { name: 'SEO Title length (<60 chars)', pass: (seoTitle || title).length <= 60, message: `Length: ${(seoTitle || title).length}/60 chars.` },
-        { name: 'Meta Description length (<160 chars)', pass: metaDesc.length > 0 && metaDesc.length <= 160, message: `Length: ${metaDesc.length}/160 chars.` },
-        { name: 'Content depth (>300 words)', pass: textOnly.split(/\s+/).length >= 300, message: `Word count: ${textOnly.split(/\s+/).length} words.` },
-        { name: 'Subheadings (H2/H3)', pass: /<h2|<h3/i.test(content), message: /<h2|<h3/i.test(content) ? 'Subheadings found.' : 'Add <h2> subheadings to structure your article.' }
-    ];
-
-    if (kw) {
-        const kwInTitle = (seoTitle || title).toLowerCase().includes(kw);
-        const kwInMeta = metaDesc.toLowerCase().includes(kw);
-        const kwCount = (textOnly.match(new RegExp(kw.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'), 'g')) || []).length;
-        checks.push({ name: 'Focus keyword in title', pass: kwInTitle, message: kwInTitle ? 'Keyword present in title.' : 'Include keyword in the title.' });
-        checks.push({ name: 'Focus keyword in meta description', pass: kwInMeta, message: kwInMeta ? 'Keyword present in meta description.' : 'Include keyword in meta description.' });
-        checks.push({ name: 'Keyword density', pass: kwCount >= 2, message: `Keyword appears ${kwCount} time(s) in content.` });
-    }
-
-    const passed = checks.filter(c => c.pass).length;
-    const score = Math.round((passed / checks.length) * 100);
-
-    return {
-        seoScore: `${score}/100`,
-        passed: `${passed} of ${checks.length} criteria met`,
-        details: checks
-    };
-}
-
-// ── MCP Server Protocol (JSON-RPC stdio) ─────────────────────────────────────
+// ── MCP Tool Definitions ─────────────────────────────────────────────────────
 const TOOLS = [
     {
-        name: 'publish_article',
-        description: 'Publish a new article or save a draft on Clarified.co.za. Automatically calculates SEO, generates static HTML page, updates categories, and syncs to GitHub & Vercel.',
+        name: 'validate_article_quality',
+        description: 'Run the Clarified Pre-Flight Quality Gate. Audits for broken internal links, thin content, missing alt tags, duplicate slugs, and Google snippet limits before publishing.',
         inputSchema: {
             type: 'object',
             properties: {
-                title: { type: 'string', description: 'The title of the article' },
-                content: { type: 'string', description: 'HTML body content with <h2> headings, <p> paragraphs, lists, etc.' },
-                excerpt: { type: 'string', description: 'Short summary (1-2 sentences)' },
-                category: { type: 'string', description: 'Category: South Africa, World, Technology, Business, Sport, Education, GenZ & Youth, Africa News, Lifestyle, Automotive' },
-                tags: { type: 'string', description: 'Comma-separated tags (e.g. "Careers, Universities, 2026")' },
-                author: { type: 'string', description: 'Author name (defaults to Clarified Editorial)' },
-                featuredImage: { type: 'string', description: 'Image URL (e.g. from Cloudinary)' },
-                imgAlt: { type: 'string', description: 'Alt text for the featured image' },
-                status: { type: 'string', enum: ['published', 'draft'], default: 'published' },
-                seoTitle: { type: 'string', description: 'SEO title under 60 characters' },
-                metaDesc: { type: 'string', description: 'Meta description under 160 characters' },
-                focusKw: { type: 'string', description: 'Target focus keyword phrase' },
-                slug: { type: 'string', description: 'URL slug (auto-generated if omitted)' }
+                title: { type: 'string' },
+                content: { type: 'string' },
+                slug: { type: 'string' },
+                seoTitle: { type: 'string' },
+                metaDesc: { type: 'string' },
+                featuredImage: { type: 'string' },
+                imgAlt: { type: 'string' }
+            },
+            required: ['title', 'content', 'slug']
+        }
+    },
+    {
+        name: 'detect_duplicates',
+        description: 'Scan Clarified archive for keyword cannibalization and topical overlap before creating a new article.',
+        inputSchema: {
+            type: 'object',
+            properties: {
+                title: { type: 'string', description: 'Proposed article title' },
+                focusKw: { type: 'string', description: 'Target focus keyword' },
+                slug: { type: 'string', description: 'Proposed slug (optional)' }
+            },
+            required: ['title']
+        }
+    },
+    {
+        name: 'suggest_internal_links',
+        description: 'Analyze article text and find high-relevance internal links to existing Clarified articles. Verifies that all suggested destination links exist on the site.',
+        inputSchema: {
+            type: 'object',
+            properties: {
+                content: { type: 'string', description: 'Article HTML or draft text' },
+                currentSlug: { type: 'string', description: 'Current article slug to avoid self-linking' }
+            },
+            required: ['content']
+        }
+    },
+    {
+        name: 'publish_article',
+        description: 'Create an article on Clarified. Defaults to safe "draft" mode. Automatically runs Quality Gate and Duplicate Detection. Commits to GitHub and deploys to Vercel.',
+        inputSchema: {
+            type: 'object',
+            properties: {
+                title: { type: 'string' },
+                content: { type: 'string', description: 'HTML content with <h2> subheadings' },
+                excerpt: { type: 'string', description: 'Summary dek' },
+                category: { type: 'string', description: 'South Africa, Technology, Business, Sport, Education, GenZ & Youth, etc.' },
+                tags: { type: 'string' },
+                author: { type: 'string' },
+                featuredImage: { type: 'string' },
+                imgAlt: { type: 'string' },
+                status: { type: 'string', enum: ['draft', 'published'], default: 'draft', description: 'Save as draft (default) or publish live.' },
+                seoTitle: { type: 'string', description: 'Under 60 chars' },
+                metaDesc: { type: 'string', description: 'Under 160 chars' },
+                focusKw: { type: 'string' },
+                slug: { type: 'string' },
+                forcePublish: { type: 'boolean', description: 'Bypass quality gate downgrades if true' }
             },
             required: ['title', 'content']
         }
     },
     {
         name: 'edit_article',
-        description: 'Edit or update an existing article on Clarified.co.za by ID or slug. Rebuilds HTML and pushes to GitHub.',
+        description: 'Safely edit an existing article on Clarified by ID or slug. Automatically regenerates pages and commits changes to Git.',
         inputSchema: {
             type: 'object',
             properties: {
-                id: { type: 'number', description: 'Article ID' },
-                slug: { type: 'string', description: 'Article slug' },
+                id: { type: 'number' },
+                slug: { type: 'string' },
                 title: { type: 'string' },
                 content: { type: 'string' },
                 excerpt: { type: 'string' },
                 category: { type: 'string' },
                 tags: { type: 'string' },
-                status: { type: 'string', enum: ['published', 'draft'] },
+                status: { type: 'string', enum: ['draft', 'published'] },
                 featuredImage: { type: 'string' },
                 seoTitle: { type: 'string' },
                 metaDesc: { type: 'string' },
-                focusKw: { type: 'string' }
+                focusKw: { type: 'string' },
+                forcePublish: { type: 'boolean' }
             }
         }
     },
     {
         name: 'list_articles',
-        description: 'List recent articles on Clarified.co.za with status, categories, and live links.',
+        description: 'List existing articles with filter by status or category.',
         inputSchema: {
             type: 'object',
             properties: {
@@ -476,7 +731,7 @@ const TOOLS = [
     },
     {
         name: 'get_article',
-        description: 'Get the full details and HTML content of a specific Clarified article.',
+        description: 'Retrieve complete content, HTML, and metadata of an article by ID or slug.',
         inputSchema: {
             type: 'object',
             properties: {
@@ -487,28 +742,14 @@ const TOOLS = [
     },
     {
         name: 'delete_article',
-        description: 'Permanently remove an article from Clarified.co.za and GitHub.',
+        description: 'Permanently remove an article. Requires "confirm: true" safeguard parameter.',
         inputSchema: {
             type: 'object',
             properties: {
-                id: { type: 'number', description: 'ID of the article to delete' }
+                id: { type: 'number' },
+                confirm: { type: 'boolean', description: 'Must be explicitly set to true to execute deletion.' }
             },
-            required: ['id']
-        }
-    },
-    {
-        name: 'check_seo',
-        description: 'Analyze an article draft against Clarified SEO guidelines (character limits, keyword density, headings).',
-        inputSchema: {
-            type: 'object',
-            properties: {
-                title: { type: 'string' },
-                content: { type: 'string' },
-                focusKw: { type: 'string' },
-                seoTitle: { type: 'string' },
-                metaDesc: { type: 'string' }
-            },
-            required: ['title', 'content']
+            required: ['id', 'confirm']
         }
     }
 ];
@@ -523,7 +764,7 @@ function sendError(id, code, message) {
     process.stdout.write(`Content-Length: ${Buffer.byteLength(msg, 'utf8')}\r\n\r\n${msg}`);
 }
 
-// Stdio Message Parser
+// ── Stdio Protocol Engine ────────────────────────────────────────────────────
 let buffer = Buffer.alloc(0);
 
 process.stdin.on('data', chunk => {
@@ -544,7 +785,7 @@ process.stdin.on('data', chunk => {
         const bodyStart = headerEnd + 4;
         const bodyEnd = bodyStart + contentLength;
 
-        if (buffer.length < bodyEnd) break; // Incomplete message
+        if (buffer.length < bodyEnd) break;
 
         const bodyStr = buffer.slice(bodyStart, bodyEnd).toString('utf8');
         buffer = buffer.slice(bodyEnd);
@@ -565,20 +806,13 @@ function handleRpc(req) {
         sendResponse(id, {
             protocolVersion: '2024-11-05',
             capabilities: { tools: {} },
-            serverInfo: { name: 'clarified-mcp', version: '1.0.0' }
+            serverInfo: { name: 'clarified-editorial-mcp', version: '2.0.0' }
         });
         return;
     }
 
-    if (method === 'notifications/initialized') {
-        // Notification - no response needed
-        return;
-    }
-
-    if (method === 'ping') {
-        sendResponse(id, {});
-        return;
-    }
+    if (method === 'notifications/initialized') return;
+    if (method === 'ping') { sendResponse(id, {}); return; }
 
     if (method === 'tools/list') {
         sendResponse(id, { tools: TOOLS });
@@ -590,6 +824,16 @@ function handleRpc(req) {
         try {
             let resultData;
             switch (name) {
+                case 'validate_article_quality':
+                    const db = getDB();
+                    resultData = runQualityGate(args, db.articles || [], false);
+                    break;
+                case 'detect_duplicates':
+                    resultData = detectDuplicates(args.title, args.focusKw, args.slug);
+                    break;
+                case 'suggest_internal_links':
+                    resultData = suggestInternalLinks(args.content, args.currentSlug);
+                    break;
                 case 'publish_article':
                     resultData = handlePublishArticle(args);
                     break;
@@ -604,9 +848,6 @@ function handleRpc(req) {
                     break;
                 case 'delete_article':
                     resultData = handleDeleteArticle(args);
-                    break;
-                case 'check_seo':
-                    resultData = handleCheckSEO(args);
                     break;
                 default:
                     sendError(id, -32601, `Tool not found: ${name}`);
