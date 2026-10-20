@@ -39,7 +39,7 @@ export async function logout() {
     if (auth) {
         await signOut(auth);
     }
-    const loginPath = window.location.pathname.startsWith('/dashboard') ? '/dashboard/login.html' : 'login.html';
+    const loginPath = '/dashboard/login.html';
     window.location.replace(loginPath);
 }
 
@@ -58,7 +58,7 @@ if (isConfigured && auth) {
         if (!user) {
             // Not logged in -> redirect to login
             const returnUrl = encodeURIComponent(window.location.pathname + window.location.search);
-            const loginPath = window.location.pathname.startsWith('/dashboard') ? '/dashboard/login.html' : 'login.html';
+            const loginPath = '/dashboard/login.html';
             window.location.replace(`${loginPath}?returnUrl=${returnUrl}`);
             return;
         }

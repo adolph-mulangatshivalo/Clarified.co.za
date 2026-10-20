@@ -4,8 +4,9 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Article Editor — Clarified Dashboard</title>
-    <link rel="stylesheet" href="css/dashboard.css">
-    <script type="module" src="auth-guard.js"></script>
+    <base href="/dashboard/">
+    <link rel="stylesheet" href="/dashboard/css/dashboard.css">
+    <script type="module" src="/dashboard/auth-guard.js"></script>
     <style>
         .editor-content[contenteditable]:empty:before {
             content: attr(placeholder);
@@ -27,8 +28,8 @@
 <body>
 
 <aside class="sidebar">
-    <a href="index.html" class="brand">
-        <img src="../images/cropped-WhatsApp-Image-2026-08-17-at-12.53.05-32x32.jpeg" alt="Logo" style="width:32px;height:32px;border-radius:6px;border:1px solid var(--line);">
+    <a href="/dashboard/index.html" class="brand">
+        <img src="/images/cropped-WhatsApp-Image-2026-08-17-at-12.53.05-32x32.jpeg" alt="Logo" style="width:32px;height:32px;border-radius:6px;border:1px solid var(--line);">
         <div><span>Clarified </span><b>South Africa</b></div>
     </a>
     <nav class="nav-menu">
