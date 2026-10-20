@@ -17,3 +17,7 @@ db.json.bak
 # Agent local configs & secrets
 .agents/
 
+# Service account & private keys
+*clarigit-*.json
+*-key.json
+service-account*.json
