@@ -3,6 +3,8 @@
   "cleanUrls": true,
   "trailingSlash": false,
   "rewrites": [
+    { "source": "/login", "destination": "/Clarified Dashboard/login.html" },
+    { "source": "/login/", "destination": "/Clarified Dashboard/login.html" },
     { "source": "/dashboard", "destination": "/Clarified Dashboard/index.html" },
     { "source": "/dashboard/", "destination": "/Clarified Dashboard/index.html" },
     { "source": "/dashboard/:match*", "destination": "/Clarified Dashboard/:match*" }

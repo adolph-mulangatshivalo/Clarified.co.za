@@ -244,19 +244,29 @@ if (isConfigured) {
     });
 }
 
-function checkAuthAndRedirect(user) {
+async function hashString(str) {
+    const data = new TextEncoder().encode((str || '').toLowerCase().trim());
+    const buf = await crypto.subtle.digest('SHA-256', data);
+    return Array.from(new Uint8Array(buf)).map(b => b.toString(16).padStart(2, '0')).join('');
+}
+
+async function checkAuthAndRedirect(user) {
     if (Array.isArray(ALLOWED_ADMIN_EMAILS) && ALLOWED_ADMIN_EMAILS.length > 0) {
-        const userEmail = (user.email || '').toLowerCase();
-        const isAllowed = ALLOWED_ADMIN_EMAILS.some(e => e.toLowerCase() === userEmail);
+        const userEmail = (user.email || '').toLowerCase().trim();
+        const emailHash = await hashString(userEmail);
+        const isAllowed = ALLOWED_ADMIN_EMAILS.some(item => {
+            const target = item.toLowerCase().trim();
+            return target === userEmail || target === emailHash;
+        });
         if (!isAllowed) {
-            showAlert(`Access Denied: ${user.email} is not listed in ALLOWED_ADMIN_EMAILS.`, true);
+            showAlert(`Access Denied: ${user.email} is not authorized to access this dashboard.`, true);
             auth.signOut();
             return;
         }
     }
 
     const params = new URLSearchParams(window.location.search);
-    const returnUrl = params.get('returnUrl') || 'index.html';
+    const returnUrl = params.get('returnUrl') || '/dashboard';
     window.location.replace(returnUrl);
 }
 
