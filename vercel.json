@@ -3,8 +3,8 @@
   "cleanUrls": true,
   "trailingSlash": false,
   "rewrites": [
-    { "source": "/login", "destination": "/dashboard/login.html" },
-    { "source": "/login/", "destination": "/dashboard/login.html" },
+    { "source": "/login", "destination": "/dashboard/login" },
+    { "source": "/login/", "destination": "/dashboard/login" },
     { "source": "/dashboard", "destination": "/dashboard/index.html" },
     { "source": "/dashboard/", "destination": "/dashboard/index.html" },
     { "source": "/Clarified%20Dashboard/:path*", "destination": "/dashboard/:path*" },
