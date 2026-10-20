@@ -8,40 +8,35 @@
     <link rel="stylesheet" href="/dashboard/css/dashboard.css">
     <script type="module" src="/dashboard/auth-guard.js"></script>
     <style>
-        .mcp-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
-            gap: 20px;
-            margin-bottom: 28px;
+        /* MCP Specific Additions that adhere to dashboard.css variables */
+        .mcp-card {
+            background-color: var(--white);
+            border: 1px solid var(--line);
+            border-radius: 14px;
+            padding: 28px;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            transition: border-color 0.15s ease, box-shadow 0.15s ease;
         }
-        .status-badge {
-            display: inline-flex;
-            align-items: center;
-            gap: 6px;
-            padding: 4px 10px;
-            border-radius: 9999px;
-            font-size: 12px;
+        .mcp-card:hover {
+            border-color: var(--cyan);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.03);
+        }
+        .tool-badge {
+            font-size: 11px;
             font-weight: 700;
+            color: var(--cyan-dark);
+            background: var(--cyan-soft);
+            padding: 3px 9px;
+            border-radius: 6px;
             text-transform: uppercase;
             letter-spacing: 0.5px;
         }
-        .status-badge.online {
-            background: rgba(16, 185, 129, 0.12);
-            color: #10b981;
-            border: 1px solid rgba(16, 185, 129, 0.3);
-        }
-        .status-badge.dot::before {
-            content: '';
-            width: 8px;
-            height: 8px;
-            border-radius: 50%;
-            background: #10b981;
-            box-shadow: 0 0 8px #10b981;
-        }
-        .config-box {
+        .code-container {
             background: #0f172a;
             color: #e2e8f0;
-            border-radius: 10px;
+            border-radius: 9px;
             padding: 16px 20px;
             font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
             font-size: 13px;
@@ -51,94 +46,33 @@
             margin-top: 12px;
             line-height: 1.5;
         }
-        .btn-copy-code {
+        .btn-copy {
             position: absolute;
-            top: 12px;
-            right: 12px;
+            top: 10px;
+            right: 10px;
             background: #334155;
             color: #f8fafc;
             border: none;
             border-radius: 6px;
-            padding: 5px 10px;
-            font-size: 11px;
+            padding: 5px 12px;
+            font-size: 12px;
             font-weight: 600;
             cursor: pointer;
-            transition: all 0.2s;
+            transition: background 0.15s ease;
+            font-family: "DM Sans", sans-serif;
         }
-        .btn-copy-code:hover {
+        .btn-copy:hover {
             background: #475569;
         }
-        .tool-card {
-            background: #fff;
-            border: 1px solid var(--line);
-            border-radius: 12px;
-            padding: 22px;
-            transition: transform 0.15s ease, box-shadow 0.15s ease, border-color 0.15s;
+        .tab-nav {
             display: flex;
-            flex-direction: column;
-            justify-content: space-between;
-        }
-        .tool-card:hover {
-            transform: translateY(-2px);
-            border-color: var(--cyan);
-            box-shadow: 0 10px 25px -5px rgba(0,0,0,0.06);
-        }
-        .tool-header {
-            display: flex;
-            align-items: flex-start;
-            justify-content: space-between;
-            margin-bottom: 10px;
-        }
-        .tool-title {
-            font-size: 16px;
-            font-weight: 700;
-            color: var(--ink);
-            display: flex;
-            align-items: center;
             gap: 8px;
+            border-bottom: 2px solid var(--line);
+            margin-bottom: 20px;
+            flex-wrap: wrap;
         }
-        .tool-cat {
-            font-size: 11px;
-            font-weight: 700;
-            color: var(--cyan-dark);
-            background: var(--cyan-soft);
-            padding: 2px 8px;
-            border-radius: 6px;
-            text-transform: uppercase;
-        }
-        .tool-desc {
-            color: var(--muted);
-            font-size: 13px;
-            line-height: 1.5;
-            margin-bottom: 14px;
-        }
-        .param-chip {
-            display: inline-block;
-            background: var(--soft);
-            color: #475569;
-            padding: 2px 7px;
-            border-radius: 4px;
-            font-size: 11px;
-            font-family: monospace;
-            margin-right: 4px;
-            margin-bottom: 4px;
-            border: 1px solid var(--line);
-        }
-        .prompt-preview {
-            background: #f8fafc;
-            border-left: 3px solid var(--cyan);
-            padding: 8px 12px;
-            font-size: 12px;
-            color: #334155;
-            border-radius: 0 6px 6px 0;
-            margin-top: 12px;
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            gap: 8px;
-        }
-        .tab-btn {
-            padding: 8px 16px;
+        .tab-link {
+            padding: 10px 18px;
             border: none;
             background: transparent;
             font-size: 14px;
@@ -146,23 +80,49 @@
             color: var(--muted);
             cursor: pointer;
             border-bottom: 2px solid transparent;
-            transition: all 0.2s;
+            margin-bottom: -2px;
+            transition: all 0.15s ease;
+            font-family: inherit;
         }
-        .tab-btn.active {
+        .tab-link:hover {
+            color: var(--ink);
+        }
+        .tab-link.active {
             color: var(--cyan-dark);
             border-bottom-color: var(--cyan);
         }
-        .check-badge {
+        .feature-item {
             display: flex;
             align-items: center;
-            gap: 6px;
-            font-size: 12px;
-            color: #475569;
-            margin-top: 4px;
+            gap: 8px;
+            font-size: 13px;
+            color: var(--muted);
+            margin-top: 6px;
         }
-        .check-badge svg {
-            color: #10b981;
+        .feature-item svg {
+            color: var(--success);
             flex-shrink: 0;
+        }
+        .prompt-box {
+            background: var(--soft);
+            border-left: 3px solid var(--cyan);
+            border-radius: 0 8px 8px 0;
+            padding: 10px 14px;
+            font-size: 13px;
+            color: var(--ink);
+            margin-top: 16px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 10px;
+        }
+        .pulse-dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: var(--success);
+            display: inline-block;
+            box-shadow: 0 0 0 2px rgba(16, 185, 129, 0.2);
         }
     </style>
 </head>
@@ -186,20 +146,6 @@
             </div>
         </details>
 
-        <details class="nav-group" open>
-            <summary class="nav-item active">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"></circle><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path></svg>
-                <span>AI & MCP Server</span>
-                <span style="margin-left:auto;margin-right:8px;background:rgba(16,185,129,0.15);color:#10b981;font-size:11px;font-weight:700;padding:2px 6px;border-radius:10px;">10 Tools</span>
-                <svg class="chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"></polyline></svg>
-            </summary>
-            <div class="nav-sub">
-                <a href="/dashboard/mcp.html" class="nav-sub-item active">Command Center</a>
-                <a href="/dashboard/mcp.html#instructions" class="nav-sub-item">Connection Guide</a>
-                <a href="/dashboard/mcp.html#capabilities" class="nav-sub-item">Everything We Can Do</a>
-            </div>
-        </details>
-
         <details class="nav-group">
             <summary class="nav-item">
                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line><polyline points="10 9 9 9 8 9"></polyline></svg>
@@ -210,6 +156,21 @@
                 <a href="/dashboard/articles.html" class="nav-sub-item">All Articles</a>
                 <a href="/dashboard/editor.html" class="nav-sub-item">New Article</a>
                 <a href="/dashboard/articles.html?filter=draft" class="nav-sub-item">Drafts</a>
+                <a href="/dashboard/articles.html?filter=scheduled" class="nav-sub-item">Scheduled</a>
+            </div>
+        </details>
+
+        <details class="nav-group" open>
+            <summary class="nav-item active">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"></circle><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path></svg>
+                <span>AI & MCP</span>
+                <span style="margin-left:auto;margin-right:8px;background:rgba(16,185,129,0.15);color:#10b981;font-size:11px;font-weight:700;padding:2px 6px;border-radius:10px;">10 Tools</span>
+                <svg class="chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"></polyline></svg>
+            </summary>
+            <div class="nav-sub">
+                <a href="/dashboard/mcp.html" class="nav-sub-item active">Command Center</a>
+                <a href="/dashboard/mcp.html#instructions" class="nav-sub-item">Connection Guide</a>
+                <a href="/dashboard/mcp.html#capabilities" class="nav-sub-item">Everything We Can Do</a>
             </div>
         </details>
 
@@ -232,105 +193,112 @@
                 <a href="/dashboard/articles.html?cat=Automotive" class="nav-sub-item">Auto</a>
             </div>
         </details>
-    </nav>
 
-    <div style="padding: 16px; border-top: 1px solid var(--line);">
-        <a href="/" target="_blank" class="nav-item" style="color:var(--muted);text-decoration:none;">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"></path><polyline points="15 3 21 3 21 9"></polyline><line x1="10" y1="14" x2="21" y2="3"></line></svg>
-            <span>Live Site</span>
+    </nav>
+    <div style="padding:16px;border-top:1px solid var(--line);margin-top:auto;">
+        <a href="/" target="_blank" class="nav-sub-item" style="display:flex;align-items:center;gap:8px;color:var(--muted);">
+            <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"></path><polyline points="15 3 21 3 21 9"></polyline><line x1="10" y1="14" x2="21" y2="3"></line></svg>
+            View live site
         </a>
     </div>
 </aside>
 
-<main class="main-content">
+<main class="main-wrapper">
     <header class="topbar">
-        <h1 class="page-title">AI Editorial & Model Context Protocol (MCP)</h1>
-        <div class="topbar-right">
-            <span id="mcp-header-status" class="status-badge online dot">MCP Server Ready</span>
-            <button onclick="pingMcpStatus()" class="btn btn-outline" style="font-size:13px;padding:6px 12px;">Ping Status</button>
-            <div class="avatar" title="Admin">A</div>
+        <div class="topbar-title">AI Editorial & MCP Server</div>
+        <div class="user-profile">
+            <button id="btn-ping" onclick="pingMcpStatus()" class="btn btn-outline" style="font-size:13px;padding:8px 14px;">
+                <span class="pulse-dot"></span>
+                <span id="ping-text">Server Status</span>
+            </button>
+            <div class="avatar">A</div>
         </div>
     </header>
 
-    <div class="content-body">
-        
-        <!-- Server Status Hero Banner -->
-        <div style="background: linear-gradient(135deg, #092c3e 0%, #0e7490 100%); border-radius: 14px; padding: 26px 30px; color: #fff; margin-bottom: 28px; box-shadow: 0 10px 25px -5px rgba(14,116,144,0.3);">
-            <div style="display:flex; justify-content:space-between; align-items:flex-start; flex-wrap:wrap; gap:16px;">
-                <div>
-                    <div style="display:flex; align-items:center; gap:10px; margin-bottom:8px;">
-                        <span class="status-badge dot" style="background:rgba(16,185,129,0.25); color:#34d399; border-color:#059669;">Connected & Operational</span>
-                        <span style="font-size:12px; opacity:0.8; font-family:monospace;">mcp/server.js (v1.0.0)</span>
-                    </div>
-                    <h2 style="font-size:24px; font-weight:700; margin-bottom:6px; font-family:'Space Grotesk',sans-serif;">Clarified AI Editorial Intelligence Server</h2>
-                    <p style="font-size:14px; opacity:0.9; max-width:680px; line-height:1.5;">
-                        Connect any AI assistant (Antigravity, Claude Desktop, Cursor, or VS Code Cline) to automate article quality validation, fact checks, duplicate detection, live GitHub deployments, and real-time Google Search Console performance analytics.
-                    </p>
+    <div class="content">
+
+        <!-- Status Cards Grid -->
+        <div class="stats-grid" style="margin-bottom:32px;">
+            <div class="stat-card">
+                <div class="stat-icon" style="background:rgba(16,185,129,0.1);color:#10B981;">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"></polyline></svg>
                 </div>
-                <div style="background:rgba(255,255,255,0.1); backdrop-filter:blur(10px); border:1px solid rgba(255,255,255,0.2); border-radius:10px; padding:14px 20px; min-width:200px;">
-                    <div style="font-size:12px; opacity:0.8; margin-bottom:4px; text-transform:uppercase; letter-spacing:0.5px;">Active Toolset</div>
-                    <div style="font-size:32px; font-weight:800; font-family:'Space Grotesk',sans-serif;">10 Tools</div>
-                    <div style="font-size:12px; color:#34d399; font-weight:600;">Quality Gates & Analytics</div>
+                <div class="stat-details">
+                    <h4>MCP Status</h4>
+                    <h2 style="font-size:26px;color:#10B981;">Online</h2>
                 </div>
             </div>
 
-            <!-- Connected Services Badges -->
-            <div style="display:flex; gap:12px; flex-wrap:wrap; margin-top:20px; padding-top:16px; border-top:1px solid rgba(255,255,255,0.15);">
-                <div style="display:flex; align-items:center; gap:6px; font-size:13px;">
-                    <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="#34d399" stroke-width="2.5"><polyline points="20 6 9 17 4 12"></polyline></svg>
-                    <span>Google Search Console: <b>clarified.co.za</b></span>
+            <div class="stat-card">
+                <div class="stat-icon">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"></circle><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path></svg>
                 </div>
-                <div style="display:flex; align-items:center; gap:6px; font-size:13px;">
-                    <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="#34d399" stroke-width="2.5"><polyline points="20 6 9 17 4 12"></polyline></svg>
-                    <span>GitHub Continuous Deployment: <b>main</b></span>
+                <div class="stat-details">
+                    <h4>Active Tools</h4>
+                    <h2 id="mcp-tool-count" style="font-size:26px;">10 Active</h2>
                 </div>
-                <div style="display:flex; align-items:center; gap:6px; font-size:13px;">
-                    <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="#34d399" stroke-width="2.5"><polyline points="20 6 9 17 4 12"></polyline></svg>
-                    <span>Cloudinary Media CDN: <b>stam320t</b></span>
+            </div>
+
+            <div class="stat-card">
+                <div class="stat-icon" style="background:#e0f2fe;color:#0284c7;">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="20" x2="18" y2="10"></line><line x1="12" y1="20" x2="12" y2="4"></line><line x1="6" y1="20" x2="6" y2="14"></line></svg>
                 </div>
-                <div style="display:flex; align-items:center; gap:6px; font-size:13px;">
-                    <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="#34d399" stroke-width="2.5"><polyline points="20 6 9 17 4 12"></polyline></svg>
-                    <span>Flesch-Kincaid Quality Gate: <b>Active</b></span>
+                <div class="stat-details">
+                    <h4>Search Console</h4>
+                    <h2 style="font-size:26px;color:#0284c7;">Synced</h2>
+                </div>
+            </div>
+
+            <div class="stat-card">
+                <div class="stat-icon" style="background:#fef3c7;color:#d97706;">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="16 16 12 12 8 16"></polyline><line x1="12" y1="12" x2="12" y2="21"></line><path d="M20.39 18.39A5 5 0 0 0 18 9h-1.26A8 8 0 1 0 3 16.3"></path></svg>
+                </div>
+                <div class="stat-details">
+                    <h4>GitHub CD</h4>
+                    <h2 style="font-size:26px;color:#d97706;">main</h2>
                 </div>
             </div>
         </div>
 
-        <!-- Connection Instructions Section -->
-        <section id="instructions" style="background:#fff; border:1px solid var(--line); border-radius:12px; padding:24px; margin-bottom:28px;">
-            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:14px; flex-wrap:wrap; gap:12px;">
+        <!-- Connection Instructions Panel -->
+        <div id="instructions" class="panel">
+            <div class="panel-header" style="margin-bottom:16px;">
                 <div>
-                    <h2 style="font-size:18px; font-weight:700; color:var(--ink);">Connect AI Assistants to this MCP Server</h2>
-                    <p style="font-size:13px; color:var(--muted);">Add this server to your favorite AI tool to run editorial checks and publish articles directly from your conversations.</p>
-                </div>
-                <div style="display:flex; gap:6px; border-bottom:1px solid var(--line);">
-                    <button class="tab-btn active" onclick="switchTab('antigravity', this)">Antigravity / Gemini</button>
-                    <button class="tab-btn" onclick="switchTab('claude', this)">Claude Desktop</button>
-                    <button class="tab-btn" onclick="switchTab('cursor', this)">Cursor IDE</button>
-                    <button class="tab-btn" onclick="switchTab('cline', this)">VS Code (Cline)</button>
+                    <h2 class="panel-title">Connect AI Assistants to this MCP Server</h2>
+                    <p style="color:var(--muted);font-size:14px;margin-top:4px;">
+                        Connect any AI client to automate writing, quality gates, search analytics, and deployments directly from your prompts.
+                    </p>
                 </div>
             </div>
 
+            <div class="tab-nav">
+                <button class="tab-link active" onclick="switchTab('antigravity', this)">Antigravity / Gemini</button>
+                <button class="tab-link" onclick="switchTab('claude', this)">Claude Desktop</button>
+                <button class="tab-link" onclick="switchTab('cursor', this)">Cursor IDE</button>
+                <button class="tab-link" onclick="switchTab('cline', this)">VS Code (Cline / Roo)</button>
+            </div>
+
             <!-- Tab: Antigravity -->
-            <div id="tab-antigravity" class="tab-panel">
-                <p style="font-size:13px; color:#475569; margin-bottom:8px;">
-                    <b>Google Antigravity</b> is already pre-configured to use this server in your workspace. You can prompt the assistant directly:
+            <div id="tab-antigravity" class="tab-content">
+                <p style="font-size:14px;color:var(--muted);line-height:1.6;">
+                    This server is pre-registered in your Antigravity workspace under <b><code>novamira-clarified-co-za</code></b>. You can interact with it directly in your assistant prompt:
                 </p>
-                <div class="config-box">
-                    <button class="btn-copy-code" onclick="copySnippet('prompt-antigravity', this)">Copy Prompt</button>
-                    <code id="prompt-antigravity">Please validate the article draft in editor.html using validate_article_quality and check Google Search Console metrics with get_search_analytics.</code>
+                <div class="code-container">
+                    <button class="btn-copy" onclick="copySnippet('prompt-antigravity', this)">Copy Prompt</button>
+                    <code id="prompt-antigravity">Please validate the article draft using validate_article_quality and check Google Search Console metrics for top queries over the last 28 days.</code>
                 </div>
             </div>
 
             <!-- Tab: Claude Desktop -->
-            <div id="tab-claude" class="tab-panel" style="display:none;">
-                <p style="font-size:13px; color:#475569; margin-bottom:4px;">
-                    Paste into <code>%APPDATA%\Claude\claude_desktop_config.json</code> (Windows) or <code>~/Library/Application Support/Claude/claude_desktop_config.json</code> (Mac):
+            <div id="tab-claude" class="tab-content" style="display:none;">
+                <p style="font-size:14px;color:var(--muted);line-height:1.6;">
+                    Add this to your <code>claude_desktop_config.json</code> file:
                 </p>
-                <div class="config-box">
-                    <button class="btn-copy-code" onclick="copySnippet('code-claude', this)">Copy JSON</button>
+                <div class="code-container">
+                    <button class="btn-copy" onclick="copySnippet('code-claude', this)">Copy JSON</button>
                     <pre id="code-claude" style="margin:0;">{
   "mcpServers": {
-    "clarified-editorial": {
+    "clarified": {
       "command": "node",
       "args": ["d:/VS CODE PROJECTS/Clarified.co.za/mcp/server.js"],
       "env": {
@@ -344,13 +312,13 @@
                 </div>
             </div>
 
-            <!-- Tab: Cursor IDE -->
-            <div id="tab-cursor" class="tab-panel" style="display:none;">
-                <p style="font-size:13px; color:#475569; margin-bottom:4px;">
-                    Add to your workspace <code>.cursor/mcp.json</code> or Cursor Settings -> Features -> MCP:
+            <!-- Tab: Cursor -->
+            <div id="tab-cursor" class="tab-content" style="display:none;">
+                <p style="font-size:14px;color:var(--muted);line-height:1.6;">
+                    Add to your workspace <code>.cursor/mcp.json</code> or Cursor Settings &gt; Features &gt; MCP:
                 </p>
-                <div class="config-box">
-                    <button class="btn-copy-code" onclick="copySnippet('code-cursor', this)">Copy JSON</button>
+                <div class="code-container">
+                    <button class="btn-copy" onclick="copySnippet('code-cursor', this)">Copy JSON</button>
                     <pre id="code-cursor" style="margin:0;">{
   "mcpServers": {
     "clarified": {
@@ -363,328 +331,269 @@
             </div>
 
             <!-- Tab: Cline -->
-            <div id="tab-cline" class="tab-panel" style="display:none;">
-                <p style="font-size:13px; color:#475569; margin-bottom:4px;">
-                    In VS Code Cline / Roo Code settings -> MCP Servers -> Add Server:
+            <div id="tab-cline" class="tab-content" style="display:none;">
+                <p style="font-size:14px;color:var(--muted);line-height:1.6;">
+                    Add to your VS Code Cline or Roo Code MCP configuration:
                 </p>
-                <div class="config-box">
-                    <button class="btn-copy-code" onclick="copySnippet('code-cline', this)">Copy Config</button>
+                <div class="code-container">
+                    <button class="btn-copy" onclick="copySnippet('code-cline', this)">Copy Config</button>
                     <pre id="code-cline" style="margin:0;">{
   "clarified-editorial": {
     "command": "node",
-    "args": ["d:/VS CODE PROJECTS/Clarified.co.za/mcp/server.js"],
-    "alwaysAllow": [
-      "validate_article_quality",
-      "detect_duplicates",
-      "suggest_internal_links",
-      "get_search_analytics",
-      "get_content_opportunities",
-      "list_articles",
-      "get_article"
-    ]
+    "args": ["d:/VS CODE PROJECTS/Clarified.co.za/mcp/server.js"]
   }
 }</pre>
                 </div>
             </div>
-        </section>
+        </div>
 
-        <!-- Capabilities Catalog: Everything We Can Do -->
-        <section id="capabilities">
-            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:18px;">
+        <!-- Everything We Can Do (10 Tools) Panel -->
+        <div id="capabilities" class="panel">
+            <div class="panel-header">
                 <div>
-                    <h2 style="font-size:20px; font-weight:700; color:var(--ink);">Everything We Can Do</h2>
-                    <p style="font-size:14px; color:var(--muted);">All 10 tools available through this MCP Server for autonomous AI operations</p>
+                    <h2 class="panel-title">Everything We Can Do (10 Capabilities)</h2>
+                    <p style="color:var(--muted);font-size:14px;margin-top:4px;">
+                        Interactive catalog of all tools exposed by the Clarified AI Editorial MCP Server.
+                    </p>
                 </div>
-                <div style="font-size:13px; font-weight:600; color:var(--cyan-dark); background:var(--cyan-soft); padding:6px 12px; border-radius:20px;">
-                    10 Active Tools Ready
-                </div>
+                <span class="tool-badge" style="font-size:12px;padding:6px 12px;">Protocol: MCP v1.0</span>
             </div>
 
-            <div class="mcp-grid">
-                
-                <!-- Tool 1: validate_article_quality -->
-                <div class="tool-card">
+            <div style="display:grid;grid-template-columns:repeat(auto-fit, minmax(340px, 1fr));gap:24px;">
+
+                <!-- 1. validate_article_quality -->
+                <div class="mcp-card">
                     <div>
-                        <div class="tool-header">
-                            <span class="tool-title">
-                                <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="var(--cyan-dark)" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path></svg>
-                                validate_article_quality
-                            </span>
-                            <span class="tool-cat">Editorial Gate</span>
+                        <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:12px;">
+                            <h3 style="font-size:17px;font-weight:700;font-family:'Space Grotesk',sans-serif;">validate_article_quality</h3>
+                            <span class="tool-badge">Editorial Gate</span>
                         </div>
-                        <p class="tool-desc">
-                            Automated quality guardian. Verifies article word count, readability score (Flesch Reading Ease), heading structure, keyword density (0.5%–2.5%), and SEO meta lengths.
+                        <p style="color:var(--muted);font-size:14px;line-height:1.5;margin-bottom:14px;">
+                            Automated editorial guardian. Checks minimum word count (600+), Flesch readability, focus keyword density (0.5%–2.5%), heading hierarchy, and meta description length.
                         </p>
-                        <div>
-                            <div class="check-badge"><svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"></polyline></svg> Word count >= 600 words</div>
-                            <div class="check-badge"><svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"></polyline></svg> Focus keyword density (0.5% - 2.5%)</div>
-                            <div class="check-badge"><svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"></polyline></svg> Meta description (120 - 160 characters)</div>
-                        </div>
+                        <div class="feature-item"><svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"></polyline></svg> Word count &gt;= 600 words</div>
+                        <div class="feature-item"><svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"></polyline></svg> Focus keyword density (0.5% - 2.5%)</div>
+                        <div class="feature-item"><svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"></polyline></svg> Meta description (120 - 160 characters)</div>
                     </div>
-                    <div class="prompt-preview">
-                        <span>💡 "Validate the quality of this draft before publishing."</span>
-                        <button onclick="copyText('Validate the quality of this draft before publishing.')" class="btn btn-outline" style="padding:2px 8px;font-size:11px;">Copy</button>
+                    <div class="prompt-box">
+                        <span>"Validate the quality of this draft before publishing."</span>
+                        <button onclick="copyPrompt('Validate the quality of this draft before publishing.')" class="btn btn-outline" style="padding:4px 10px;font-size:12px;">Copy</button>
                     </div>
                 </div>
 
-                <!-- Tool 2: detect_duplicates -->
-                <div class="tool-card">
+                <!-- 2. detect_duplicates -->
+                <div class="mcp-card">
                     <div>
-                        <div class="tool-header">
-                            <span class="tool-title">
-                                <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="#f59e0b" stroke-width="2"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
-                                detect_duplicates
-                            </span>
-                            <span class="tool-cat" style="background:#fef3c7;color:#b45309;">Content Integrity</span>
+                        <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:12px;">
+                            <h3 style="font-size:17px;font-weight:700;font-family:'Space Grotesk',sans-serif;">detect_duplicates</h3>
+                            <span class="tool-badge" style="background:#fef3c7;color:#b45309;">Content Integrity</span>
                         </div>
-                        <p class="tool-desc">
+                        <p style="color:var(--muted);font-size:14px;line-height:1.5;margin-bottom:14px;">
                             Scans all existing articles for duplicate titles, conflicting URL slugs, or overlapping paragraphs to prevent keyword cannibalization and redundant coverage.
                         </p>
-                        <div>
-                            <div class="check-badge"><svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"></polyline></svg> Title similarity score (Dice coefficient)</div>
-                            <div class="check-badge"><svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"></polyline></svg> Slug collision check</div>
-                            <div class="check-badge"><svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"></polyline></svg> Threshold blocking above 60% match</div>
-                        </div>
+                        <div class="feature-item"><svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"></polyline></svg> Title similarity score (Dice coefficient)</div>
+                        <div class="feature-item"><svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"></polyline></svg> Slug collision check</div>
+                        <div class="feature-item"><svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"></polyline></svg> Threshold blocking above 60% match</div>
                     </div>
-                    <div class="prompt-preview">
-                        <span>💡 "Check if we already covered this topic on Clarified."</span>
-                        <button onclick="copyText('Check if we already covered this topic on Clarified.')" class="btn btn-outline" style="padding:2px 8px;font-size:11px;">Copy</button>
+                    <div class="prompt-box">
+                        <span>"Check if we already published an article on this topic."</span>
+                        <button onclick="copyPrompt('Check if we already published an article on this topic.')" class="btn btn-outline" style="padding:4px 10px;font-size:12px;">Copy</button>
                     </div>
                 </div>
 
-                <!-- Tool 3: suggest_internal_links -->
-                <div class="tool-card">
+                <!-- 3. suggest_internal_links -->
+                <div class="mcp-card">
                     <div>
-                        <div class="tool-header">
-                            <span class="tool-title">
-                                <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="#8b5cf6" stroke-width="2"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg>
-                                suggest_internal_links
-                            </span>
-                            <span class="tool-cat" style="background:#ede9fe;color:#6d28d9;">SEO & Linking</span>
+                        <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:12px;">
+                            <h3 style="font-size:17px;font-weight:700;font-family:'Space Grotesk',sans-serif;">suggest_internal_links</h3>
+                            <span class="tool-badge" style="background:#ede9fe;color:#6d28d9;">SEO & Linking</span>
                         </div>
-                        <p class="tool-desc">
+                        <p style="color:var(--muted);font-size:14px;line-height:1.5;margin-bottom:14px;">
                             Cross-references draft text against all published Clarified articles and generates natural HTML internal anchor links with recommended anchor phrases.
                         </p>
-                        <div>
-                            <div class="check-badge"><svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"></polyline></svg> Contextual keyword matching</div>
-                            <div class="check-badge"><svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"></polyline></svg> Ready-to-paste HTML anchor snippets</div>
-                            <div class="check-badge"><svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"></polyline></svg> Category-aware weighting</div>
-                        </div>
+                        <div class="feature-item"><svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"></polyline></svg> Contextual keyword matching</div>
+                        <div class="feature-item"><svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"></polyline></svg> Ready-to-paste HTML anchor snippets</div>
+                        <div class="feature-item"><svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"></polyline></svg> Category-aware weighting</div>
                     </div>
-                    <div class="prompt-preview">
-                        <span>💡 "Suggest 3 internal links for this article draft."</span>
-                        <button onclick="copyText('Suggest 3 internal links for this article draft.')" class="btn btn-outline" style="padding:2px 8px;font-size:11px;">Copy</button>
+                    <div class="prompt-box">
+                        <span>"Suggest 3 internal links for this article draft."</span>
+                        <button onclick="copyPrompt('Suggest 3 internal links for this article draft.')" class="btn btn-outline" style="padding:4px 10px;font-size:12px;">Copy</button>
                     </div>
                 </div>
 
-                <!-- Tool 4: publish_article -->
-                <div class="tool-card">
+                <!-- 4. publish_article -->
+                <div class="mcp-card">
                     <div>
-                        <div class="tool-header">
-                            <span class="tool-title">
-                                <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="#10b981" stroke-width="2"><polyline points="16 16 12 12 8 16"></polyline><line x1="12" y1="12" x2="12" y2="21"></line><path d="M20.39 18.39A5 5 0 0 0 18 9h-1.26A8 8 0 1 0 3 16.3"></path></svg>
-                                publish_article
-                            </span>
-                            <span class="tool-cat" style="background:rgba(16,185,129,0.12);color:#059669;">Publishing</span>
+                        <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:12px;">
+                            <h3 style="font-size:17px;font-weight:700;font-family:'Space Grotesk',sans-serif;">publish_article</h3>
+                            <span class="tool-badge" style="background:rgba(16,185,129,0.12);color:#059669;">Publishing</span>
                         </div>
-                        <p class="tool-desc">
-                            The complete publishing pipeline. Runs quality gates, updates database, regenerates sitemap.xml & RSS feed, and pushes commits directly to GitHub for live Vercel deployment.
+                        <p style="color:var(--muted);font-size:14px;line-height:1.5;margin-bottom:14px;">
+                            The complete publishing pipeline. Runs quality gates, updates database, regenerates sitemap.xml & RSS feed, and commits to GitHub for live Vercel deployment.
                         </p>
-                        <div>
-                            <div class="check-badge"><svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"></polyline></svg> Auto-fallback to Draft if standards fail</div>
-                            <div class="check-badge"><svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"></polyline></svg> Auto-updates sitemap.xml & rss.xml</div>
-                            <div class="check-badge"><svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"></polyline></svg> Live Git push to GitHub repository</div>
-                        </div>
+                        <div class="feature-item"><svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"></polyline></svg> Auto-fallback to Draft if standards fail</div>
+                        <div class="feature-item"><svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"></polyline></svg> Auto-updates sitemap.xml & rss.xml</div>
+                        <div class="feature-item"><svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"></polyline></svg> Live Git push to GitHub repository</div>
                     </div>
-                    <div class="prompt-preview">
-                        <span>💡 "Publish this draft to the live Clarified site."</span>
-                        <button onclick="copyText('Publish this draft to the live Clarified site.')" class="btn btn-outline" style="padding:2px 8px;font-size:11px;">Copy</button>
+                    <div class="prompt-box">
+                        <span>"Publish this draft to the live Clarified site."</span>
+                        <button onclick="copyPrompt('Publish this draft to the live Clarified site.')" class="btn btn-outline" style="padding:4px 10px;font-size:12px;">Copy</button>
                     </div>
                 </div>
 
-                <!-- Tool 5: edit_article -->
-                <div class="tool-card">
+                <!-- 5. edit_article -->
+                <div class="mcp-card">
                     <div>
-                        <div class="tool-header">
-                            <span class="tool-title">
-                                <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="#0ea5e9" stroke-width="2"><path d="M12 20h9"></path><path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"></path></svg>
-                                edit_article
-                            </span>
-                            <span class="tool-cat">Article Mgmt</span>
+                        <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:12px;">
+                            <h3 style="font-size:17px;font-weight:700;font-family:'Space Grotesk',sans-serif;">edit_article</h3>
+                            <span class="tool-badge">Article Mgmt</span>
                         </div>
-                        <p class="tool-desc">
+                        <p style="color:var(--muted);font-size:14px;line-height:1.5;margin-bottom:14px;">
                             Updates article content, category, focus keyword, meta description, or status. Re-validates against quality gates and re-deploys updated HTML to GitHub automatically.
                         </p>
-                        <div>
-                            <div class="check-badge"><svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"></polyline></svg> Search by ID or Slug</div>
-                            <div class="check-badge"><svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"></polyline></svg> Selective partial field update</div>
-                            <div class="check-badge"><svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"></polyline></svg> Re-generates article HTML on disk</div>
-                        </div>
+                        <div class="feature-item"><svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"></polyline></svg> Search by ID or Slug</div>
+                        <div class="feature-item"><svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"></polyline></svg> Selective partial field update</div>
+                        <div class="feature-item"><svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"></polyline></svg> Re-generates article HTML on disk</div>
                     </div>
-                    <div class="prompt-preview">
-                        <span>💡 "Update the conclusion of article #14 and re-deploy."</span>
-                        <button onclick="copyText('Update the conclusion of article #14 and re-deploy.')" class="btn btn-outline" style="padding:2px 8px;font-size:11px;">Copy</button>
+                    <div class="prompt-box">
+                        <span>"Update the conclusion of article #14 and save."</span>
+                        <button onclick="copyPrompt('Update the conclusion of article #14 and save.')" class="btn btn-outline" style="padding:4px 10px;font-size:12px;">Copy</button>
                     </div>
                 </div>
 
-                <!-- Tool 6: get_search_analytics -->
-                <div class="tool-card">
+                <!-- 6. get_search_analytics -->
+                <div class="mcp-card">
                     <div>
-                        <div class="tool-header">
-                            <span class="tool-title">
-                                <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="#ec4899" stroke-width="2"><line x1="18" y1="20" x2="18" y2="10"></line><line x1="12" y1="20" x2="12" y2="4"></line><line x1="6" y1="20" x2="6" y2="14"></line></svg>
-                                get_search_analytics
-                            </span>
-                            <span class="tool-cat" style="background:#fce7f3;color:#be185d;">Search Analytics</span>
+                        <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:12px;">
+                            <h3 style="font-size:17px;font-weight:700;font-family:'Space Grotesk',sans-serif;">get_search_analytics</h3>
+                            <span class="tool-badge" style="background:#fce7f3;color:#be185d;">Search Console</span>
                         </div>
-                        <p class="tool-desc">
+                        <p style="color:var(--muted);font-size:14px;line-height:1.5;margin-bottom:14px;">
                             Direct integration with Google Search Console API. Fetches real organic search performance: impressions, clicks, CTR, position, and top queries.
                         </p>
-                        <div>
-                            <div class="check-badge"><svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"></polyline></svg> Site: https://clarified.co.za/</div>
-                            <div class="check-badge"><svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"></polyline></svg> Query, Page, Country, Device breakdown</div>
-                            <div class="check-badge"><svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"></polyline></svg> Date ranges: 7, 28, 90 days</div>
-                        </div>
+                        <div class="feature-item"><svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"></polyline></svg> Site: https://clarified.co.za/</div>
+                        <div class="feature-item"><svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"></polyline></svg> Query, Page, Country, Device breakdown</div>
+                        <div class="feature-item"><svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"></polyline></svg> Date ranges: 7, 28, 90 days</div>
                     </div>
-                    <div class="prompt-preview">
-                        <span>💡 "Show me top search queries from Google Search Console."</span>
-                        <button onclick="copyText('Show me top search queries from Google Search Console for the past 28 days.')" class="btn btn-outline" style="padding:2px 8px;font-size:11px;">Copy</button>
+                    <div class="prompt-box">
+                        <span>"Show me top search queries from Google Search Console."</span>
+                        <button onclick="copyPrompt('Show me top search queries from Google Search Console for the past 28 days.')" class="btn btn-outline" style="padding:4px 10px;font-size:12px;">Copy</button>
                     </div>
                 </div>
 
-                <!-- Tool 7: get_content_opportunities -->
-                <div class="tool-card">
+                <!-- 7. get_content_opportunities -->
+                <div class="mcp-card">
                     <div>
-                        <div class="tool-header">
-                            <span class="tool-title">
-                                <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="#f97316" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 14 14"></polyline></svg>
-                                get_content_opportunities
-                            </span>
-                            <span class="tool-cat" style="background:#ffedd5;color:#c2410c;">SEO Opportunities</span>
+                        <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:12px;">
+                            <h3 style="font-size:17px;font-weight:700;font-family:'Space Grotesk',sans-serif;">get_content_opportunities</h3>
+                            <span class="tool-badge" style="background:#ffedd5;color:#c2410c;">SEO Opportunities</span>
                         </div>
-                        <p class="tool-desc">
+                        <p style="color:var(--muted);font-size:14px;line-height:1.5;margin-bottom:14px;">
                             Discovers high-potential content topics from Google Search Console. Identifies striking distance queries (page 2, positions 8–20) and high-impression queries with low CTR.
                         </p>
-                        <div>
-                            <div class="check-badge"><svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"></polyline></svg> Page 2 striking distance keywords</div>
-                            <div class="check-badge"><svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"></polyline></svg> High impressions with low CTR</div>
-                            <div class="check-badge"><svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"></polyline></svg> Actionable editorial recommendations</div>
-                        </div>
+                        <div class="feature-item"><svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"></polyline></svg> Page 2 striking distance keywords</div>
+                        <div class="feature-item"><svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"></polyline></svg> High impressions with low CTR</div>
+                        <div class="feature-item"><svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"></polyline></svg> Actionable editorial recommendations</div>
                     </div>
-                    <div class="prompt-preview">
-                        <span>💡 "Find keyword opportunities where we can rank on page 1."</span>
-                        <button onclick="copyText('Find keyword opportunities where Clarified can rank on page 1 of Google.')" class="btn btn-outline" style="padding:2px 8px;font-size:11px;">Copy</button>
+                    <div class="prompt-box">
+                        <span>"Find keyword opportunities where we can rank on page 1."</span>
+                        <button onclick="copyPrompt('Find keyword opportunities where Clarified can rank on page 1 of Google.')" class="btn btn-outline" style="padding:4px 10px;font-size:12px;">Copy</button>
                     </div>
                 </div>
 
-                <!-- Tool 8: list_articles -->
-                <div class="tool-card">
+                <!-- 8. list_articles -->
+                <div class="mcp-card">
                     <div>
-                        <div class="tool-header">
-                            <span class="tool-title">
-                                <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="#64748b" stroke-width="2"><line x1="8" y1="6" x2="21" y2="6"></line><line x1="8" y1="12" x2="21" y2="12"></line><line x1="8" y1="18" x2="21" y2="18"></line><line x1="3" y1="6" x2="3.01" y2="6"></line><line x1="3" y1="12" x2="3.01" y2="12"></line><line x1="3" y1="18" x2="3.01" y2="18"></line></svg>
-                                list_articles
-                            </span>
-                            <span class="tool-cat">Content Query</span>
+                        <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:12px;">
+                            <h3 style="font-size:17px;font-weight:700;font-family:'Space Grotesk',sans-serif;">list_articles</h3>
+                            <span class="tool-badge">Content Query</span>
                         </div>
-                        <p class="tool-desc">
+                        <p style="color:var(--muted);font-size:14px;line-height:1.5;margin-bottom:14px;">
                             Full-text search, category filter, and status pagination across all articles in the repository. Fast and lightweight JSON response.
                         </p>
-                        <div>
-                            <div class="check-badge"><svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"></polyline></svg> Filter by category & status</div>
-                            <div class="check-badge"><svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"></polyline></svg> Full text query support</div>
-                            <div class="check-badge"><svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"></polyline></svg> Pagination limit and offset</div>
-                        </div>
+                        <div class="feature-item"><svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"></polyline></svg> Filter by category & status</div>
+                        <div class="feature-item"><svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"></polyline></svg> Full text query support</div>
+                        <div class="feature-item"><svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"></polyline></svg> Pagination limit and offset</div>
                     </div>
-                    <div class="prompt-preview">
-                        <span>💡 "List the 5 most recent articles in South Africa category."</span>
-                        <button onclick="copyText('List the 5 most recent articles in South Africa category.')" class="btn btn-outline" style="padding:2px 8px;font-size:11px;">Copy</button>
+                    <div class="prompt-box">
+                        <span>"List the 5 most recent articles in South Africa category."</span>
+                        <button onclick="copyPrompt('List the 5 most recent articles in South Africa category.')" class="btn btn-outline" style="padding:4px 10px;font-size:12px;">Copy</button>
                     </div>
                 </div>
 
-                <!-- Tool 9: get_article -->
-                <div class="tool-card">
+                <!-- 9. get_article -->
+                <div class="mcp-card">
                     <div>
-                        <div class="tool-header">
-                            <span class="tool-title">
-                                <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="#64748b" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline></svg>
-                                get_article
-                            </span>
-                            <span class="tool-cat">Content Query</span>
+                        <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:12px;">
+                            <h3 style="font-size:17px;font-weight:700;font-family:'Space Grotesk',sans-serif;">get_article</h3>
+                            <span class="tool-badge">Content Query</span>
                         </div>
-                        <p class="tool-desc">
+                        <p style="color:var(--muted);font-size:14px;line-height:1.5;margin-bottom:14px;">
                             Retrieves complete article data, full HTML markup, meta tags, schema markup, and editorial metrics by ID or slug.
                         </p>
-                        <div>
-                            <div class="check-badge"><svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"></polyline></svg> Full article HTML body</div>
-                            <div class="check-badge"><svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"></polyline></svg> SEO keywords & structured data</div>
-                        </div>
+                        <div class="feature-item"><svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"></polyline></svg> Full article HTML body</div>
+                        <div class="feature-item"><svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"></polyline></svg> SEO keywords & structured data</div>
                     </div>
-                    <div class="prompt-preview">
-                        <span>💡 "Fetch full article content for slug 'example-slug'."</span>
-                        <button onclick="copyText('Fetch full article content for slug example-slug.')" class="btn btn-outline" style="padding:2px 8px;font-size:11px;">Copy</button>
+                    <div class="prompt-box">
+                        <span>"Fetch full article content for slug 'example-slug'."</span>
+                        <button onclick="copyPrompt('Fetch full article content for slug example-slug.')" class="btn btn-outline" style="padding:4px 10px;font-size:12px;">Copy</button>
                     </div>
                 </div>
 
-                <!-- Tool 10: delete_article -->
-                <div class="tool-card">
+                <!-- 10. delete_article -->
+                <div class="mcp-card">
                     <div>
-                        <div class="tool-header">
-                            <span class="tool-title">
-                                <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="var(--danger)" stroke-width="2"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path></svg>
-                                delete_article
-                            </span>
-                            <span class="tool-cat" style="background:rgba(239,68,68,0.1);color:#dc2626;">Safety Guard</span>
+                        <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:12px;">
+                            <h3 style="font-size:17px;font-weight:700;font-family:'Space Grotesk',sans-serif;">delete_article</h3>
+                            <span class="tool-badge" style="background:rgba(239,68,68,0.1);color:#dc2626;">Safety Guard</span>
                         </div>
-                        <p class="tool-desc">
+                        <p style="color:var(--muted);font-size:14px;line-height:1.5;margin-bottom:14px;">
                             Safely removes an article from database, deletes generated HTML pages, and syncs changes directly with the GitHub repository.
                         </p>
-                        <div>
-                            <div class="check-badge"><svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"></polyline></svg> Database cleanup</div>
-                            <div class="check-badge"><svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"></polyline></svg> GitHub repository sync</div>
-                        </div>
+                        <div class="feature-item"><svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"></polyline></svg> Database cleanup</div>
+                        <div class="feature-item"><svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"></polyline></svg> GitHub repository sync</div>
                     </div>
-                    <div class="prompt-preview">
-                        <span>💡 "Delete draft article with ID '12345'."</span>
-                        <button onclick="copyText('Delete draft article with ID 12345.')" class="btn btn-outline" style="padding:2px 8px;font-size:11px;">Copy</button>
+                    <div class="prompt-box">
+                        <span>"Delete draft article with ID '12345'."</span>
+                        <button onclick="copyPrompt('Delete draft article with ID 12345.')" class="btn btn-outline" style="padding:4px 10px;font-size:12px;">Copy</button>
                     </div>
                 </div>
 
             </div>
-        </section>
+        </div>
 
     </div>
 </main>
 
 <script>
 async function pingMcpStatus() {
-    const statusEl = document.getElementById('mcp-header-status');
-    statusEl.textContent = 'Pinging…';
+    const textEl = document.getElementById('ping-text');
+    textEl.textContent = 'Pinging…';
     try {
         const res = await fetch('/api/mcp-status');
         const data = await res.json();
         if (data.status === 'ready' || data.connected) {
-            statusEl.textContent = 'MCP Server Ready (10 Tools)';
-            statusEl.className = 'status-badge online dot';
-            alert('MCP Server Status: Operational\n' +
-                  'Server: novamira-clarified-co-za (mcp/server.js)\n' +
-                  'Tools: 10 tools active\n' +
-                  'Search Console: ' + (data.environment.searchConsoleConfigured ? 'Connected (clarified.co.za)' : 'Not configured') + '\n' +
-                  'GitHub Sync: ' + (data.environment.githubSyncEnabled ? 'Enabled (' + data.environment.githubRepo + ')' : 'Local mode') + '\n' +
-                  'Published Articles: ' + data.environment.publishedArticles);
+            textEl.textContent = 'Connected (10 Tools)';
+            alert('Clarified MCP Server Status: Operational\n\n' +
+                  '• Server: ' + data.serverName + ' (' + data.serverScript + ')\n' +
+                  '• Protocol: ' + data.protocol + '\n' +
+                  '• Available Tools: ' + data.toolCount + ' tools active\n' +
+                  '• Search Console: ' + (data.environment.searchConsoleConfigured ? 'Connected (' + data.environment.searchConsoleProperty + ')' : 'Not configured') + '\n' +
+                  '• GitHub CD Sync: ' + (data.environment.githubSyncEnabled ? 'Enabled (' + data.environment.githubRepo + ':' + data.environment.githubBranch + ')' : 'Local mode') + '\n' +
+                  '• Database: ' + data.environment.totalArticles + ' total articles (' + data.environment.publishedArticles + ' published, ' + data.environment.draftArticles + ' drafts)');
         } else {
-            statusEl.textContent = 'Status: ' + (data.status || 'Offline');
-            statusEl.className = 'status-badge';
+            textEl.textContent = 'Offline';
+            alert('MCP Server returned an issue: ' + (data.error || 'Server not responding'));
         }
     } catch(e) {
-        statusEl.textContent = 'Ping Error';
+        textEl.textContent = 'Error';
         alert('Could not ping MCP API: ' + e.message);
     }
 }
 
 function switchTab(tabId, btn) {
-    document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
-    document.querySelectorAll('.tab-panel').forEach(p => p.style.display = 'none');
+    document.querySelectorAll('.tab-link').forEach(b => b.classList.remove('active'));
+    document.querySelectorAll('.tab-content').forEach(p => p.style.display = 'none');
     btn.classList.add('active');
     const panel = document.getElementById('tab-' + tabId);
     if (panel) panel.style.display = 'block';
@@ -699,9 +608,9 @@ function copySnippet(elementId, btn) {
     });
 }
 
-function copyText(text) {
+function copyPrompt(text) {
     navigator.clipboard.writeText(text).then(() => {
-        alert('Prompt copied to clipboard:\n"' + text + '"');
+        alert('Prompt copied to clipboard:\n\n"' + text + '"');
     });
 }
 </script>
