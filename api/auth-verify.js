@@ -6,8 +6,7 @@
 
 const FIREBASE_API_KEY = process.env.FIREBASE_API_KEY || "AIzaSyBwNSi_ROjHpNBTlT1MjDouEMQAKeyE4cg";
 
-// Hash of authorized admin email (prevents exposing the raw email in code)
-// Matches SHA-256 of adolphusmulanga723@gmail.com
+// Cryptographic SHA-256 hash of authorized admin email
 const AUTHORIZED_EMAIL_HASH = "4c909297955f5107960485634d341da82f983625c43d0d4a7fdb66ee9048ab50";
 
 function sha256(str) {
