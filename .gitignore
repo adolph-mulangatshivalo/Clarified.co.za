@@ -13,3 +13,7 @@ db.json.bak
 .env
 .env.local
 .env.*.local
+
+# Agent local configs & secrets
+.agents/
+
