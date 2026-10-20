@@ -15,5 +15,6 @@ export const firebaseConfig = {
 // Leave empty [] to allow any authenticated user in your Firebase project,
 // or specify your email address(es) to restrict access strictly to you:
 export const ALLOWED_ADMIN_EMAILS = [
-    "adolphusmulanga723@gmail.com"
+    // Stored as SHA-256 hash to protect admin identity from public repository scrapers
+    "4c909297955f5107960485634d341da82f983625c43d0d4a7fdb66ee9048ab50"
 ];

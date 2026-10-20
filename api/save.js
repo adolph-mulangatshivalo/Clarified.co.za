@@ -1,8 +1,14 @@
 import { getFileContent, createBlob, createCommitAndPush } from './github-helper.js';
+import { verifyAdminAuth } from './auth-verify.js';
 
 export default async function handler(req, res) {
-    // CORS headers
-    res.setHeader('Access-Control-Allow-Origin', '*');
+    // Security: Restrict CORS
+    const origin = req.headers.origin || '';
+    if (origin.includes('clarified.co.za') || origin.includes('localhost') || origin.includes('127.0.0.1') || origin.includes('vercel.app')) {
+        res.setHeader('Access-Control-Allow-Origin', origin);
+    } else {
+        res.setHeader('Access-Control-Allow-Origin', 'https://clarified.co.za');
+    }
     res.setHeader('Access-Control-Allow-Methods', 'POST, OPTIONS');
     res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization');
 
@@ -12,6 +18,12 @@ export default async function handler(req, res) {
 
     if (req.method !== 'POST') {
         return res.status(405).json({ error: 'Method not allowed' });
+    }
+
+    // Security: Verify Admin Authentication
+    const authResult = await verifyAdminAuth(req);
+    if (!authResult.authorized) {
+        return res.status(authResult.status || 401).json({ error: authResult.error });
     }
 
     const {

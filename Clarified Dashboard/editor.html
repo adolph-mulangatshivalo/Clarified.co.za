@@ -588,9 +588,13 @@ async function uploadImage(file) {
         const reader = new FileReader();
         reader.onload = async (e) => {
             try {
+                const token = window.getAuthToken ? await window.getAuthToken() : '';
+                const headers = { 'Content-Type': 'application/json' };
+                if (token) headers['Authorization'] = `Bearer ${token}`;
+
                 const res = await fetch('/api/upload', {
                     method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
+                    headers,
                     body: JSON.stringify({ image: e.target.result })
                 });
                 const data = await res.json();
@@ -678,9 +682,13 @@ async function save(status) {
     publishBtn.textContent = status === 'published' ? 'Publishing…' : 'Publish';
 
     try {
+        const token = window.getAuthToken ? await window.getAuthToken() : '';
+        const headers = { 'Content-Type': 'application/json' };
+        if (token) headers['Authorization'] = `Bearer ${token}`;
+
         const res  = await fetch('/api/save', {
             method:  'POST',
-            headers: { 'Content-Type': 'application/json' },
+            headers,
             body:    JSON.stringify(payload)
         });
         const data = await res.json();
@@ -723,11 +731,19 @@ async function deleteArticle() {
     if (!articleId) return;
     if (!confirm('Permanently delete this article? This cannot be undone.')) return;
     try {
-        await fetch('/api/delete', {
+        const token = window.getAuthToken ? await window.getAuthToken() : '';
+        const headers = { 'Content-Type': 'application/json' };
+        if (token) headers['Authorization'] = `Bearer ${token}`;
+
+        const res = await fetch('/api/delete', {
             method:  'POST',
-            headers: { 'Content-Type': 'application/json' },
+            headers,
             body:    JSON.stringify({ id: articleId })
         });
+        if (!res.ok) {
+            const errData = await res.json().catch(() => ({}));
+            throw new Error(errData.error || 'Delete failed');
+        }
         window.location.href = 'articles.html';
     } catch(e) {
         showNotice('Error deleting: ' + e.message, 'error');

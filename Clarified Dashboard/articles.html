@@ -242,11 +242,18 @@ function filterTable() {
 async function del(id) {
     if (!confirm('Delete this article? This cannot be undone.')) return;
     try {
-        const res = await fetch('/api/delete', { method:'POST', body: JSON.stringify({id}), headers:{'Content-Type':'application/json'} });
-        if (!res.ok) throw new Error('Delete failed');
+        const token = window.getAuthToken ? await window.getAuthToken() : '';
+        const headers = { 'Content-Type': 'application/json' };
+        if (token) headers['Authorization'] = `Bearer ${token}`;
+
+        const res = await fetch('/api/delete', { method:'POST', body: JSON.stringify({id}), headers });
+        if (!res.ok) {
+            const errData = await res.json().catch(() => ({}));
+            throw new Error(errData.error || 'Delete failed');
+        }
         loadArticles();
     } catch(e) {
-        alert('Could not delete article. Make sure server.js is running.');
+        alert('Could not delete article: ' + e.message);
     }
 }
 

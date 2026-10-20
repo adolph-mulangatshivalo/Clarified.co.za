@@ -42,11 +42,18 @@ export async function logout() {
     window.location.replace('login.html');
 }
 
-// Attach logout helper to window for HTML button onclick
+// Attach helpers to window for HTML access
 window.dashboardLogout = logout;
+window.getAuthToken = getIdToken;
+
+async function hashString(str) {
+    const data = new TextEncoder().encode((str || '').toLowerCase().trim());
+    const buf = await crypto.subtle.digest('SHA-256', data);
+    return Array.from(new Uint8Array(buf)).map(b => b.toString(16).padStart(2, '0')).join('');
+}
 
 if (isConfigured && auth) {
-    onAuthStateChanged(auth, user => {
+    onAuthStateChanged(auth, async user => {
         if (!user) {
             // Not logged in -> redirect to login
             const returnUrl = encodeURIComponent(window.location.pathname + window.location.search);
@@ -54,10 +61,14 @@ if (isConfigured && auth) {
             return;
         }
 
-        // Email Whitelist Verification
+        // Email Whitelist Verification (Supports plain email or SHA-256 privacy hash)
         if (Array.isArray(ALLOWED_ADMIN_EMAILS) && ALLOWED_ADMIN_EMAILS.length > 0) {
-            const userEmail = (user.email || '').toLowerCase();
-            const isAllowed = ALLOWED_ADMIN_EMAILS.some(e => e.toLowerCase() === userEmail);
+            const userEmail = (user.email || '').toLowerCase().trim();
+            const emailHash = await hashString(userEmail);
+            const isAllowed = ALLOWED_ADMIN_EMAILS.some(item => {
+                const target = item.toLowerCase().trim();
+                return target === userEmail || target === emailHash;
+            });
             if (!isAllowed) {
                 alert(`Access Denied: The account ${user.email} is not authorized to access this dashboard.`);
                 logout();
