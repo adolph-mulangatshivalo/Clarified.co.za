@@ -1,10 +1,50 @@
 import fs from 'fs';
 import path from 'path';
+import { findMcpConfig, verifyMcpToken } from './mcp-auth.js';
+import { verifyAdminAuth } from './auth-verify.js';
+
+async function checkMcpAuth(req, serverName) {
+    // 1. Check local session file
+    try {
+        const sessionPath = path.join(process.cwd(), 'dashboard', '.mcp-session.json');
+        if (fs.existsSync(sessionPath)) {
+            const session = JSON.parse(fs.readFileSync(sessionPath, 'utf8'));
+            if (session && session.connected) {
+                return { authenticated: true, session };
+            }
+        }
+    } catch(e) {}
+
+    // 2. Check headers / token for signed MCP session
+    const authHeader = req.headers.authorization || req.headers.Authorization || '';
+    let mcpToken = '';
+    if (authHeader && authHeader.startsWith('Bearer mcp_')) {
+        mcpToken = authHeader.replace('Bearer ', '').trim();
+    } else if (req.headers['x-mcp-auth'] && req.headers['x-mcp-auth'].startsWith('mcp_')) {
+        mcpToken = req.headers['x-mcp-auth'].trim();
+    }
+
+    if (mcpToken && verifyMcpToken(mcpToken, serverName)) {
+        return { authenticated: true, session: { token: mcpToken } };
+    }
+
+    // 3. Fallback: verify if caller is an authorized Firebase Admin
+    if (authHeader.startsWith('Bearer ') && !authHeader.startsWith('Bearer mcp_')) {
+        try {
+            const adminCheck = await verifyAdminAuth(req);
+            if (adminCheck && adminCheck.authorized) {
+                return { authenticated: true, session: { user: adminCheck.user, type: 'admin' } };
+            }
+        } catch(e) {}
+    }
+
+    return { authenticated: false, session: null };
+}
 
 export default async function handler(req, res) {
     res.setHeader('Access-Control-Allow-Origin', '*');
     res.setHeader('Access-Control-Allow-Methods', 'GET, OPTIONS');
-    res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization');
+    res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization, x-mcp-auth');
     res.setHeader('Cache-Control', 'no-store, max-age=0');
 
     if (req.method === 'OPTIONS') {
@@ -12,10 +52,8 @@ export default async function handler(req, res) {
     }
 
     try {
-        const hasGithubToken = Boolean(process.env.GITHUB_TOKEN);
-        const githubOwner = process.env.GITHUB_OWNER || 'adolph-mulangatshivalo';
-        const githubRepo = process.env.GITHUB_REPO || 'Clarified.co.za';
-        const githubBranch = process.env.GITHUB_BRANCH || 'main';
+        const configInfo = findMcpConfig();
+        const authInfo = await checkMcpAuth(req, configInfo.serverName);
 
         // Check db stats
         let totalArticles = 0;
@@ -126,10 +164,54 @@ export default async function handler(req, res) {
             }
         ];
 
+        // CASE 1: No server configured in config.json
+        if (!configInfo.hasServers) {
+            return res.status(200).json({
+                connected: false,
+                configured: false,
+                status: "no_config",
+                configPath: configInfo.path,
+                serverName: null,
+                serverNames: [],
+                message: `No MCP server configured in config.json (${path.basename(configInfo.path)} is empty). Add your server configuration to connect.`,
+                protocol: "Model Context Protocol (MCP) v1.0",
+                toolCount: 0,
+                tools: [],
+                allTools: tools
+            });
+        }
+
+        // CASE 2: Server configured, but NOT authenticated yet
+        if (!authInfo.authenticated) {
+            return res.status(200).json({
+                connected: false,
+                configured: true,
+                status: "unauthenticated",
+                configPath: configInfo.path,
+                serverName: configInfo.serverName,
+                serverNames: configInfo.serverNames,
+                message: `Server definition found in ${path.basename(configInfo.path)}: "${configInfo.serverName}". Authentication required to connect.`,
+                protocol: "Model Context Protocol (MCP) v1.0",
+                toolCount: 0,
+                tools: [],
+                allTools: tools
+            });
+        }
+
+        // CASE 3: Configured AND authenticated -> CONNECTED
+        const hasGithubToken = Boolean(process.env.GITHUB_TOKEN);
+        const githubOwner = process.env.GITHUB_OWNER || 'adolph-mulangatshivalo';
+        const githubRepo = process.env.GITHUB_REPO || 'Clarified.co.za';
+        const githubBranch = process.env.GITHUB_BRANCH || 'main';
+
         return res.status(200).json({
-            status: "ready",
             connected: true,
-            serverName: "novamira-clarified-co-za",
+            configured: true,
+            status: "ready",
+            configPath: configInfo.path,
+            serverName: configInfo.serverName,
+            serverNames: configInfo.serverNames,
+            message: `Connected to ${configInfo.serverName}`,
             protocol: "Model Context Protocol (MCP) v1.0",
             serverScript: "mcp/server.js",
             environment: {
@@ -144,12 +226,14 @@ export default async function handler(req, res) {
                 draftArticles
             },
             toolCount: tools.length,
-            tools
+            tools,
+            allTools: tools
         });
     } catch(err) {
         return res.status(500).json({
-            status: "error",
             connected: false,
+            configured: false,
+            status: "error",
             error: err.message
         });
     }

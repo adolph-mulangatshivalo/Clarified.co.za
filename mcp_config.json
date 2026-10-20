@@ -1,0 +1,13 @@
+{
+  "mcpServers": {
+    "clarified": {
+      "command": "node",
+      "args": ["mcp/server.js"],
+      "env": {
+        "GITHUB_OWNER": "adolph-mulangatshivalo",
+        "GITHUB_REPO": "Clarified.co.za",
+        "GITHUB_BRANCH": "main"
+      }
+    }
+  }
+}

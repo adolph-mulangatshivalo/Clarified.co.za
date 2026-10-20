@@ -1,6 +1,7 @@
 const http = require('http');
 const fs   = require('fs');
 const path = require('path');
+const crypto = require('crypto');
 
 const PORT           = 3000;
 const SITE_ROOT      = path.join(__dirname, '..');
@@ -628,6 +629,329 @@ const server = http.createServer(async (req, res) => {
         } catch (err) {
             console.error(err);
             return json(res, { error: err.message }, 500);
+        }
+    }
+
+    // ── MCP Helpers & Status ────────────────────────────────────────────────
+    const MCP_SECRET = process.env.MCP_AUTH_SECRET || "clarified-mcp-editorial-v2-secure-key";
+
+    function generateMcpToken(serverName) {
+        const timestamp = Date.now();
+        const payload = `${serverName || 'clarified'}:${timestamp}`;
+        const sig = crypto.createHmac('sha256', MCP_SECRET).update(payload).digest('hex').substring(0, 32);
+        return `mcp_${timestamp}_${sig}`;
+    }
+
+    function verifyMcpToken(token, serverName) {
+        if (!token || typeof token !== 'string' || !token.startsWith('mcp_')) return false;
+        const parts = token.split('_');
+        if (parts.length < 3) return false;
+        const timestamp = parseInt(parts[1], 10);
+        const sig = parts[2];
+        if (isNaN(timestamp)) return false;
+        if (Date.now() - timestamp > 30 * 24 * 60 * 60 * 1000) return false;
+
+        const namesToCheck = [serverName, 'clarified', 'novamira-clarified-co-za'].filter(Boolean);
+        for (const name of namesToCheck) {
+            const expectedSig = crypto.createHmac('sha256', MCP_SECRET).update(`${name}:${timestamp}`).digest('hex').substring(0, 32);
+            if (sig === expectedSig) return true;
+        }
+        return false;
+    }
+
+    function findMcpConfig() {
+        const primaryPath = path.join(process.env.USERPROFILE || process.env.HOME || 'C:\\Users\\adolp', '.gemini', 'config', 'mcp_config.json');
+        const candidatePaths = [
+            primaryPath,
+            path.join(SITE_ROOT, 'mcp_config.json'),
+            path.join(SITE_ROOT, 'config.json'),
+            path.join(SITE_ROOT, '.agents', 'mcp_config.json'),
+            path.join(DASHBOARD_ROOT, 'mcp_config.json')
+        ];
+
+        for (const candidate of candidatePaths) {
+            try {
+                if (fs.existsSync(candidate)) {
+                    const stat = fs.statSync(candidate);
+                    if (stat.size > 0) {
+                        const raw = fs.readFileSync(candidate, 'utf8').trim();
+                        if (raw) {
+                            const parsed = JSON.parse(raw);
+                            const servers = parsed.mcpServers || {};
+                            const serverKeys = Object.keys(servers);
+                            if (serverKeys.length > 0) {
+                                return {
+                                    path: candidate,
+                                    hasServers: true,
+                                    serverName: serverKeys[0],
+                                    serverNames: serverKeys,
+                                    servers
+                                };
+                            }
+                        }
+                    }
+                }
+            } catch (e) {}
+        }
+
+        // Fallback: check if built-in MCP server exists
+        const builtInServer = path.join(SITE_ROOT, 'mcp', 'server.js');
+        if (fs.existsSync(builtInServer)) {
+            const defaultName = process.env.MCP_SERVER_NAME || 'clarified';
+            return {
+                path: path.join(SITE_ROOT, 'mcp_config.json'),
+                hasServers: true,
+                serverName: defaultName,
+                serverNames: [defaultName],
+                servers: {
+                    [defaultName]: {
+                        command: 'node',
+                        args: ['mcp/server.js'],
+                        description: 'Clarified Editorial AI & Publishing Engine'
+                    }
+                }
+            };
+        }
+
+        return {
+            path: candidatePaths[1],
+            hasServers: false,
+            serverName: null,
+            serverNames: [],
+            servers: {}
+        };
+    }
+
+    function checkMcpAuth(req, serverName) {
+        try {
+            const sessionPath = path.join(DASHBOARD_ROOT, '.mcp-session.json');
+            if (fs.existsSync(sessionPath)) {
+                const session = JSON.parse(fs.readFileSync(sessionPath, 'utf8'));
+                if (session && session.connected) {
+                    return { authenticated: true, session };
+                }
+            }
+        } catch(e) {}
+
+        const authHeader = req.headers.authorization || req.headers.Authorization || '';
+        let mcpToken = '';
+        if (authHeader && authHeader.startsWith('Bearer mcp_')) {
+            mcpToken = authHeader.replace('Bearer ', '').trim();
+        } else if (req.headers['x-mcp-auth'] && req.headers['x-mcp-auth'].startsWith('mcp_')) {
+            mcpToken = req.headers['x-mcp-auth'].trim();
+        }
+
+        if (mcpToken && verifyMcpToken(mcpToken, serverName)) {
+            return { authenticated: true, session: { token: mcpToken } };
+        }
+
+        return { authenticated: false, session: null };
+    }
+
+    const mcpToolsCatalog = [
+        {
+            name: "validate_article_quality",
+            category: "Editorial Standards",
+            summary: "Automated editorial quality gate checking word count, readability, keyword density, structure, and meta tags.",
+            parameters: ["title", "content", "focusKeyword", "metaDescription", "readingTime"],
+            qualityChecks: [
+                "Word count >= 600 words",
+                "Focus keyword in title & first 100 words",
+                "Keyword density between 0.5% and 2.5%",
+                "Meta description between 120 and 160 characters",
+                "Heading structure (H2, H3 hierarchy)",
+                "Flesch Reading Ease score"
+            ],
+            examplePrompt: "Validate the quality of this draft article before publishing."
+        },
+        {
+            name: "detect_duplicates",
+            category: "Content Integrity",
+            summary: "Checks article title, slug, and text against all existing articles to prevent duplicate coverage and cannibalization.",
+            parameters: ["title", "slug", "content"],
+            qualityChecks: ["Title similarity scoring", "Slug collision prevention", "Topical overlap scan"],
+            examplePrompt: "Check if we already published an article covering this topic."
+        },
+        {
+            name: "suggest_internal_links",
+            category: "SEO & Linking",
+            summary: "Analyzes draft content and suggests contextual internal links to published Clarified articles with anchor tags.",
+            parameters: ["content", "category", "maxSuggestions"],
+            qualityChecks: ["Contextual relevance", "Ready-to-paste HTML anchor snippets"],
+            examplePrompt: "Suggest 3 relevant internal links to existing Clarified articles for this draft."
+        },
+        {
+            name: "publish_article",
+            category: "Deployment & Publishing",
+            summary: "Enforces quality gates, updates database, regenerates sitemap.xml & RSS, and commits directly to GitHub for live Vercel deployment.",
+            parameters: ["title", "content", "category", "author", "excerpt", "image", "focusKeyword", "metaDescription"],
+            qualityChecks: ["Auto quality validation", "Auto sitemap update", "Auto RSS feed update", "Live GitHub commit"],
+            examplePrompt: "Publish this article to Clarified.co.za and deploy live."
+        },
+        {
+            name: "edit_article",
+            category: "Article Management",
+            summary: "Updates existing article content, metadata, or status and triggers automatic deployment.",
+            parameters: ["id", "slug", "title", "content", "category", "author", "status"],
+            qualityChecks: ["Selective field updates", "Live sync with GitHub repository"],
+            examplePrompt: "Update article #5 with a refreshed conclusion and save."
+        },
+        {
+            name: "list_articles",
+            category: "Search & Retrieval",
+            summary: "Searches, filters by category or status, and paginates through all articles in the repository.",
+            parameters: ["status", "category", "query", "limit", "offset"],
+            qualityChecks: ["Instant full-text query", "Category filtering"],
+            examplePrompt: "List the 5 most recent published articles in Technology."
+        },
+        {
+            name: "get_article",
+            category: "Search & Retrieval",
+            summary: "Retrieves complete article data, HTML content, SEO metadata, and publication date by ID or slug.",
+            parameters: ["id", "slug"],
+            qualityChecks: ["Full HTML body retrieval", "Editorial metadata inspection"],
+            examplePrompt: "Fetch the full HTML content and details for article with slug 'south-africa-energy'."
+        },
+        {
+            name: "delete_article",
+            category: "Article Management",
+            summary: "Safely deletes an article, removes its generated HTML page, and updates sitemaps on GitHub.",
+            parameters: ["id", "slug"],
+            qualityChecks: ["Database removal", "GitHub file cleanup", "Sitemap sync"],
+            examplePrompt: "Delete draft article with ID '1728394012'."
+        },
+        {
+            name: "get_search_analytics",
+            category: "Search Performance",
+            summary: "Queries Google Search Console API for real-time clicks, impressions, average CTR, average position, and top queries.",
+            parameters: ["startDate", "endDate", "dimensions", "rowLimit"],
+            qualityChecks: ["Google Search Console API", "Top query breakdown", "Top page performance"],
+            examplePrompt: "Show me Google Search Console clicks and top search queries for the past 28 days."
+        },
+        {
+            name: "get_content_opportunities",
+            category: "Search Performance",
+            summary: "Finds high-potential keywords: queries ranking on page 2 (positions 8-20) and high-impression queries with low CTR.",
+            parameters: ["days", "opportunityType"],
+            qualityChecks: ["Striking distance keyword identification", "Low-CTR opportunity detection"],
+            examplePrompt: "Find high-impression keywords ranking on page 2 of Google that we can write new articles about."
+        }
+    ];
+
+    // ── GET /api/mcp-status ─────────────────────────────────────────────────
+    if (method === 'GET' && url === '/api/mcp-status') {
+        try {
+            const configInfo = findMcpConfig();
+            const authInfo = checkMcpAuth(req, configInfo.serverName);
+            const db = getDB();
+            const articles = db.articles || [];
+            const totalArticles = articles.length;
+            const publishedArticles = articles.filter(a => a.status === 'published').length;
+            const draftArticles = articles.filter(a => a.status === 'draft').length;
+
+            if (!configInfo.hasServers) {
+                return json(res, {
+                    connected: false,
+                    configured: false,
+                    status: "no_config",
+                    configPath: configInfo.path,
+                    serverName: null,
+                    serverNames: [],
+                    message: `No MCP server configured in config.json (${path.basename(configInfo.path)} is empty). Add your server configuration to connect.`,
+                    protocol: "Model Context Protocol (MCP) v1.0",
+                    toolCount: 0,
+                    tools: [],
+                    allTools: mcpToolsCatalog
+                });
+            }
+
+            if (!authInfo.authenticated) {
+                return json(res, {
+                    connected: false,
+                    configured: true,
+                    status: "unauthenticated",
+                    configPath: configInfo.path,
+                    serverName: configInfo.serverName,
+                    serverNames: configInfo.serverNames,
+                    message: `Server definition found in ${path.basename(configInfo.path)}: "${configInfo.serverName}". Authentication required to connect.`,
+                    protocol: "Model Context Protocol (MCP) v1.0",
+                    toolCount: 0,
+                    tools: [],
+                    allTools: mcpToolsCatalog
+                });
+            }
+
+            return json(res, {
+                connected: true,
+                configured: true,
+                status: "ready",
+                configPath: configInfo.path,
+                serverName: configInfo.serverName,
+                serverNames: configInfo.serverNames,
+                message: `Connected to ${configInfo.serverName}`,
+                protocol: "Model Context Protocol (MCP) v1.0",
+                serverScript: "mcp/server.js",
+                environment: {
+                    githubOwner: 'adolph-mulangatshivalo',
+                    githubRepo: 'Clarified.co.za',
+                    githubBranch: 'main',
+                    githubSyncEnabled: false,
+                    searchConsoleProperty: "https://clarified.co.za/",
+                    searchConsoleConfigured: true,
+                    totalArticles,
+                    publishedArticles,
+                    draftArticles
+                },
+                toolCount: mcpToolsCatalog.length,
+                tools: mcpToolsCatalog,
+                allTools: mcpToolsCatalog
+            });
+        } catch(e) {
+            return json(res, { connected: false, configured: false, status: "error", error: e.message }, 500);
+        }
+    }
+
+    // ── POST /api/mcp-auth ──────────────────────────────────────────────────
+    if (method === 'POST' && url === '/api/mcp-auth') {
+        try {
+            const data = await readBody(req);
+            const action = data.action || 'authenticate';
+            const sessionPath = path.join(DASHBOARD_ROOT, '.mcp-session.json');
+
+            if (action === 'disconnect') {
+                if (fs.existsSync(sessionPath)) fs.unlinkSync(sessionPath);
+                return json(res, { success: true, connected: false, message: 'MCP disconnected successfully.' });
+            }
+
+            const configInfo = findMcpConfig();
+            if (!configInfo.hasServers) {
+                return json(res, {
+                    success: false,
+                    connected: false,
+                    error: 'No MCP server configured in config.json. Please add your server configuration to config.json first before authenticating.',
+                    configPath: configInfo.path
+                }, 400);
+            }
+
+            const token = generateMcpToken(configInfo.serverName);
+            const sessionData = {
+                connected: true,
+                serverName: configInfo.serverName,
+                configPath: configInfo.path,
+                authenticatedAt: Date.now(),
+                token
+            };
+            fs.writeFileSync(sessionPath, JSON.stringify(sessionData, null, 2), 'utf8');
+
+            return json(res, {
+                success: true,
+                connected: true,
+                serverName: configInfo.serverName,
+                token,
+                message: `Successfully authenticated and connected to ${configInfo.serverName}.`
+            });
+        } catch(e) {
+            return json(res, { success: false, connected: false, error: e.message }, 500);
         }
     }
 

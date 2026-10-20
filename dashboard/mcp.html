@@ -9,61 +9,122 @@
     <script type="module" src="/dashboard/auth-guard.js"></script>
     <style>
         /* MCP Specific Additions that adhere to dashboard.css variables */
+        .stats-grid-4 {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 20px;
+            margin-bottom: 28px;
+        }
+        @media (max-width: 1100px) {
+            .stats-grid-4 {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+        @media (max-width: 600px) {
+            .stats-grid-4 {
+                grid-template-columns: 1fr;
+            }
+        }
+
         .mcp-card {
             background-color: var(--white);
             border: 1px solid var(--line);
             border-radius: 14px;
-            padding: 28px;
+            padding: 24px;
             display: flex;
             flex-direction: column;
             justify-content: space-between;
-            transition: border-color 0.15s ease, box-shadow 0.15s ease;
+            transition: border-color 0.2s ease, box-shadow 0.2s ease, transform 0.15s ease;
+            position: relative;
         }
         .mcp-card:hover {
             border-color: var(--cyan);
-            box-shadow: 0 4px 12px rgba(0,0,0,0.03);
+            box-shadow: 0 6px 20px rgba(0,0,0,0.04);
+            transform: translateY(-2px);
         }
         .tool-badge {
             font-size: 11px;
             font-weight: 700;
             color: var(--cyan-dark);
             background: var(--cyan-soft);
-            padding: 3px 9px;
+            padding: 4px 10px;
             border-radius: 6px;
             text-transform: uppercase;
             letter-spacing: 0.5px;
+            white-space: nowrap;
+            flex-shrink: 0;
         }
-        .code-container {
-            background: #0f172a;
-            color: #e2e8f0;
-            border-radius: 9px;
-            padding: 16px 20px;
-            font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
-            font-size: 13px;
-            position: relative;
-            overflow-x: auto;
+
+        /* Flush Terminal Code Component - 100% Non-overlapping */
+        .code-terminal {
+            background: #090d16;
             border: 1px solid #1e293b;
-            margin-top: 12px;
-            line-height: 1.5;
+            border-radius: 10px;
+            overflow: hidden;
+            margin-top: 14px;
+            box-shadow: 0 4px 16px rgba(0,0,0,0.06);
         }
-        .btn-copy {
-            position: absolute;
-            top: 10px;
-            right: 10px;
-            background: #334155;
-            color: #f8fafc;
-            border: none;
+        .code-terminal-header {
+            background: #0f172a;
+            padding: 10px 16px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            border-bottom: 1px solid #1e293b;
+            gap: 12px;
+        }
+        .code-terminal-dots {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+        .code-dot {
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            display: inline-block;
+        }
+        .code-dot.red { background: #ef4444; }
+        .code-dot.yellow { background: #f59e0b; }
+        .code-dot.green { background: #10b981; }
+        .code-terminal-title {
+            font-size: 12px;
+            color: #94a3b8;
+            font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+            margin-left: 8px;
+        }
+        .btn-copy-flush {
+            background: #1e293b;
+            color: #f1f5f9;
+            border: 1px solid #334155;
             border-radius: 6px;
             padding: 5px 12px;
             font-size: 12px;
             font-weight: 600;
             cursor: pointer;
-            transition: background 0.15s ease;
-            font-family: "DM Sans", sans-serif;
+            font-family: inherit;
+            transition: all 0.15s ease;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            flex-shrink: 0;
         }
-        .btn-copy:hover {
-            background: #475569;
+        .btn-copy-flush:hover {
+            background: #334155;
+            color: #38bdf8;
+            border-color: #475569;
         }
+        .code-terminal-body {
+            padding: 18px 20px;
+            margin: 0;
+            color: #e2e8f0;
+            font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+            font-size: 13px;
+            line-height: 1.6;
+            overflow-x: auto;
+            white-space: pre;
+        }
+
         .tab-nav {
             display: flex;
             gap: 8px;
@@ -114,15 +175,100 @@
             display: flex;
             align-items: center;
             justify-content: space-between;
-            gap: 10px;
+            gap: 12px;
+            min-width: 0;
+        }
+        .prompt-box span {
+            flex: 1;
+            min-width: 0;
+            line-height: 1.4;
+            word-break: break-word;
+        }
+        .prompt-box button {
+            flex-shrink: 0;
+            white-space: nowrap;
         }
         .pulse-dot {
             width: 8px;
             height: 8px;
             border-radius: 50%;
-            background: var(--success);
             display: inline-block;
-            box-shadow: 0 0 0 2px rgba(16, 185, 129, 0.2);
+            transition: all 0.3s ease;
+        }
+        .pulse-dot.online {
+            background: var(--success);
+            box-shadow: 0 0 0 2px rgba(16, 185, 129, 0.25);
+        }
+        .pulse-dot.offline {
+            background: #94a3b8;
+            box-shadow: 0 0 0 2px rgba(148, 163, 184, 0.25);
+        }
+        .pulse-dot.amber {
+            background: #f59e0b;
+            box-shadow: 0 0 0 2px rgba(245, 158, 11, 0.25);
+        }
+
+        /* Interactive Connection & Authentication Panel */
+        .auth-panel {
+            background: #ffffff;
+            border: 1px solid var(--line);
+            border-radius: 14px;
+            padding: 28px;
+            margin-bottom: 32px;
+            transition: border-color 0.2s ease;
+        }
+        .auth-panel.connected {
+            border-color: rgba(16, 185, 129, 0.4);
+            background: linear-gradient(180deg, #ffffff 0%, #f0fdf4 100%);
+        }
+        .auth-panel.disconnected {
+            border-color: var(--line);
+            background: #ffffff;
+        }
+        .step-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+            margin-top: 20px;
+        }
+        @media (max-width: 850px) {
+            .step-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+        .step-card {
+            background: var(--soft);
+            border: 1px solid var(--line);
+            border-radius: 10px;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            gap: 14px;
+        }
+        .step-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            font-size: 11px;
+            font-weight: 700;
+            padding: 3px 8px;
+            border-radius: 6px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            width: fit-content;
+        }
+        .step-badge.pending {
+            background: rgba(245, 158, 11, 0.12);
+            color: #d97706;
+        }
+        .step-badge.ready {
+            background: rgba(16, 185, 129, 0.12);
+            color: #059669;
+        }
+        .step-badge.disabled {
+            background: rgba(148, 163, 184, 0.15);
+            color: #64748b;
         }
     </style>
 </head>
@@ -164,7 +310,7 @@
             <summary class="nav-item active">
                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"></circle><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path></svg>
                 <span>AI & MCP</span>
-                <span style="margin-left:auto;margin-right:8px;background:rgba(16,185,129,0.15);color:#10b981;font-size:11px;font-weight:700;padding:2px 6px;border-radius:10px;">10 Tools</span>
+                <span id="sidebar-mcp-badge" class="nav-badge disconnected">Offline</span>
                 <svg class="chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"></polyline></svg>
             </summary>
             <div class="nav-sub">
@@ -205,10 +351,10 @@
 
 <main class="main-wrapper">
     <header class="topbar">
-        <div class="topbar-title">AI Editorial & MCP Server</div>
+        <div class="topbar-title">AI Editorial &amp; MCP Server</div>
         <div class="user-profile">
-            <button id="btn-ping" onclick="pingMcpStatus()" class="btn btn-outline" style="font-size:13px;padding:8px 14px;">
-                <span class="pulse-dot"></span>
+            <button id="btn-ping" onclick="pingMcpStatus()" class="btn btn-outline" style="font-size:13px;padding:8px 14px;display:inline-flex;align-items:center;gap:8px;white-space:nowrap;">
+                <span id="topbar-pulse" class="pulse-dot offline"></span>
                 <span id="ping-text">Server Status</span>
             </button>
             <div class="avatar">A</div>
@@ -217,56 +363,120 @@
 
     <div class="content">
 
-        <!-- Status Cards Grid -->
-        <div class="stats-grid" style="margin-bottom:32px;">
+        <!-- Flush 4-Card Status Grid -->
+        <div class="stats-grid-4">
             <div class="stat-card">
-                <div class="stat-icon" style="background:rgba(16,185,129,0.1);color:#10B981;">
-                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"></polyline></svg>
+                <div id="stat-icon-status" class="stat-icon" style="background:#f1f5f9;color:#64748b;">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="8" x2="12" y2="12"></line><line x1="12" y1="16" x2="12.01" y2="16"></line></svg>
                 </div>
                 <div class="stat-details">
                     <h4>MCP Status</h4>
-                    <h2 style="font-size:26px;color:#10B981;">Online</h2>
+                    <h2 id="mcp-stat-status" style="font-size:24px;color:#64748b;">Disconnected</h2>
                 </div>
             </div>
 
             <div class="stat-card">
-                <div class="stat-icon">
+                <div class="stat-icon" style="background:var(--cyan-soft);color:var(--cyan-dark);">
                     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"></circle><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path></svg>
                 </div>
                 <div class="stat-details">
                     <h4>Active Tools</h4>
-                    <h2 id="mcp-tool-count" style="font-size:26px;">10 Active</h2>
+                    <h2 id="mcp-stat-tools" style="font-size:24px;">0 Active</h2>
                 </div>
             </div>
 
             <div class="stat-card">
-                <div class="stat-icon" style="background:#e0f2fe;color:#0284c7;">
+                <div id="stat-icon-search" class="stat-icon" style="background:#f1f5f9;color:#64748b;">
                     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="20" x2="18" y2="10"></line><line x1="12" y1="20" x2="12" y2="4"></line><line x1="6" y1="20" x2="6" y2="14"></line></svg>
                 </div>
                 <div class="stat-details">
                     <h4>Search Console</h4>
-                    <h2 style="font-size:26px;color:#0284c7;">Synced</h2>
+                    <h2 id="mcp-stat-search" style="font-size:24px;color:#64748b;">Standby</h2>
                 </div>
             </div>
 
             <div class="stat-card">
-                <div class="stat-icon" style="background:#fef3c7;color:#d97706;">
+                <div id="stat-icon-git" class="stat-icon" style="background:#f1f5f9;color:#64748b;">
                     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="16 16 12 12 8 16"></polyline><line x1="12" y1="12" x2="12" y2="21"></line><path d="M20.39 18.39A5 5 0 0 0 18 9h-1.26A8 8 0 1 0 3 16.3"></path></svg>
                 </div>
                 <div class="stat-details">
                     <h4>GitHub CD</h4>
-                    <h2 style="font-size:26px;color:#d97706;">main</h2>
+                    <h2 id="mcp-stat-git" style="font-size:24px;color:#64748b;">Standby</h2>
                 </div>
             </div>
         </div>
 
-        <!-- Connection Instructions Panel -->
+        <!-- MCP Connection & Authentication Command Panel -->
+        <div id="connection-panel" class="auth-panel disconnected">
+            <div style="display:flex;justify-content:space-between;align-items:flex-start;flex-wrap:wrap;gap:16px;">
+                <div style="flex:1;min-width:280px;">
+                    <div style="display:flex;align-items:center;gap:10px;margin-bottom:8px;">
+                        <span id="panel-pulse" class="pulse-dot offline"></span>
+                        <h2 id="panel-status-heading" class="panel-title" style="margin:0;font-size:20px;">MCP Server Disconnected</h2>
+                        <span id="panel-status-pill" class="step-badge disabled">Not Connected</span>
+                    </div>
+                    <p id="panel-status-desc" style="color:var(--muted);font-size:14px;line-height:1.5;margin:0;">
+                        To connect, first configure your MCP server definition in your <code>config.json</code> file, then authenticate below.
+                    </p>
+                </div>
+                <div id="panel-action-container" style="display:flex;gap:10px;flex-shrink:0;">
+                    <button id="btn-check-config" onclick="checkConfig(true)" class="btn btn-outline" style="font-size:13px;padding:8px 14px;">
+                        Check Config File
+                    </button>
+                </div>
+            </div>
+
+            <!-- Two-Step Connection Flow -->
+            <div class="step-grid">
+                <!-- Step 1 -->
+                <div class="step-card">
+                    <div>
+                        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;">
+                            <span id="badge-step-1" class="step-badge pending">Step 1 &middot; Config</span>
+                            <span id="badge-step-1-file" style="font-size:11px;font-family:monospace;color:var(--muted);">mcp_config.json</span>
+                        </div>
+                        <h3 style="font-size:16px;font-weight:700;margin-bottom:6px;font-family:'Space Grotesk',sans-serif;">Configure Server Definition</h3>
+                        <p id="step-1-text" style="font-size:13px;color:var(--muted);line-height:1.5;margin-bottom:12px;">
+                            No server definition detected in your config file. Paste your server JSON into <code>config.json</code>.
+                        </p>
+                    </div>
+                    <div style="display:flex;gap:8px;flex-wrap:wrap;">
+                        <a href="#instructions" class="btn btn-outline" style="font-size:12px;padding:6px 12px;">View Config Templates ↓</a>
+                        <button onclick="copySnippet('code-antigravity', this)" class="btn btn-outline" style="font-size:12px;padding:6px 12px;">Copy Example Config</button>
+                    </div>
+                </div>
+
+                <!-- Step 2 -->
+                <div class="step-card">
+                    <div>
+                        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;">
+                            <span id="badge-step-2" class="step-badge disabled">Step 2 &middot; Authentication</span>
+                            <span id="badge-step-2-status" style="font-size:11px;font-weight:600;color:var(--muted);">Awaiting Step 1</span>
+                        </div>
+                        <h3 style="font-size:16px;font-weight:700;margin-bottom:6px;font-family:'Space Grotesk',sans-serif;">Authenticate &amp; Connect</h3>
+                        <p id="step-2-text" style="font-size:13px;color:var(--muted);line-height:1.5;margin-bottom:12px;">
+                            Verify credentials and establish active connection to Clarified AI Editorial engine.
+                        </p>
+                    </div>
+                    <div id="auth-controls" style="display:flex;gap:10px;align-items:center;">
+                        <button id="btn-authenticate" onclick="authenticateMcp()" class="btn btn-primary" style="font-size:13px;padding:8px 18px;" disabled>
+                            Authenticate &amp; Connect
+                        </button>
+                        <button id="btn-disconnect" onclick="disconnectMcp()" class="btn btn-outline" style="font-size:13px;padding:8px 14px;color:var(--danger);border-color:var(--danger);display:none;">
+                            Disconnect
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Connection Instructions Panel (Flush Code Terminals) -->
         <div id="instructions" class="panel">
             <div class="panel-header" style="margin-bottom:16px;">
                 <div>
-                    <h2 class="panel-title">Connect AI Assistants to this MCP Server</h2>
+                    <h2 class="panel-title">Add MCP Server to Config JSON</h2>
                     <p style="color:var(--muted);font-size:14px;margin-top:4px;">
-                        Connect any AI client to automate writing, quality gates, search analytics, and deployments directly from your prompts.
+                        Copy the exact JSON configuration block below into your MCP config file. Once saved, click <b>Check Config File</b> above to authenticate.
                     </p>
                 </div>
             </div>
@@ -281,11 +491,31 @@
             <!-- Tab: Antigravity -->
             <div id="tab-antigravity" class="tab-content">
                 <p style="font-size:14px;color:var(--muted);line-height:1.6;">
-                    This server is pre-registered in your Antigravity workspace under <b><code>novamira-clarified-co-za</code></b>. You can interact with it directly in your assistant prompt:
+                    Add this to your user config at <code>c:\Users\adolp\.gemini\config\mcp_config.json</code> or workspace <code>.agents/mcp_config.json</code>:
                 </p>
-                <div class="code-container">
-                    <button class="btn-copy" onclick="copySnippet('prompt-antigravity', this)">Copy Prompt</button>
-                    <code id="prompt-antigravity">Please validate the article draft using validate_article_quality and check Google Search Console metrics for top queries over the last 28 days.</code>
+                <div class="code-terminal">
+                    <div class="code-terminal-header">
+                        <div class="code-terminal-dots">
+                            <span class="code-dot red"></span>
+                            <span class="code-dot yellow"></span>
+                            <span class="code-dot green"></span>
+                            <span class="code-terminal-title">mcp_config.json</span>
+                        </div>
+                        <button class="btn-copy-flush" onclick="copySnippet('code-antigravity', this)">Copy JSON</button>
+                    </div>
+                    <pre class="code-terminal-body" id="code-antigravity">{
+  "mcpServers": {
+    "clarified": {
+      "command": "node",
+      "args": ["d:/VS CODE PROJECTS/Clarified.co.za/mcp/server.js"],
+      "env": {
+        "GITHUB_OWNER": "adolph-mulangatshivalo",
+        "GITHUB_REPO": "Clarified.co.za",
+        "GITHUB_BRANCH": "main"
+      }
+    }
+  }
+}</pre>
                 </div>
             </div>
 
@@ -294,9 +524,17 @@
                 <p style="font-size:14px;color:var(--muted);line-height:1.6;">
                     Add this to your <code>claude_desktop_config.json</code> file:
                 </p>
-                <div class="code-container">
-                    <button class="btn-copy" onclick="copySnippet('code-claude', this)">Copy JSON</button>
-                    <pre id="code-claude" style="margin:0;">{
+                <div class="code-terminal">
+                    <div class="code-terminal-header">
+                        <div class="code-terminal-dots">
+                            <span class="code-dot red"></span>
+                            <span class="code-dot yellow"></span>
+                            <span class="code-dot green"></span>
+                            <span class="code-terminal-title">claude_desktop_config.json</span>
+                        </div>
+                        <button class="btn-copy-flush" onclick="copySnippet('code-claude', this)">Copy JSON</button>
+                    </div>
+                    <pre class="code-terminal-body" id="code-claude">{
   "mcpServers": {
     "clarified": {
       "command": "node",
@@ -317,9 +555,17 @@
                 <p style="font-size:14px;color:var(--muted);line-height:1.6;">
                     Add to your workspace <code>.cursor/mcp.json</code> or Cursor Settings &gt; Features &gt; MCP:
                 </p>
-                <div class="code-container">
-                    <button class="btn-copy" onclick="copySnippet('code-cursor', this)">Copy JSON</button>
-                    <pre id="code-cursor" style="margin:0;">{
+                <div class="code-terminal">
+                    <div class="code-terminal-header">
+                        <div class="code-terminal-dots">
+                            <span class="code-dot red"></span>
+                            <span class="code-dot yellow"></span>
+                            <span class="code-dot green"></span>
+                            <span class="code-terminal-title">.cursor/mcp.json</span>
+                        </div>
+                        <button class="btn-copy-flush" onclick="copySnippet('code-cursor', this)">Copy JSON</button>
+                    </div>
+                    <pre class="code-terminal-body" id="code-cursor">{
   "mcpServers": {
     "clarified": {
       "command": "node",
@@ -335,12 +581,22 @@
                 <p style="font-size:14px;color:var(--muted);line-height:1.6;">
                     Add to your VS Code Cline or Roo Code MCP configuration:
                 </p>
-                <div class="code-container">
-                    <button class="btn-copy" onclick="copySnippet('code-cline', this)">Copy Config</button>
-                    <pre id="code-cline" style="margin:0;">{
-  "clarified-editorial": {
-    "command": "node",
-    "args": ["d:/VS CODE PROJECTS/Clarified.co.za/mcp/server.js"]
+                <div class="code-terminal">
+                    <div class="code-terminal-header">
+                        <div class="code-terminal-dots">
+                            <span class="code-dot red"></span>
+                            <span class="code-dot yellow"></span>
+                            <span class="code-dot green"></span>
+                            <span class="code-terminal-title">cline_mcp_settings.json</span>
+                        </div>
+                        <button class="btn-copy-flush" onclick="copySnippet('code-cline', this)">Copy Config</button>
+                    </div>
+                    <pre class="code-terminal-body" id="code-cline">{
+  "mcpServers": {
+    "clarified-editorial": {
+      "command": "node",
+      "args": ["d:/VS CODE PROJECTS/Clarified.co.za/mcp/server.js"]
+    }
   }
 }</pre>
                 </div>
@@ -353,7 +609,7 @@
                 <div>
                     <h2 class="panel-title">Everything We Can Do (10 Capabilities)</h2>
                     <p style="color:var(--muted);font-size:14px;margin-top:4px;">
-                        Interactive catalog of all tools exposed by the Clarified AI Editorial MCP Server.
+                        Interactive catalog of editorial tools exposed by the Clarified AI Editorial MCP Server.
                     </p>
                 </div>
                 <span class="tool-badge" style="font-size:12px;padding:6px 12px;">Protocol: MCP v1.0</span>
@@ -364,7 +620,7 @@
                 <!-- 1. validate_article_quality -->
                 <div class="mcp-card">
                     <div>
-                        <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:12px;">
+                        <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:12px;gap:10px;">
                             <h3 style="font-size:17px;font-weight:700;font-family:'Space Grotesk',sans-serif;">validate_article_quality</h3>
                             <span class="tool-badge">Editorial Gate</span>
                         </div>
@@ -384,7 +640,7 @@
                 <!-- 2. detect_duplicates -->
                 <div class="mcp-card">
                     <div>
-                        <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:12px;">
+                        <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:12px;gap:10px;">
                             <h3 style="font-size:17px;font-weight:700;font-family:'Space Grotesk',sans-serif;">detect_duplicates</h3>
                             <span class="tool-badge" style="background:#fef3c7;color:#b45309;">Content Integrity</span>
                         </div>
@@ -404,9 +660,9 @@
                 <!-- 3. suggest_internal_links -->
                 <div class="mcp-card">
                     <div>
-                        <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:12px;">
+                        <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:12px;gap:10px;">
                             <h3 style="font-size:17px;font-weight:700;font-family:'Space Grotesk',sans-serif;">suggest_internal_links</h3>
-                            <span class="tool-badge" style="background:#ede9fe;color:#6d28d9;">SEO & Linking</span>
+                            <span class="tool-badge" style="background:#ede9fe;color:#6d28d9;">SEO &amp; Linking</span>
                         </div>
                         <p style="color:var(--muted);font-size:14px;line-height:1.5;margin-bottom:14px;">
                             Cross-references draft text against all published Clarified articles and generates natural HTML internal anchor links with recommended anchor phrases.
@@ -424,15 +680,15 @@
                 <!-- 4. publish_article -->
                 <div class="mcp-card">
                     <div>
-                        <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:12px;">
+                        <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:12px;gap:10px;">
                             <h3 style="font-size:17px;font-weight:700;font-family:'Space Grotesk',sans-serif;">publish_article</h3>
                             <span class="tool-badge" style="background:rgba(16,185,129,0.12);color:#059669;">Publishing</span>
                         </div>
                         <p style="color:var(--muted);font-size:14px;line-height:1.5;margin-bottom:14px;">
-                            The complete publishing pipeline. Runs quality gates, updates database, regenerates sitemap.xml & RSS feed, and commits to GitHub for live Vercel deployment.
+                            The complete publishing pipeline. Runs quality gates, updates database, regenerates sitemap.xml &amp; RSS feed, and commits to GitHub for live Vercel deployment.
                         </p>
                         <div class="feature-item"><svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"></polyline></svg> Auto-fallback to Draft if standards fail</div>
-                        <div class="feature-item"><svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"></polyline></svg> Auto-updates sitemap.xml & rss.xml</div>
+                        <div class="feature-item"><svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"></polyline></svg> Auto-updates sitemap.xml &amp; rss.xml</div>
                         <div class="feature-item"><svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"></polyline></svg> Live Git push to GitHub repository</div>
                     </div>
                     <div class="prompt-box">
@@ -444,118 +700,120 @@
                 <!-- 5. edit_article -->
                 <div class="mcp-card">
                     <div>
-                        <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:12px;">
+                        <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:12px;gap:10px;">
                             <h3 style="font-size:17px;font-weight:700;font-family:'Space Grotesk',sans-serif;">edit_article</h3>
                             <span class="tool-badge">Article Mgmt</span>
                         </div>
                         <p style="color:var(--muted);font-size:14px;line-height:1.5;margin-bottom:14px;">
-                            Updates article content, category, focus keyword, meta description, or status. Re-validates against quality gates and re-deploys updated HTML to GitHub automatically.
+                            Modifies existing article content, categories, tags, or status, re-renders the static HTML view, and commits changes to production.
                         </p>
-                        <div class="feature-item"><svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"></polyline></svg> Search by ID or Slug</div>
-                        <div class="feature-item"><svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"></polyline></svg> Selective partial field update</div>
-                        <div class="feature-item"><svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"></polyline></svg> Re-generates article HTML on disk</div>
+                        <div class="feature-item"><svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"></polyline></svg> Selective parameter updates</div>
+                        <div class="feature-item"><svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"></polyline></svg> Automatic timestamp &amp; date tracking</div>
+                        <div class="feature-item"><svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"></polyline></svg> Preserves slug &amp; SEO rankings</div>
                     </div>
                     <div class="prompt-box">
-                        <span>"Update the conclusion of article #14 and save."</span>
-                        <button onclick="copyPrompt('Update the conclusion of article #14 and save.')" class="btn btn-outline" style="padding:4px 10px;font-size:12px;">Copy</button>
+                        <span>"Update article #3 to published status."</span>
+                        <button onclick="copyPrompt('Update article #3 to published status.')" class="btn btn-outline" style="padding:4px 10px;font-size:12px;">Copy</button>
                     </div>
                 </div>
 
-                <!-- 6. get_search_analytics -->
+                <!-- 6. list_articles -->
                 <div class="mcp-card">
                     <div>
-                        <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:12px;">
-                            <h3 style="font-size:17px;font-weight:700;font-family:'Space Grotesk',sans-serif;">get_search_analytics</h3>
-                            <span class="tool-badge" style="background:#fce7f3;color:#be185d;">Search Console</span>
-                        </div>
-                        <p style="color:var(--muted);font-size:14px;line-height:1.5;margin-bottom:14px;">
-                            Direct integration with Google Search Console API. Fetches real organic search performance: impressions, clicks, CTR, position, and top queries.
-                        </p>
-                        <div class="feature-item"><svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"></polyline></svg> Site: https://clarified.co.za/</div>
-                        <div class="feature-item"><svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"></polyline></svg> Query, Page, Country, Device breakdown</div>
-                        <div class="feature-item"><svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"></polyline></svg> Date ranges: 7, 28, 90 days</div>
-                    </div>
-                    <div class="prompt-box">
-                        <span>"Show me top search queries from Google Search Console."</span>
-                        <button onclick="copyPrompt('Show me top search queries from Google Search Console for the past 28 days.')" class="btn btn-outline" style="padding:4px 10px;font-size:12px;">Copy</button>
-                    </div>
-                </div>
-
-                <!-- 7. get_content_opportunities -->
-                <div class="mcp-card">
-                    <div>
-                        <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:12px;">
-                            <h3 style="font-size:17px;font-weight:700;font-family:'Space Grotesk',sans-serif;">get_content_opportunities</h3>
-                            <span class="tool-badge" style="background:#ffedd5;color:#c2410c;">SEO Opportunities</span>
-                        </div>
-                        <p style="color:var(--muted);font-size:14px;line-height:1.5;margin-bottom:14px;">
-                            Discovers high-potential content topics from Google Search Console. Identifies striking distance queries (page 2, positions 8–20) and high-impression queries with low CTR.
-                        </p>
-                        <div class="feature-item"><svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"></polyline></svg> Page 2 striking distance keywords</div>
-                        <div class="feature-item"><svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"></polyline></svg> High impressions with low CTR</div>
-                        <div class="feature-item"><svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"></polyline></svg> Actionable editorial recommendations</div>
-                    </div>
-                    <div class="prompt-box">
-                        <span>"Find keyword opportunities where we can rank on page 1."</span>
-                        <button onclick="copyPrompt('Find keyword opportunities where Clarified can rank on page 1 of Google.')" class="btn btn-outline" style="padding:4px 10px;font-size:12px;">Copy</button>
-                    </div>
-                </div>
-
-                <!-- 8. list_articles -->
-                <div class="mcp-card">
-                    <div>
-                        <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:12px;">
+                        <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:12px;gap:10px;">
                             <h3 style="font-size:17px;font-weight:700;font-family:'Space Grotesk',sans-serif;">list_articles</h3>
-                            <span class="tool-badge">Content Query</span>
+                            <span class="tool-badge" style="background:#e0f2fe;color:#0369a1;">Search</span>
                         </div>
                         <p style="color:var(--muted);font-size:14px;line-height:1.5;margin-bottom:14px;">
-                            Full-text search, category filter, and status pagination across all articles in the repository. Fast and lightweight JSON response.
+                            Instant search, category filtering, and pagination over the Clarified editorial database for fast indexing and auditing.
                         </p>
-                        <div class="feature-item"><svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"></polyline></svg> Filter by category & status</div>
-                        <div class="feature-item"><svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"></polyline></svg> Full text query support</div>
-                        <div class="feature-item"><svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"></polyline></svg> Pagination limit and offset</div>
+                        <div class="feature-item"><svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"></polyline></svg> Filter by draft vs published</div>
+                        <div class="feature-item"><svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"></polyline></svg> Keyword search across titles &amp; content</div>
+                        <div class="feature-item"><svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"></polyline></svg> Category-specific retrieval</div>
                     </div>
                     <div class="prompt-box">
-                        <span>"List the 5 most recent articles in South Africa category."</span>
-                        <button onclick="copyPrompt('List the 5 most recent articles in South Africa category.')" class="btn btn-outline" style="padding:4px 10px;font-size:12px;">Copy</button>
+                        <span>"List all draft articles in Technology category."</span>
+                        <button onclick="copyPrompt('List all draft articles in Technology category.')" class="btn btn-outline" style="padding:4px 10px;font-size:12px;">Copy</button>
                     </div>
                 </div>
 
-                <!-- 9. get_article -->
+                <!-- 7. get_article -->
                 <div class="mcp-card">
                     <div>
-                        <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:12px;">
+                        <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:12px;gap:10px;">
                             <h3 style="font-size:17px;font-weight:700;font-family:'Space Grotesk',sans-serif;">get_article</h3>
-                            <span class="tool-badge">Content Query</span>
+                            <span class="tool-badge" style="background:#e0f2fe;color:#0369a1;">Search</span>
                         </div>
                         <p style="color:var(--muted);font-size:14px;line-height:1.5;margin-bottom:14px;">
-                            Retrieves complete article data, full HTML markup, meta tags, schema markup, and editorial metrics by ID or slug.
+                            Fetch full article contents by ID or slug including SEO title, meta descriptions, HTML body, and author info.
                         </p>
-                        <div class="feature-item"><svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"></polyline></svg> Full article HTML body</div>
-                        <div class="feature-item"><svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"></polyline></svg> SEO keywords & structured data</div>
+                        <div class="feature-item"><svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"></polyline></svg> Complete HTML body payload</div>
+                        <div class="feature-item"><svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"></polyline></svg> Focus keyword &amp; reading time inspection</div>
+                        <div class="feature-item"><svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"></polyline></svg> ID or slug based lookup</div>
                     </div>
                     <div class="prompt-box">
-                        <span>"Fetch full article content for slug 'example-slug'."</span>
-                        <button onclick="copyPrompt('Fetch full article content for slug example-slug.')" class="btn btn-outline" style="padding:4px 10px;font-size:12px;">Copy</button>
+                        <span>"Fetch the full article content for slug 'eskom-loadshedding'."</span>
+                        <button onclick="copyPrompt('Fetch the full article content for slug \'eskom-loadshedding\'.')" class="btn btn-outline" style="padding:4px 10px;font-size:12px;">Copy</button>
                     </div>
                 </div>
 
-                <!-- 10. delete_article -->
+                <!-- 8. delete_article -->
                 <div class="mcp-card">
                     <div>
-                        <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:12px;">
+                        <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:12px;gap:10px;">
                             <h3 style="font-size:17px;font-weight:700;font-family:'Space Grotesk',sans-serif;">delete_article</h3>
-                            <span class="tool-badge" style="background:rgba(239,68,68,0.1);color:#dc2626;">Safety Guard</span>
+                            <span class="tool-badge" style="background:#fee2e2;color:#b91c1c;">Danger</span>
                         </div>
                         <p style="color:var(--muted);font-size:14px;line-height:1.5;margin-bottom:14px;">
-                            Safely removes an article from database, deletes generated HTML pages, and syncs changes directly with the GitHub repository.
+                            Safely removes an article from the database, deletes its generated HTML file, and updates sitemaps on GitHub.
                         </p>
-                        <div class="feature-item"><svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"></polyline></svg> Database cleanup</div>
-                        <div class="feature-item"><svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"></polyline></svg> GitHub repository sync</div>
+                        <div class="feature-item"><svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"></polyline></svg> Safe deletion from database</div>
+                        <div class="feature-item"><svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"></polyline></svg> HTML file unlinking</div>
+                        <div class="feature-item"><svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"></polyline></svg> Auto-sync with production</div>
                     </div>
                     <div class="prompt-box">
-                        <span>"Delete draft article with ID '12345'."</span>
-                        <button onclick="copyPrompt('Delete draft article with ID 12345.')" class="btn btn-outline" style="padding:4px 10px;font-size:12px;">Copy</button>
+                        <span>"Delete the draft article with ID '1728394012'."</span>
+                        <button onclick="copyPrompt('Delete the draft article with ID \'1728394012\'.')" class="btn btn-outline" style="padding:4px 10px;font-size:12px;">Copy</button>
+                    </div>
+                </div>
+
+                <!-- 9. get_search_analytics -->
+                <div class="mcp-card">
+                    <div>
+                        <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:12px;gap:10px;">
+                            <h3 style="font-size:17px;font-weight:700;font-family:'Space Grotesk',sans-serif;">get_search_analytics</h3>
+                            <span class="tool-badge" style="background:#dbeafe;color:#1d4ed8;">Search Console</span>
+                        </div>
+                        <p style="color:var(--muted);font-size:14px;line-height:1.5;margin-bottom:14px;">
+                            Queries Google Search Console API for clicks, impressions, CTR, position, and top user queries on Clarified.co.za.
+                        </p>
+                        <div class="feature-item"><svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"></polyline></svg> Live clicks &amp; impressions breakdown</div>
+                        <div class="feature-item"><svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"></polyline></svg> Average Google ranking position</div>
+                        <div class="feature-item"><svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"></polyline></svg> Top performing queries &amp; pages</div>
+                    </div>
+                    <div class="prompt-box">
+                        <span>"Show Google Search Console metrics for past 28 days."</span>
+                        <button onclick="copyPrompt('Show Google Search Console metrics for past 28 days.')" class="btn btn-outline" style="padding:4px 10px;font-size:12px;">Copy</button>
+                    </div>
+                </div>
+
+                <!-- 10. get_content_opportunities -->
+                <div class="mcp-card">
+                    <div>
+                        <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:12px;gap:10px;">
+                            <h3 style="font-size:17px;font-weight:700;font-family:'Space Grotesk',sans-serif;">get_content_opportunities</h3>
+                            <span class="tool-badge" style="background:#fdf4ff;color:#a21caf;">SEO Growth</span>
+                        </div>
+                        <p style="color:var(--muted);font-size:14px;line-height:1.5;margin-bottom:14px;">
+                            Identifies high-impression queries ranking on Google Page 2 (striking distance) and high-potential article topics.
+                        </p>
+                        <div class="feature-item"><svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"></polyline></svg> Page 2 striking-distance discovery</div>
+                        <div class="feature-item"><svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"></polyline></svg> Low CTR opportunity detection</div>
+                        <div class="feature-item"><svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"></polyline></svg> Ready-to-write article pitches</div>
+                    </div>
+                    <div class="prompt-box">
+                        <span>"Find page 2 striking-distance keywords to target next."</span>
+                        <button onclick="copyPrompt('Find page 2 striking-distance keywords to target next.')" class="btn btn-outline" style="padding:4px 10px;font-size:12px;">Copy</button>
                     </div>
                 </div>
 
@@ -566,28 +824,294 @@
 </main>
 
 <script>
-async function pingMcpStatus() {
-    const textEl = document.getElementById('ping-text');
-    textEl.textContent = 'Pinging…';
+let currentMcpData = null;
+
+async function fetchMcpStatus() {
     try {
-        const res = await fetch('/api/mcp-status');
+        const token = localStorage.getItem('clarified_mcp_auth') || '';
+        const headers = {};
+        if (token) {
+            headers['Authorization'] = 'Bearer ' + token;
+            headers['x-mcp-auth'] = token;
+        }
+
+        const res = await fetch('/api/mcp-status', { headers });
         const data = await res.json();
-        if (data.status === 'ready' || data.connected) {
-            textEl.textContent = 'Connected (10 Tools)';
-            alert('Clarified MCP Server Status: Operational\n\n' +
-                  '• Server: ' + data.serverName + ' (' + data.serverScript + ')\n' +
-                  '• Protocol: ' + data.protocol + '\n' +
-                  '• Available Tools: ' + data.toolCount + ' tools active\n' +
-                  '• Search Console: ' + (data.environment.searchConsoleConfigured ? 'Connected (' + data.environment.searchConsoleProperty + ')' : 'Not configured') + '\n' +
-                  '• GitHub CD Sync: ' + (data.environment.githubSyncEnabled ? 'Enabled (' + data.environment.githubRepo + ':' + data.environment.githubBranch + ')' : 'Local mode') + '\n' +
-                  '• Database: ' + data.environment.totalArticles + ' total articles (' + data.environment.publishedArticles + ' published, ' + data.environment.draftArticles + ' drafts)');
+        currentMcpData = data;
+        applyMcpState(data);
+        return data;
+    } catch(e) {
+        console.error('Failed to fetch MCP status:', e);
+        applyMcpState({ connected: false, configured: false, status: 'error', error: e.message });
+    }
+}
+
+function applyMcpState(data) {
+    const isConnected = Boolean(data && data.connected);
+    const isConfigured = Boolean(data && data.configured);
+
+    // 1. Topbar Button & Dot
+    const topbarPulse = document.getElementById('topbar-pulse');
+    const pingText = document.getElementById('ping-text');
+    if (isConnected) {
+        topbarPulse.className = 'pulse-dot online';
+        pingText.textContent = 'Connected (10 Tools)';
+    } else if (isConfigured) {
+        topbarPulse.className = 'pulse-dot amber';
+        pingText.textContent = 'Auth Required';
+    } else {
+        topbarPulse.className = 'pulse-dot offline';
+        pingText.textContent = 'Disconnected';
+    }
+
+    // 2. Sidebar Badge
+    const sidebarBadge = document.getElementById('sidebar-mcp-badge');
+    if (sidebarBadge) {
+        if (isConnected) {
+            sidebarBadge.textContent = (data.toolCount || 10) + ' Tools';
+            sidebarBadge.className = 'nav-badge connected';
         } else {
-            textEl.textContent = 'Offline';
-            alert('MCP Server returned an issue: ' + (data.error || 'Server not responding'));
+            sidebarBadge.textContent = 'Offline';
+            sidebarBadge.className = 'nav-badge disconnected';
+        }
+    }
+
+    // 3. Stat Cards
+    const statStatus = document.getElementById('mcp-stat-status');
+    const statTools = document.getElementById('mcp-stat-tools');
+    const statSearch = document.getElementById('mcp-stat-search');
+    const statGit = document.getElementById('mcp-stat-git');
+
+    const iconStatus = document.getElementById('stat-icon-status');
+    const iconSearch = document.getElementById('stat-icon-search');
+    const iconGit = document.getElementById('stat-icon-git');
+
+    if (isConnected) {
+        statStatus.textContent = 'Online';
+        statStatus.style.color = '#10B981';
+        if (iconStatus) {
+            iconStatus.style.background = 'rgba(16,185,129,0.1)';
+            iconStatus.style.color = '#10B981';
+        }
+
+        statTools.textContent = (data.toolCount || 10) + ' Active';
+
+        statSearch.textContent = 'Synced';
+        statSearch.style.color = '#0284c7';
+        if (iconSearch) {
+            iconSearch.style.background = '#e0f2fe';
+            iconSearch.style.color = '#0284c7';
+        }
+
+        statGit.textContent = (data.environment && data.environment.githubBranch) || 'main';
+        statGit.style.color = '#d97706';
+        if (iconGit) {
+            iconGit.style.background = '#fef3c7';
+            iconGit.style.color = '#d97706';
+        }
+    } else {
+        statStatus.textContent = isConfigured ? 'Auth Required' : 'Disconnected';
+        statStatus.style.color = isConfigured ? '#d97706' : '#64748b';
+        if (iconStatus) {
+            iconStatus.style.background = isConfigured ? 'rgba(245,158,11,0.1)' : '#f1f5f9';
+            iconStatus.style.color = isConfigured ? '#d97706' : '#64748b';
+        }
+
+        statTools.textContent = '0 Active';
+
+        statSearch.textContent = 'Standby';
+        statSearch.style.color = '#64748b';
+        if (iconSearch) {
+            iconSearch.style.background = '#f1f5f9';
+            iconSearch.style.color = '#64748b';
+        }
+
+        statGit.textContent = 'Standby';
+        statGit.style.color = '#64748b';
+        if (iconGit) {
+            iconGit.style.background = '#f1f5f9';
+            iconGit.style.color = '#64748b';
+        }
+    }
+
+    // 4. Connection Panel
+    const connPanel = document.getElementById('connection-panel');
+    const panelPulse = document.getElementById('panel-pulse');
+    const panelHeading = document.getElementById('panel-status-heading');
+    const panelPill = document.getElementById('panel-status-pill');
+    const panelDesc = document.getElementById('panel-status-desc');
+
+    const badgeStep1 = document.getElementById('badge-step-1');
+    const step1Text = document.getElementById('step-1-text');
+
+    const badgeStep2 = document.getElementById('badge-step-2');
+    const badgeStep2Status = document.getElementById('badge-step-2-status');
+    const step2Text = document.getElementById('step-2-text');
+    const btnAuth = document.getElementById('btn-authenticate');
+    const btnDisc = document.getElementById('btn-disconnect');
+
+    if (isConnected) {
+        connPanel.className = 'auth-panel connected';
+        panelPulse.className = 'pulse-dot online';
+        panelHeading.textContent = 'MCP Server Connected & Operational';
+        panelPill.textContent = '● Connected';
+        panelPill.className = 'step-badge ready';
+        panelDesc.innerHTML = `Active connection established with server <b><code>${data.serverName || 'clarified'}</code></b>. All 10 editorial and SEO tools are unlocked and ready for AI prompts.`;
+
+        badgeStep1.className = 'step-badge ready';
+        badgeStep1.textContent = 'Step 1 · Configured';
+        step1Text.innerHTML = `✓ Server definition detected: <b><code>${data.serverName || 'clarified'}</code></b> in config file.`;
+
+        badgeStep2.className = 'step-badge ready';
+        badgeStep2.textContent = 'Step 2 · Authenticated';
+        badgeStep2Status.textContent = 'Session Active';
+        badgeStep2Status.style.color = '#10B981';
+        step2Text.textContent = 'Authenticated. You can disconnect at any time to lock the MCP tools.';
+
+        btnAuth.style.display = 'none';
+        btnDisc.style.display = 'inline-flex';
+    } else if (isConfigured) {
+        connPanel.className = 'auth-panel disconnected';
+        panelPulse.className = 'pulse-dot amber';
+        panelHeading.textContent = 'Server Config Detected — Authentication Required';
+        panelPill.textContent = 'Ready to Auth';
+        panelPill.className = 'step-badge pending';
+        panelDesc.innerHTML = `Found server definition <b><code>${data.serverName || 'clarified'}</code></b> in mcp_config.json. Click <b>Authenticate &amp; Connect</b> below to connect the dashboard.`;
+
+        badgeStep1.className = 'step-badge ready';
+        badgeStep1.textContent = 'Step 1 · Configured';
+        step1Text.innerHTML = `✓ Server definition found: <b><code>${data.serverName || 'clarified'}</code></b>.`;
+
+        badgeStep2.className = 'step-badge pending';
+        badgeStep2.textContent = 'Step 2 · Ready';
+        badgeStep2Status.textContent = 'Ready to connect';
+        badgeStep2Status.style.color = '#d97706';
+        step2Text.textContent = 'Click Authenticate & Connect below to establish the connection.';
+
+        btnAuth.style.display = 'inline-flex';
+        btnAuth.disabled = false;
+        btnDisc.style.display = 'none';
+    } else {
+        connPanel.className = 'auth-panel disconnected';
+        panelPulse.className = 'pulse-dot offline';
+        panelHeading.textContent = 'MCP Server Disconnected';
+        panelPill.textContent = 'Not Connected';
+        panelPill.className = 'step-badge disabled';
+        panelDesc.textContent = 'Currently, the dashboard is not connected to any MCP server. To connect, add your server configuration to your mcp_config.json file and authenticate below.';
+
+        badgeStep1.className = 'step-badge pending';
+        badgeStep1.textContent = 'Step 1 · Required';
+        step1Text.innerHTML = 'No server found in mcp_config.json. Copy the template below and save it to your config file.';
+
+        badgeStep2.className = 'step-badge disabled';
+        badgeStep2.textContent = 'Step 2 · Locked';
+        badgeStep2Status.textContent = 'Awaiting Step 1';
+        badgeStep2Status.style.color = '#64748b';
+        step2Text.textContent = 'Requires a valid server definition in mcp_config.json before authentication.';
+
+        btnAuth.style.display = 'inline-flex';
+        btnAuth.disabled = true;
+        btnDisc.style.display = 'none';
+    }
+}
+
+async function checkConfig(isUserClick = false) {
+    const btn = document.getElementById('btn-check-config');
+    const originalText = btn.textContent;
+    btn.textContent = 'Checking…';
+    btn.disabled = true;
+
+    try {
+        const data = await fetchMcpStatus();
+        btn.textContent = 'Updated!';
+        setTimeout(() => {
+            btn.textContent = originalText;
+            btn.disabled = false;
+        }, 1500);
+
+        if (isUserClick) {
+            if (data.connected) {
+                alert('MCP Status: Connected\n\nActive server: ' + data.serverName);
+            } else if (data.configured) {
+                alert('MCP Config Detected!\n\nFound server: ' + data.serverName + '\nStatus: Ready to authenticate. Click "Authenticate & Connect" to connect.');
+            } else {
+                alert('MCP Config Check:\n\n' + data.message + '\n\nPlease add a server to your config file to proceed.');
+            }
         }
     } catch(e) {
-        textEl.textContent = 'Error';
-        alert('Could not ping MCP API: ' + e.message);
+        btn.textContent = originalText;
+        btn.disabled = false;
+        alert('Could not check config: ' + e.message);
+    }
+}
+
+async function authenticateMcp() {
+    const btn = document.getElementById('btn-authenticate');
+    btn.textContent = 'Authenticating…';
+    btn.disabled = true;
+
+    try {
+        const res = await fetch('/api/mcp-auth', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ action: 'authenticate' })
+        });
+        const data = await res.json();
+
+        if (data.success && data.connected) {
+            if (data.token) {
+                localStorage.setItem('clarified_mcp_auth', data.token);
+            }
+            await fetchMcpStatus();
+            alert('✓ MCP Connected Successfully!\n\nConnected to: ' + data.serverName + '\n10 Editorial & SEO tools are now operational.');
+        } else {
+            alert('Authentication Failed:\n\n' + (data.error || 'Could not authenticate. Check config.json.'));
+            btn.textContent = 'Authenticate & Connect';
+            btn.disabled = false;
+        }
+    } catch(e) {
+        btn.textContent = 'Authenticate & Connect';
+        btn.disabled = false;
+        alert('Authentication error: ' + e.message);
+    }
+}
+
+async function disconnectMcp() {
+    if (!confirm('Are you sure you want to disconnect the MCP server?')) return;
+    try {
+        const token = localStorage.getItem('clarified_mcp_auth') || '';
+        await fetch('/api/mcp-auth', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': 'Bearer ' + token
+            },
+            body: JSON.stringify({ action: 'disconnect' })
+        });
+    } catch(e) {}
+
+    localStorage.removeItem('clarified_mcp_auth');
+    await fetchMcpStatus();
+    alert('MCP Server has been disconnected.');
+}
+
+async function pingMcpStatus() {
+    const data = await fetchMcpStatus();
+    if (data.connected) {
+        alert('Clarified MCP Server Status: Operational\n\n' +
+              '• Server: ' + data.serverName + ' (' + (data.serverScript || 'active') + ')\n' +
+              '• Protocol: ' + data.protocol + '\n' +
+              '• Available Tools: ' + (data.toolCount || 10) + ' tools active\n' +
+              '• Status: Connected & Authenticated');
+    } else if (data.configured) {
+        alert('Clarified MCP Server Status: Not Connected\n\n' +
+              '• Detected in Config: ' + data.serverName + '\n' +
+              '• Status: Authentication Required\n\n' +
+              'Click "Authenticate & Connect" on the dashboard to connect.');
+    } else {
+        alert('Clarified MCP Server Status: Disconnected\n\n' +
+              '• Status: No servers in config.json\n\n' +
+              'Please add an MCP server configuration to your config.json file to connect.');
     }
 }
 
@@ -600,7 +1124,8 @@ function switchTab(tabId, btn) {
 }
 
 function copySnippet(elementId, btn) {
-    const text = document.getElementById(elementId).innerText;
+    const el = document.getElementById(elementId);
+    const text = el.innerText || el.textContent;
     navigator.clipboard.writeText(text).then(() => {
         const original = btn.innerText;
         btn.innerText = 'Copied!';
@@ -613,6 +1138,9 @@ function copyPrompt(text) {
         alert('Prompt copied to clipboard:\n\n"' + text + '"');
     });
 }
+
+// Initial state load
+fetchMcpStatus();
 </script>
 
 </body>
