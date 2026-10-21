@@ -408,24 +408,25 @@
 
         <!-- MCP Connection & Authentication Command Panel -->
         <!-- MCP Connection & Authentication Command Panel -->
+        <!-- MCP Connection & Authentication Command Panel -->
         <div id="connection-panel" class="auth-panel disconnected">
             <div style="display:flex;justify-content:space-between;align-items:flex-start;flex-wrap:wrap;gap:16px;">
                 <div style="flex:1;min-width:280px;">
                     <div style="display:flex;align-items:center;gap:10px;margin-bottom:8px;">
                         <span id="panel-pulse" class="pulse-dot offline"></span>
-                        <h2 id="panel-status-heading" class="panel-title" style="margin:0;font-size:20px;">MCP Server Disconnected</h2>
-                        <span id="panel-status-pill" class="step-badge disabled">Not Connected</span>
+                        <h2 id="panel-status-heading" class="panel-title" style="margin:0;font-size:20px;">Antigravity MCP Integration</h2>
+                        <span id="panel-status-pill" class="step-badge disabled">Standby</span>
                     </div>
                     <p id="panel-status-desc" style="color:var(--muted);font-size:14px;line-height:1.5;margin:0;">
-                        Ready for any AI assistant to connect via Stdio (Claude Desktop, Cursor, Antigravity, Cline) or HTTP SSE stream.
+                        Server is configured for Antigravity. Click Connect Antigravity to activate your live web session.
                     </p>
                 </div>
                 <div id="panel-action-container" style="display:flex;gap:10px;flex-shrink:0;align-items:center;flex-wrap:wrap;">
-                    <button id="btn-force-disconnect" onclick="disconnectMcp()" class="btn btn-outline" style="font-size:13px;padding:8px 14px;color:#ef4444;border-color:#ef4444;display:none;">
-                        Force Disconnect &amp; Kill
+                    <button id="btn-connect-antigravity" onclick="connectAntigravity()" class="btn btn-primary" style="font-size:13px;padding:8px 16px;background:#0d9488;border-color:#0d9488;color:#fff;">
+                        ⚡ Connect Antigravity
                     </button>
-                    <button id="btn-copy-sse" onclick="copySseUrl()" class="btn btn-outline" style="font-size:13px;padding:8px 14px;">
-                        Copy SSE URL
+                    <button id="btn-force-disconnect" onclick="disconnectMcp()" class="btn btn-outline" style="font-size:13px;padding:8px 14px;color:#ef4444;border-color:#ef4444;display:none;">
+                        Disconnect
                     </button>
                     <button id="btn-check-config" onclick="checkConfig(true)" class="btn btn-outline" style="font-size:13px;padding:8px 14px;">
                         Refresh Status
@@ -439,17 +440,17 @@
                 <div class="step-card">
                     <div>
                         <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;">
-                            <span id="badge-step-1" class="step-badge pending">Step 1 &middot; Server Config</span>
-                            <span id="badge-step-1-file" style="font-size:11px;font-family:monospace;color:var(--muted);">mcp_config.json</span>
+                            <span id="badge-step-1" class="step-badge ready">Step 1 &middot; Antigravity Config</span>
+                            <span id="badge-step-1-file" style="font-size:11px;font-family:monospace;color:var(--muted);">settings.json</span>
                         </div>
-                        <h3 style="font-size:16px;font-weight:700;margin-bottom:6px;font-family:'Space Grotesk',sans-serif;">Server Definition</h3>
+                        <h3 style="font-size:16px;font-weight:700;margin-bottom:6px;font-family:'Space Grotesk',sans-serif;">Antigravity Registered</h3>
                         <p id="step-1-text" style="font-size:13px;color:var(--muted);line-height:1.5;margin-bottom:12px;">
-                            Checking local configuration file...
+                            Configured in Antigravity 2.0 settings.json &amp; workspace mcp_config.json.
                         </p>
                     </div>
                     <div style="display:flex;gap:8px;flex-wrap:wrap;">
-                        <a href="#instructions" class="btn btn-outline" style="font-size:12px;padding:6px 12px;">View Config Templates ↓</a>
-                        <button onclick="copySnippet('code-antigravity', this)" class="btn btn-outline" style="font-size:12px;padding:6px 12px;">Copy Example Config</button>
+                        <a href="#instructions" class="btn btn-outline" style="font-size:12px;padding:6px 12px;">View Antigravity Config ↓</a>
+                        <button onclick="copySnippet('code-antigravity-settings', this)" class="btn btn-outline" style="font-size:12px;padding:6px 12px;">Copy Settings JSON</button>
                     </div>
                 </div>
 
@@ -457,12 +458,12 @@
                 <div class="step-card">
                     <div>
                         <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;">
-                            <span id="badge-step-2" class="step-badge disabled">Step 2 &middot; AI Pairing</span>
-                            <span id="badge-step-2-status" style="font-size:11px;font-weight:600;color:var(--muted);">Awaiting Connection</span>
+                            <span id="badge-step-2" class="step-badge pending">Step 2 &middot; AI Pairing</span>
+                            <span id="badge-step-2-status" style="font-size:11px;font-weight:600;color:var(--muted);">Ready to Connect</span>
                         </div>
-                        <h3 style="font-size:16px;font-weight:700;margin-bottom:6px;font-family:'Space Grotesk',sans-serif;">Universal AI Integration</h3>
+                        <h3 style="font-size:16px;font-weight:700;margin-bottom:6px;font-family:'Space Grotesk',sans-serif;">Antigravity Live Session</h3>
                         <p id="step-2-text" style="font-size:13px;color:var(--muted);line-height:1.5;margin-bottom:12px;">
-                            Connect any AI assistant via local Stdio process or HTTP SSE stream.
+                            Click "Connect Antigravity" above or interact with Antigravity to activate.
                         </p>
                     </div>
                     <div id="auth-controls" style="display:flex;gap:10px;align-items:center;flex-wrap:wrap;">
@@ -477,43 +478,36 @@
             </div>
         </div>
 
-        <!-- Connection Instructions Panel (Flush Code Terminals) -->
+        <!-- Connection Instructions Panel (Antigravity Only) -->
         <div id="instructions" class="panel">
             <div class="panel-header" style="margin-bottom:16px;">
                 <div>
-                    <h2 class="panel-title">Universal AI Connection Hub (Any AI with MCP)</h2>
+                    <h2 class="panel-title">Antigravity AI Configuration</h2>
                     <p style="color:var(--muted);font-size:14px;margin-top:4px;">
-                        Select your preferred AI editor or client below to copy the verified, ready-to-run configuration block.
+                        Pre-configured MCP server definition for Antigravity 2.0 (Desktop) and workspace agents.
                     </p>
                 </div>
+                <span class="tool-badge" style="font-size:12px;padding:6px 12px;background:rgba(16,185,129,0.1);color:#10b981;">✓ Antigravity Verified</span>
             </div>
 
-            <div class="tab-nav" style="flex-wrap:wrap;">
-                <button class="tab-link active" onclick="switchTab('antigravity', this)">Antigravity / Gemini</button>
-                <button class="tab-link" onclick="switchTab('claude', this)">Claude Desktop</button>
-                <button class="tab-link" onclick="switchTab('cursor', this)">Cursor IDE</button>
-                <button class="tab-link" onclick="switchTab('cline', this)">VS Code (Cline / Roo / Continue)</button>
-                <button class="tab-link" onclick="switchTab('windsurf', this)">Windsurf</button>
-                <button class="tab-link" onclick="switchTab('zed', this)">Zed Editor</button>
-                <button class="tab-link" onclick="switchTab('sse', this)">Web AI / SSE (LibreChat / Open-WebUI)</button>
-            </div>
-
-            <!-- Tab: Antigravity -->
-            <div id="tab-antigravity" class="tab-content">
-                <p style="font-size:14px;color:var(--muted);line-height:1.6;">
-                    Add this to your user config at <code>c:\Users\adolp\.gemini\config\mcp_config.json</code> or workspace <code>.agents/mcp_config.json</code>:
-                </p>
-                <div class="code-terminal">
-                    <div class="code-terminal-header">
-                        <div class="code-terminal-dots">
-                            <span class="code-dot red"></span>
-                            <span class="code-dot yellow"></span>
-                            <span class="code-dot green"></span>
-                            <span class="code-terminal-title">mcp_config.json</span>
-                        </div>
-                        <button class="btn-copy-flush" onclick="copySnippet('code-antigravity', this)">Copy JSON</button>
+            <div style="display:grid;grid-template-columns:repeat(auto-fit, minmax(360px, 1fr));gap:20px;">
+                <!-- Antigravity 2.0 Desktop -->
+                <div>
+                    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;">
+                        <label style="font-size:13px;font-weight:700;">Antigravity 2.0 Desktop App</label>
+                        <span style="font-size:11px;color:var(--muted);font-family:monospace;">~/.gemini/settings.json</span>
                     </div>
-                    <pre class="code-terminal-body" id="code-antigravity">{
+                    <div class="code-terminal" style="margin-top:0;">
+                        <div class="code-terminal-header">
+                            <div class="code-terminal-dots">
+                                <span class="code-dot red"></span>
+                                <span class="code-dot yellow"></span>
+                                <span class="code-dot green"></span>
+                                <span class="code-terminal-title">settings.json</span>
+                            </div>
+                            <button class="btn-copy-flush" onclick="copySnippet('code-antigravity-settings', this)">Copy JSON</button>
+                        </div>
+                        <pre class="code-terminal-body" id="code-antigravity-settings">{
   "mcpServers": {
     "clarified": {
       "command": "node",
@@ -526,194 +520,39 @@
     }
   }
 }</pre>
-                </div>
-            </div>
-
-            <!-- Tab: Claude Desktop -->
-            <div id="tab-claude" class="tab-content" style="display:none;">
-                <p style="font-size:14px;color:var(--muted);line-height:1.6;">
-                    Add this to your <code>%APPDATA%\Claude\claude_desktop_config.json</code> (Windows) or <code>~/Library/Application Support/Claude/claude_desktop_config.json</code> (Mac):
-                </p>
-                <div class="code-terminal">
-                    <div class="code-terminal-header">
-                        <div class="code-terminal-dots">
-                            <span class="code-dot red"></span>
-                            <span class="code-dot yellow"></span>
-                            <span class="code-dot green"></span>
-                            <span class="code-terminal-title">claude_desktop_config.json</span>
-                        </div>
-                        <button class="btn-copy-flush" onclick="copySnippet('code-claude', this)">Copy JSON</button>
                     </div>
-                    <pre class="code-terminal-body" id="code-claude">{
+                </div>
+
+                <!-- Workspace / Config -->
+                <div>
+                    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;">
+                        <label style="font-size:13px;font-weight:700;">Workspace / Global Config</label>
+                        <span style="font-size:11px;color:var(--muted);font-family:monospace;">.agents/mcp_config.json</span>
+                    </div>
+                    <div class="code-terminal" style="margin-top:0;">
+                        <div class="code-terminal-header">
+                            <div class="code-terminal-dots">
+                                <span class="code-dot red"></span>
+                                <span class="code-dot yellow"></span>
+                                <span class="code-dot green"></span>
+                                <span class="code-terminal-title">mcp_config.json</span>
+                            </div>
+                            <button class="btn-copy-flush" onclick="copySnippet('code-antigravity-config', this)">Copy JSON</button>
+                        </div>
+                        <pre class="code-terminal-body" id="code-antigravity-config">{
   "mcpServers": {
     "clarified": {
       "command": "node",
-      "args": ["d:/VS CODE PROJECTS/Clarified.co.za/mcp/server.js"]
-    }
-  }
-}</pre>
-                </div>
-            </div>
-
-            <!-- Tab: Cursor -->
-            <div id="tab-cursor" class="tab-content" style="display:none;">
-                <p style="font-size:14px;color:var(--muted);line-height:1.6;">
-                    Add to your workspace <code>.cursor/mcp.json</code> or Cursor Settings &gt; Features &gt; MCP (supports both Stdio &amp; SSE):
-                </p>
-                <div class="code-terminal">
-                    <div class="code-terminal-header">
-                        <div class="code-terminal-dots">
-                            <span class="code-dot red"></span>
-                            <span class="code-dot yellow"></span>
-                            <span class="code-dot green"></span>
-                            <span class="code-terminal-title">.cursor/mcp.json (Stdio)</span>
-                        </div>
-                        <button class="btn-copy-flush" onclick="copySnippet('code-cursor', this)">Copy Stdio JSON</button>
-                    </div>
-                    <pre class="code-terminal-body" id="code-cursor">{
-  "mcpServers": {
-    "clarified": {
-      "command": "node",
-      "args": ["${workspaceFolder}/mcp/server.js"]
-    }
-  }
-}</pre>
-                </div>
-                <div class="code-terminal" style="margin-top:14px;">
-                    <div class="code-terminal-header">
-                        <div class="code-terminal-dots">
-                            <span class="code-dot red"></span>
-                            <span class="code-dot yellow"></span>
-                            <span class="code-dot green"></span>
-                            <span class="code-terminal-title">.cursor/mcp.json (SSE Stream)</span>
-                        </div>
-                        <button class="btn-copy-flush" onclick="copySnippet('code-cursor-sse', this)">Copy SSE JSON</button>
-                    </div>
-                    <pre class="code-terminal-body" id="code-cursor-sse">{
-  "mcpServers": {
-    "clarified": {
-      "url": "http://localhost:3000/api/mcp/sse"
-    }
-  }
-}</pre>
-                </div>
-            </div>
-
-            <!-- Tab: Cline / Roo / Continue -->
-            <div id="tab-cline" class="tab-content" style="display:none;">
-                <p style="font-size:14px;color:var(--muted);line-height:1.6;">
-                    Add to your VS Code Cline / Roo Code (<code>cline_mcp_settings.json</code>) or Continue (<code>~/.continue/config.json</code>):
-                </p>
-                <div class="code-terminal">
-                    <div class="code-terminal-header">
-                        <div class="code-terminal-dots">
-                            <span class="code-dot red"></span>
-                            <span class="code-dot yellow"></span>
-                            <span class="code-dot green"></span>
-                            <span class="code-terminal-title">cline_mcp_settings.json</span>
-                        </div>
-                        <button class="btn-copy-flush" onclick="copySnippet('code-cline', this)">Copy Config</button>
-                    </div>
-                    <pre class="code-terminal-body" id="code-cline">{
-  "mcpServers": {
-    "clarified": {
-      "command": "node",
-      "args": ["d:/VS CODE PROJECTS/Clarified.co.za/mcp/server.js"]
-    }
-  }
-}</pre>
-                </div>
-            </div>
-
-            <!-- Tab: Windsurf -->
-            <div id="tab-windsurf" class="tab-content" style="display:none;">
-                <p style="font-size:14px;color:var(--muted);line-height:1.6;">
-                    Add to your Windsurf configuration at <code>~/.codeium/windsurf/mcp_config.json</code>:
-                </p>
-                <div class="code-terminal">
-                    <div class="code-terminal-header">
-                        <div class="code-terminal-dots">
-                            <span class="code-dot red"></span>
-                            <span class="code-dot yellow"></span>
-                            <span class="code-dot green"></span>
-                            <span class="code-terminal-title">~/.codeium/windsurf/mcp_config.json</span>
-                        </div>
-                        <button class="btn-copy-flush" onclick="copySnippet('code-windsurf', this)">Copy Config</button>
-                    </div>
-                    <pre class="code-terminal-body" id="code-windsurf">{
-  "mcpServers": {
-    "clarified": {
-      "command": "node",
-      "args": ["d:/VS CODE PROJECTS/Clarified.co.za/mcp/server.js"]
-    }
-  }
-}</pre>
-                </div>
-            </div>
-
-            <!-- Tab: Zed -->
-            <div id="tab-zed" class="tab-content" style="display:none;">
-                <p style="font-size:14px;color:var(--muted);line-height:1.6;">
-                    Add to your Zed configuration at <code>~/.config/zed/settings.json</code> under <code>context_servers</code>:
-                </p>
-                <div class="code-terminal">
-                    <div class="code-terminal-header">
-                        <div class="code-terminal-dots">
-                            <span class="code-dot red"></span>
-                            <span class="code-dot yellow"></span>
-                            <span class="code-dot green"></span>
-                            <span class="code-terminal-title">settings.json (Zed)</span>
-                        </div>
-                        <button class="btn-copy-flush" onclick="copySnippet('code-zed', this)">Copy Config</button>
-                    </div>
-                    <pre class="code-terminal-body" id="code-zed">{
-  "context_servers": {
-    "clarified": {
-      "command": {
-        "path": "node",
-        "args": ["d:/VS CODE PROJECTS/Clarified.co.za/mcp/server.js"]
+      "args": ["d:/VS CODE PROJECTS/Clarified.co.za/mcp/server.js"],
+      "env": {
+        "GITHUB_OWNER": "adolph-mulangatshivalo",
+        "GITHUB_REPO": "Clarified.co.za",
+        "GITHUB_BRANCH": "main"
       }
     }
   }
 }</pre>
-                </div>
-            </div>
-
-            <!-- Tab: SSE (Web AI) -->
-            <div id="tab-sse" class="tab-content" style="display:none;">
-                <p style="font-size:14px;color:var(--muted);line-height:1.6;">
-                    Connect any web-based or networked AI (LibreChat, Open-WebUI, Dify, LangChain, Flowise, or remote scripts) directly via HTTP Server-Sent Events without spawning local subprocesses:
-                </p>
-                <div class="code-terminal">
-                    <div class="code-terminal-header">
-                        <div class="code-terminal-dots">
-                            <span class="code-dot red"></span>
-                            <span class="code-dot yellow"></span>
-                            <span class="code-dot green"></span>
-                            <span class="code-terminal-title">SSE Endpoint URL</span>
-                        </div>
-                        <button class="btn-copy-flush" onclick="copySnippet('code-sse', this)">Copy URL</button>
                     </div>
-                    <pre class="code-terminal-body" id="code-sse">http://localhost:3000/api/mcp/sse</pre>
-                </div>
-                <div class="code-terminal" style="margin-top:14px;">
-                    <div class="code-terminal-header">
-                        <div class="code-terminal-dots">
-                            <span class="code-dot red"></span>
-                            <span class="code-dot yellow"></span>
-                            <span class="code-dot green"></span>
-                            <span class="code-terminal-title">LibreChat / MCP SSE Config JSON</span>
-                        </div>
-                        <button class="btn-copy-flush" onclick="copySnippet('code-sse-json', this)">Copy JSON</button>
-                    </div>
-                    <pre class="code-terminal-body" id="code-sse-json">{
-  "mcpServers": {
-    "clarified": {
-      "type": "sse",
-      "url": "http://localhost:3000/api/mcp/sse"
-    }
-  }
-}</pre>
                 </div>
             </div>
         </div>
@@ -1152,7 +991,13 @@ async function runToolTest() {
 
 async function fetchMcpStatus() {
     try {
-        const res = await fetch('/api/mcp-status');
+        const token = localStorage.getItem('clarified_mcp_auth') || '';
+        const headers = {};
+        if (token) {
+            headers['Authorization'] = 'Bearer ' + token;
+            headers['x-mcp-auth'] = token;
+        }
+        const res = await fetch('/api/mcp-status', { headers });
         const data = await res.json();
         currentMcpData = data;
         applyMcpState(data);
@@ -1163,10 +1008,38 @@ async function fetchMcpStatus() {
     }
 }
 
+async function connectAntigravity() {
+    const btn = document.getElementById('btn-connect-antigravity');
+    const originalText = btn ? btn.textContent : '⚡ Connect Antigravity';
+    if (btn) {
+        btn.disabled = true;
+        btn.textContent = 'Connecting…';
+    }
+    try {
+        const res = await fetch('/api/mcp-auth', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ action: 'authenticate', client: 'Antigravity' })
+        });
+        const data = await res.json();
+        if (data.token) {
+            localStorage.setItem('clarified_mcp_auth', data.token);
+        }
+        await fetchMcpStatus();
+    } catch(err) {
+        alert('Could not connect to Antigravity: ' + err.message);
+    } finally {
+        if (btn) {
+            btn.disabled = false;
+            btn.textContent = originalText;
+        }
+    }
+}
+
 function applyMcpState(data) {
     const isConnected = Boolean(data && data.connected);
     const isConfigured = Boolean(data && data.configured);
-    const clientName = (data && data.client) || 'AI Assistant (MCP)';
+    const clientName = 'Antigravity';
     const transport = (data && data.transport) ? data.transport.toUpperCase() : 'STDIO';
     const toolCount = (data && data.toolCount) || 10;
 
@@ -1175,10 +1048,10 @@ function applyMcpState(data) {
     const pingText = document.getElementById('ping-text');
     if (isConnected) {
         topbarPulse.className = 'pulse-dot online';
-        pingText.textContent = `${clientName} Live (${toolCount} Tools)`;
+        pingText.textContent = `Antigravity Live (${toolCount} Tools)`;
     } else if (isConfigured) {
         topbarPulse.className = 'pulse-dot amber';
-        pingText.textContent = 'Standby (Ready for Any AI)';
+        pingText.textContent = 'Antigravity Standby';
     } else {
         topbarPulse.className = 'pulse-dot offline';
         pingText.textContent = 'Disconnected';
@@ -1207,7 +1080,7 @@ function applyMcpState(data) {
     const iconGit = document.getElementById('stat-icon-git');
 
     if (isConnected) {
-        statStatus.textContent = clientName;
+        statStatus.textContent = 'Antigravity Live';
         statStatus.style.color = '#10B981';
         if (iconStatus) {
             iconStatus.style.background = 'rgba(16,185,129,0.1)';
@@ -1230,7 +1103,7 @@ function applyMcpState(data) {
             iconGit.style.color = '#d97706';
         }
     } else {
-        statStatus.textContent = isConfigured ? 'Standby' : 'Disconnected';
+        statStatus.textContent = isConfigured ? 'Antigravity Standby' : 'Disconnected';
         statStatus.style.color = isConfigured ? '#d97706' : '#64748b';
         if (iconStatus) {
             iconStatus.style.background = isConfigured ? 'rgba(245,158,11,0.1)' : '#f1f5f9';
@@ -1268,67 +1141,71 @@ function applyMcpState(data) {
     const badgeStep2Status = document.getElementById('badge-step-2-status');
     const step2Text = document.getElementById('step-2-text');
 
+    const btnConnectAntigravity = document.getElementById('btn-connect-antigravity');
     const btnForceDisc = document.getElementById('btn-force-disconnect');
     const btnPanelDisc = document.getElementById('btn-panel-disconnect');
 
     if (isConnected) {
         connPanel.className = 'auth-panel connected';
         panelPulse.className = 'pulse-dot online';
-        panelHeading.textContent = `MCP Server Connected to ${clientName}`;
-        panelPill.textContent = `● Live in ${clientName} (${transport})`;
+        panelHeading.textContent = 'MCP Server Connected to Antigravity';
+        panelPill.textContent = `● Live in Antigravity (${transport})`;
         panelPill.className = 'step-badge ready';
-        panelDesc.innerHTML = `Active <b>${transport}</b> connection established with <b>${clientName}</b>${data.pid ? ` (PID: ${data.pid})` : ''}. All 10 editorial and SEO tools are available. Closing the AI client or clicking Disconnect releases all resources immediately.`;
+        panelDesc.innerHTML = `Active <b>${transport}</b> connection established with <b>Antigravity</b>${data.pid ? ` (PID: ${data.pid})` : ''}. All 10 editorial, SEO, and publishing tools are available in real time.`;
 
         badgeStep1.className = 'step-badge ready';
         badgeStep1.textContent = 'Step 1 · Configured';
-        step1Text.innerHTML = `✓ Server definition active: <b><code>${data.serverName || 'clarified'}</code></b> (${data.configPath || 'mcp_config.json'}).`;
+        step1Text.innerHTML = `✓ Server definition active: <b><code>${data.serverName || 'clarified'}</code></b> (settings.json / mcp_config.json).`;
 
         badgeStep2.className = 'step-badge ready';
         badgeStep2.textContent = 'Step 2 · Live';
-        badgeStep2Status.textContent = 'Heartbeat Active';
+        badgeStep2Status.textContent = 'Active Session';
         badgeStep2Status.style.color = '#10B981';
-        step2Text.textContent = `Connected to ${clientName} via ${transport} transport.`;
+        step2Text.textContent = `Connected to Antigravity via ${transport} transport.`;
 
+        if (btnConnectAntigravity) btnConnectAntigravity.style.display = 'none';
         if (btnForceDisc) btnForceDisc.style.display = 'inline-flex';
         if (btnPanelDisc) btnPanelDisc.style.display = 'inline-flex';
     } else if (isConfigured) {
         connPanel.className = 'auth-panel disconnected';
         panelPulse.className = 'pulse-dot amber';
-        panelHeading.textContent = 'MCP Server Standby — Ready for Any AI';
+        panelHeading.textContent = 'Antigravity MCP Server — Ready to Connect';
         panelPill.textContent = '○ Standby';
         panelPill.className = 'step-badge pending';
-        panelDesc.innerHTML = `Server definition detected: <b><code>${data.serverName || 'clarified'}</code></b>. Connect any AI assistant via local Stdio process (Claude Desktop, Cursor, Antigravity, Cline) or HTTP SSE stream (<code>${data.sseUrl || 'http://localhost:3000/api/mcp/sse'}</code>).`;
+        panelDesc.innerHTML = `Server definition detected: <b><code>${data.serverName || 'clarified'}</code></b>. Click <b>⚡ Connect Antigravity</b> above to start your live web session, or launch Antigravity to connect via Stdio.`;
 
         badgeStep1.className = 'step-badge ready';
-        badgeStep1.textContent = 'Step 1 · Configured';
-        step1Text.innerHTML = `✓ Server definition detected: <b><code>${data.serverName || 'clarified'}</code></b>.`;
+        badgeStep1.textContent = 'Step 1 · Ready';
+        step1Text.innerHTML = `✓ Server definition verified: <b><code>${data.serverName || 'clarified'}</code></b>.`;
 
         badgeStep2.className = 'step-badge pending';
         badgeStep2.textContent = 'Step 2 · Standby';
         badgeStep2Status.textContent = 'Ready for Connection';
         badgeStep2Status.style.color = '#d97706';
-        step2Text.textContent = 'Opens instantly when you start or interact with any MCP-enabled AI client.';
+        step2Text.textContent = 'Click "Connect Antigravity" above to begin live session.';
 
+        if (btnConnectAntigravity) btnConnectAntigravity.style.display = 'inline-flex';
         if (btnForceDisc) btnForceDisc.style.display = 'none';
         if (btnPanelDisc) btnPanelDisc.style.display = 'none';
     } else {
         connPanel.className = 'auth-panel disconnected';
         panelPulse.className = 'pulse-dot offline';
-        panelHeading.textContent = 'MCP Server Disconnected';
+        panelHeading.textContent = 'Antigravity MCP Disconnected';
         panelPill.textContent = 'Not Connected';
         panelPill.className = 'step-badge disabled';
-        panelDesc.textContent = 'Currently, no MCP server definition was found in your configuration file. Copy any of the configurations below into mcp_config.json to connect.';
+        panelDesc.textContent = 'No MCP server definition found. Please ensure clarified is registered in settings.json or mcp_config.json.';
 
         badgeStep1.className = 'step-badge pending';
         badgeStep1.textContent = 'Step 1 · Required';
-        step1Text.innerHTML = 'No server found. Copy one of the templates below and save it to your config file.';
+        step1Text.innerHTML = 'Add the clarified server definition to your configuration file.';
 
         badgeStep2.className = 'step-badge disabled';
         badgeStep2.textContent = 'Step 2 · Locked';
         badgeStep2Status.textContent = 'Awaiting Step 1';
         badgeStep2Status.style.color = '#64748b';
-        step2Text.textContent = 'Requires a server definition in mcp_config.json.';
+        step2Text.textContent = 'Requires server configuration in settings.json.';
 
+        if (btnConnectAntigravity) btnConnectAntigravity.style.display = 'inline-flex';
         if (btnForceDisc) btnForceDisc.style.display = 'none';
         if (btnPanelDisc) btnPanelDisc.style.display = 'none';
     }
@@ -1354,9 +1231,9 @@ async function checkConfig(isUserClick = false) {
 
         if (isUserClick) {
             if (data.connected) {
-                alert(`MCP Server Status: Connected\n\n• Client: ${data.client}\n• Transport: ${data.transport || 'stdio'}\n• Server: ${data.serverName}\n• Tools: ${data.toolCount || 10} active`);
+                alert(`MCP Server Status: Connected\n\n• Client: Antigravity\n• Transport: ${data.transport || 'stdio'}\n• Server: ${data.serverName}\n• Tools: ${data.toolCount || 10} active`);
             } else if (data.configured) {
-                alert(`MCP Server Status: Standby\n\n• Config: ${data.serverName} verified\n• Ready for any AI client to connect.\n• SSE Endpoint: ${data.sseUrl}`);
+                alert(`MCP Server Status: Ready\n\n• Config: ${data.serverName} verified\n• Ready to connect to Antigravity.\n• Click '⚡ Connect Antigravity' to go live.`);
             } else {
                 alert(`MCP Status: Not Configured\n\n${data.message}`);
             }
@@ -1371,7 +1248,7 @@ async function checkConfig(isUserClick = false) {
 }
 
 async function disconnectMcp() {
-    if (!confirm('Are you sure you want to disconnect the MCP server and terminate any background processes?')) return;
+    if (!confirm('Are you sure you want to disconnect Antigravity and end the session?')) return;
     try {
         await fetch('/api/mcp-disconnect', {
             method: 'POST',
@@ -1389,26 +1266,6 @@ async function disconnectMcp() {
 
     localStorage.removeItem('clarified_mcp_auth');
     await fetchMcpStatus();
-    alert('✓ MCP Server disconnected successfully. Any background processes have been terminated.');
-}
-
-async function pingMcpStatus() {
-    await checkConfig(true);
-}
-
-function copySseUrl() {
-    const url = 'http://localhost:3000/api/mcp/sse';
-    navigator.clipboard.writeText(url).then(() => {
-        alert('MCP SSE URL copied to clipboard:\n\n' + url + '\n\nPaste this URL into any SSE-compatible AI client (Cursor, LibreChat, Open-WebUI, Dify).');
-    });
-}
-
-function switchTab(tabId, btn) {
-    document.querySelectorAll('.tab-link').forEach(b => b.classList.remove('active'));
-    document.querySelectorAll('.tab-content').forEach(p => p.style.display = 'none');
-    btn.classList.add('active');
-    const panel = document.getElementById('tab-' + tabId);
-    if (panel) panel.style.display = 'block';
 }
 
 function copySnippet(elementId, btn) {

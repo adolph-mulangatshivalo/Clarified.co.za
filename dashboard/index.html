@@ -284,7 +284,7 @@ async function loadMcpStatus() {
         const liveIcon  = document.getElementById('mcp-live-icon');
         const liveActions = document.getElementById('mcp-live-actions');
 
-        const clientName = mcpData.client || 'Antigravity 2.0';
+        const clientName = 'Antigravity';
 
         if (mcpData.connected) {
             if (badgeEl) {
@@ -304,35 +304,68 @@ async function loadMcpStatus() {
             if (liveActions) {
                 liveActions.innerHTML = `
                     <a href="/dashboard/mcp.html" class="btn btn-primary" style="font-size:14px;">MCP Command Center →</a>
-                    <a href="/dashboard/mcp.html#capabilities" class="btn btn-outline" style="font-size:14px;">Everything We Can Do</a>
+                    <button onclick="quickDisconnectAntigravity()" class="btn btn-outline" style="font-size:14px;color:#ef4444;border-color:#ef4444;">Disconnect</button>
                 `;
             }
         } else {
             if (badgeEl) {
-                badgeEl.textContent = 'Offline';
-                badgeEl.className = 'nav-badge disconnected';
+                badgeEl.textContent = mcpData.configured ? 'Standby' : 'Offline';
+                badgeEl.className = mcpData.configured ? 'nav-badge pending' : 'nav-badge disconnected';
             }
             if (liveBadge) {
-                liveBadge.textContent = mcpData.configured ? '○ Standby (Ready to Connect)' : '○ Disconnected';
-                liveBadge.className = 'nav-badge disconnected';
+                liveBadge.textContent = mcpData.configured ? '○ Antigravity Standby' : '○ Disconnected';
+                liveBadge.className = mcpData.configured ? 'nav-badge pending' : 'nav-badge disconnected';
             }
-            if (liveTitle) liveTitle.textContent = 'Clarified AI Editorial MCP';
+            if (liveTitle) liveTitle.textContent = 'Clarified AI Editorial MCP (Antigravity)';
             if (liveDesc) {
                 liveDesc.textContent = mcpData.configured
-                    ? `Server "${mcpData.serverName}" detected and ready. Connect with any AI assistant (Antigravity, Claude Desktop, Cursor, Cline, or SSE).`
-                    : 'Currently disconnected. Configure your server in mcp_config.json to enable AI tools.';
+                    ? 'Server configured for Antigravity. Click "Connect Antigravity" to activate your live web session.'
+                    : 'Currently disconnected. Configure your server in settings.json to enable Antigravity AI tools.';
             }
             if (liveIcon) {
                 liveIcon.style.background = '#f1f5f9';
                 liveIcon.style.color = '#64748b';
             }
             if (liveActions) {
-                liveActions.innerHTML = `<a href="/dashboard/mcp.html" class="btn btn-primary" style="font-size:14px;">MCP Command Center →</a>`;
+                liveActions.innerHTML = `
+                    <button onclick="quickConnectAntigravity()" class="btn btn-primary" style="font-size:14px;background:#0d9488;border-color:#0d9488;color:#fff;">⚡ Connect Antigravity</button>
+                    <a href="/dashboard/mcp.html" class="btn btn-outline" style="font-size:14px;">MCP Config →</a>
+                `;
             }
         }
     } catch(err) {
         console.warn('Could not load MCP status on dashboard:', err);
     }
+}
+
+async function quickConnectAntigravity() {
+    try {
+        const res = await fetch('/api/mcp-auth', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ action: 'authenticate', client: 'Antigravity' })
+        });
+        const data = await res.json();
+        if (data.token) {
+            localStorage.setItem('clarified_mcp_auth', data.token);
+        }
+        await loadMcpStatus();
+    } catch(err) {
+        alert('Could not connect to Antigravity: ' + err.message);
+    }
+}
+
+async function quickDisconnectAntigravity() {
+    if (!confirm('Disconnect Antigravity and end session?')) return;
+    try {
+        await fetch('/api/mcp-disconnect', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ action: 'disconnect' })
+        });
+    } catch(e) {}
+    localStorage.removeItem('clarified_mcp_auth');
+    await loadMcpStatus();
 }
 
 async function del(id) {

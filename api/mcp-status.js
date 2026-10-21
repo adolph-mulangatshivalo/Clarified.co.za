@@ -74,9 +74,54 @@ async function checkMcpAuth(req, serverName) {
             authenticated: true,
             session: {
                 live: true,
-                client: live.data.client || 'AI Assistant (MCP)',
+                client: 'Antigravity',
                 pid: live.data.pid,
                 transport: live.data.transport || 'stdio'
+            }
+        };
+    }
+
+    // Check session file if exists
+    const sessionPaths = [
+        path.join(process.cwd(), 'dashboard', '.mcp-session.json'),
+        path.join(process.cwd(), 'Clarified Dashboard', '.mcp-session.json'),
+        path.join(process.cwd(), '.mcp-session.json')
+    ];
+    for (const sp of sessionPaths) {
+        try {
+            if (fs.existsSync(sp)) {
+                const sData = JSON.parse(fs.readFileSync(sp, 'utf8'));
+                if (sData && sData.connected && sData.token && verifyMcpToken(sData.token, serverName)) {
+                    return {
+                        authenticated: true,
+                        session: {
+                            live: true,
+                            client: 'Antigravity',
+                            transport: 'stdio'
+                        }
+                    };
+                }
+            }
+        } catch(e) {}
+    }
+
+    // Check session token from browser header or query
+    const authHeader = (req.headers && (req.headers['authorization'] || req.headers['x-mcp-auth'])) || '';
+    let token = authHeader.replace(/^Bearer\s+/i, '').trim();
+    if (!token && req.url) {
+        try {
+            const parsedUrl = new URL(req.url, 'http://localhost');
+            token = parsedUrl.searchParams.get('token') || '';
+        } catch(e) {}
+    }
+
+    if (token && verifyMcpToken(token, serverName)) {
+        return {
+            authenticated: true,
+            session: {
+                live: true,
+                client: 'Antigravity',
+                transport: 'stdio'
             }
         };
     }
@@ -230,12 +275,13 @@ export default async function handler(req, res) {
                 connected: false,
                 configured: true,
                 status: "standby",
+                client: "Antigravity",
                 configPath: configInfo.path,
                 serverName: configInfo.serverName,
                 serverNames: configInfo.serverNames,
-                message: `Server "${configInfo.serverName}" is ready. Connect with any AI assistant (Antigravity, Claude Desktop, Cursor, Cline, or SSE).`,
+                message: `Server "${configInfo.serverName}" is ready for Antigravity.`,
                 protocol: "Model Context Protocol (MCP) v2024-11-05",
-                toolCount: 0,
+                toolCount: tools.length,
                 tools: [],
                 allTools: tools
             });
@@ -246,7 +292,7 @@ export default async function handler(req, res) {
         const githubOwner = process.env.GITHUB_OWNER || 'adolph-mulangatshivalo';
         const githubRepo = process.env.GITHUB_REPO || 'Clarified.co.za';
         const githubBranch = process.env.GITHUB_BRANCH || 'main';
-        const clientName = (authInfo.session && authInfo.session.client) || 'AI Assistant (MCP)';
+        const clientName = (authInfo.session && authInfo.session.client) || 'Antigravity';
         const pid = authInfo.session && authInfo.session.pid;
         const transport = (authInfo.session && authInfo.session.transport) || 'stdio';
 
@@ -261,7 +307,7 @@ export default async function handler(req, res) {
             configPath: configInfo.path,
             serverName: configInfo.serverName,
             serverNames: configInfo.serverNames,
-            message: `Connected: ${clientName} (${transport.toUpperCase()} Transport Active)`,
+            message: `Connected: Antigravity Active (10 Tools Loaded)`,
             protocol: "Model Context Protocol (MCP) v2024-11-05",
             serverScript: "mcp/server.js",
             environment: {

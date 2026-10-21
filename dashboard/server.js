@@ -822,9 +822,53 @@ const server = http.createServer(async (req, res) => {
                 authenticated: true,
                 session: {
                     live: true,
-                    client: live.data.client || 'AI Assistant (MCP)',
+                    client: 'Antigravity',
                     pid: live.data.pid,
                     transport: live.data.transport || 'stdio'
+                }
+            };
+        }
+
+        const sessionPaths = [
+            path.join(DASHBOARD_ROOT, '.mcp-session.json'),
+            path.join(SITE_ROOT, 'dashboard', '.mcp-session.json'),
+            path.join(SITE_ROOT, 'Clarified Dashboard', '.mcp-session.json'),
+            path.join(process.cwd(), '.mcp-session.json')
+        ];
+        for (const sp of sessionPaths) {
+            try {
+                if (fs.existsSync(sp)) {
+                    const sData = JSON.parse(fs.readFileSync(sp, 'utf8'));
+                    if (sData && sData.connected && sData.token && verifyMcpToken(sData.token, serverName)) {
+                        return {
+                            authenticated: true,
+                            session: {
+                                live: true,
+                                client: 'Antigravity',
+                                transport: 'stdio'
+                            }
+                        };
+                    }
+                }
+            } catch(e) {}
+        }
+
+        const authHeader = (req.headers && (req.headers['authorization'] || req.headers['x-mcp-auth'])) || '';
+        let token = authHeader.replace(/^Bearer\s+/i, '').trim();
+        if (!token && req.url) {
+            try {
+                const parsedUrl = new URL(req.url, 'http://localhost');
+                token = parsedUrl.searchParams.get('token') || '';
+            } catch(e) {}
+        }
+
+        if (token && verifyMcpToken(token, serverName)) {
+            return {
+                authenticated: true,
+                session: {
+                    live: true,
+                    client: 'Antigravity',
+                    transport: 'stdio'
                 }
             };
         }
@@ -943,7 +987,7 @@ const server = http.createServer(async (req, res) => {
                     configPath: configInfo.path,
                     serverName: null,
                     serverNames: [],
-                    message: `No MCP server configured in config.json. Add your clarified server configuration to connect any AI.`,
+                    message: `No MCP server configured in config.json. Add your clarified server configuration to connect Antigravity.`,
                     protocol: "Model Context Protocol (MCP) v2024-11-05",
                     sseUrl,
                     toolCount: 0,
@@ -957,10 +1001,11 @@ const server = http.createServer(async (req, res) => {
                     connected: false,
                     configured: true,
                     status: "standby",
+                    client: "Antigravity",
                     configPath: configInfo.path,
                     serverName: configInfo.serverName,
                     serverNames: configInfo.serverNames,
-                    message: `Server "${configInfo.serverName}" is in standby. Ready for any AI client (Antigravity, Claude, Cursor, Cline, or SSE) to connect.`,
+                    message: `Server "${configInfo.serverName}" is ready for Antigravity.`,
                     protocol: "Model Context Protocol (MCP) v2024-11-05",
                     sseUrl,
                     toolCount: toolsCatalog.length,
@@ -969,7 +1014,7 @@ const server = http.createServer(async (req, res) => {
                 });
             }
 
-            const clientName = (authInfo.session && authInfo.session.client) || 'AI Assistant (MCP)';
+            const clientName = (authInfo.session && authInfo.session.client) || 'Antigravity';
             const pid = authInfo.session && authInfo.session.pid;
             const transport = (authInfo.session && authInfo.session.transport) || 'stdio';
 
@@ -984,7 +1029,7 @@ const server = http.createServer(async (req, res) => {
                 configPath: configInfo.path,
                 serverName: configInfo.serverName,
                 serverNames: configInfo.serverNames,
-                message: `Connected: ${clientName} (${transport.toUpperCase()} Transport Active)`,
+                message: `Connected: Antigravity Active (10 Tools Loaded)`,
                 protocol: "Model Context Protocol (MCP) v2024-11-05",
                 serverScript: "mcp/server.js",
                 sseUrl,

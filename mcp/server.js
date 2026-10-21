@@ -1,10 +1,10 @@
 #!/usr/bin/env node
 /**
  * Clarified.co.za Model Context Protocol (MCP) Server
- * Universal AI Editorial Engine (Stdio + SSE Transports)
+ * Antigravity AI Editorial Engine (Stdio + SSE Transports)
  *
  * Fully compliant with Model Context Protocol specification.
- * Connectable to ANY AI assistant (Claude Desktop, Cursor, Antigravity, Cline, Windsurf, Zed, LibreChat, Open-WebUI).
+ * Dedicated integration for Antigravity (Antigravity 2.0 & Antigravity IDE).
  *
  * Core Capabilities:
  * 1. Safe, Reversible Publishing (Draft-First & Git/Vercel Sync)
@@ -70,21 +70,14 @@ function resolveProcessAncestors() {
         }
         if (chain.length > 0) {
             parentPid = chain[0].ProcessId;
-            const knownApps = ['antigravity', 'claude', 'cursor', 'code', 'windsurf', 'zed'];
+            const knownApps = ['antigravity', 'gemini', 'code', 'electron'];
             for (const p of chain) {
                 const nameLower = (p.Name || '').toLowerCase();
                 for (const app of knownApps) {
                     if (nameLower.includes(app)) {
                         rootPid = p.ProcessId;
                         rootName = p.Name;
-                        if (!currentClient) {
-                            if (app === 'antigravity') currentClient = 'Antigravity';
-                            else if (app === 'claude') currentClient = 'Claude Desktop';
-                            else if (app === 'cursor') currentClient = 'Cursor IDE';
-                            else if (app === 'code') currentClient = 'Cline (VS Code)';
-                            else if (app === 'windsurf') currentClient = 'Windsurf';
-                            else if (app === 'zed') currentClient = 'Zed Editor';
-                        }
+                        currentClient = 'Antigravity';
                         return;
                     }
                 }
@@ -131,20 +124,7 @@ function checkLifecycle() {
 }
 
 function formatClientName(raw) {
-    if (!raw) return 'AI Assistant (MCP)';
-    const name = String(raw).trim();
-    const lower = name.toLowerCase();
-    if (lower.includes('antigravity')) return 'Antigravity';
-    if (lower.includes('claude')) return 'Claude Desktop';
-    if (lower.includes('cursor')) return 'Cursor IDE';
-    if (lower.includes('cline')) return 'Cline (VS Code)';
-    if (lower.includes('roo')) return 'Roo Code';
-    if (lower.includes('zed')) return 'Zed Editor';
-    if (lower.includes('windsurf')) return 'Windsurf';
-    if (lower.includes('continue')) return 'Continue';
-    if (lower.includes('librechat')) return 'LibreChat';
-    if (lower.includes('open-webui')) return 'Open-WebUI';
-    return name;
+    return 'Antigravity';
 }
 
 function touchLiveStatus(clientInfo = null, transport = 'stdio') {
@@ -1647,20 +1627,14 @@ if (require.main === module) {
     if (args.includes('--help') || args.includes('-h')) {
         console.log(`
 Clarified Model Context Protocol (MCP) Server v2.1.0
-Universal Editorial & SEO AI Engine for Clarified.co.za
+Editorial & SEO AI Engine for Clarified.co.za (Antigravity Integration)
 
 Usage:
   node mcp/server.js               Start MCP server in Stdio mode (Default)
   node mcp/server.js --sse [port]  Start MCP server in SSE HTTP mode (Default port: 3333)
 
-Supported AI Clients:
-  - Antigravity / Gemini 2.0 (mcp_config.json)
-  - Claude Desktop (claude_desktop_config.json)
-  - Cursor IDE (.cursor/mcp.json or SSE)
-  - VS Code Cline / Roo Code / Continue (settings.json)
-  - Windsurf (Codeium)
-  - Zed Editor (settings.json)
-  - LibreChat / Open-WebUI / Remote AI (SSE Transport)
+Supported AI Client:
+  - Antigravity 2.0 / Antigravity IDE (settings.json / mcp_config.json)
 `);
         process.exit(0);
     }

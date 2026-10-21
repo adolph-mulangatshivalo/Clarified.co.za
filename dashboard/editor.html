@@ -790,7 +790,13 @@ document.getElementById('category-checkboxes').addEventListener('change', markDi
 // ── Sidebar MCP Badge ──────────────────────────────────────────────────────────
 async function updateSidebarMcpBadge() {
     try {
-        const res = await fetch('/api/mcp-status');
+        const token = localStorage.getItem('clarified_mcp_auth') || '';
+        const headers = {};
+        if (token) {
+            headers['Authorization'] = 'Bearer ' + token;
+            headers['x-mcp-auth'] = token;
+        }
+        const res = await fetch('/api/mcp-status', { headers });
         const data = await res.json();
         const badgeEl = document.getElementById('sidebar-mcp-badge');
         if (badgeEl) {
