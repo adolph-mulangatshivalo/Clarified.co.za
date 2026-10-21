@@ -453,12 +453,85 @@ ${absoluteImg ? `<meta name="twitter:image" content="${absoluteImg}">` : ''}
         }
     }
     // Generate robots.txt
-    const robotsTxt = `User-agent: *\nAllow: /\nSitemap: https://clarified.co.za/sitemap.xml`;
+    const robotsTxt = `User-agent: *
+Allow: /
+Allow: /articles/
+Allow: /images/
+Allow: /category-*.html
+Disallow: /dashboard/
+Disallow: /api/
+
+User-agent: Googlebot
+Allow: /
+Allow: /articles/
+Allow: /images/
+Allow: /category-*.html
+Disallow: /dashboard/
+Disallow: /api/
+
+User-agent: Googlebot-Image
+Allow: /images/
+
+Sitemap: https://clarified.co.za/sitemap.xml`;
     fs.writeFileSync(path.join(SITE_ROOT, 'robots.txt'), robotsTxt);
     
     // Generate sitemap.xml
-    const sitemapUrls = published.map(a => `  <url>\n    <loc>https://clarified.co.za/articles/${a.slug}.html</loc>\n    <lastmod>${new Date(a.date).toISOString().split('T')[0]}</lastmod>\n  </url>`).join('\n');
-    const sitemapXml = `<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n  <url>\n    <loc>https://clarified.co.za/</loc>\n  </url>\n${categories.map(catSlug => `  <url>\n    <loc>https://clarified.co.za/category-${catSlug}.html</loc>\n  </url>`).join('\n')}\n${sitemapUrls}\n</urlset>`;
+    function escapeXml(str) {
+        if (!str) return '';
+        return String(str).replace(/[<>&'"]/g, c => {
+            switch (c) {
+                case '<': return '&lt;';
+                case '>': return '&gt;';
+                case '&': return '&amp;';
+                case '\'': return '&apos;';
+                case '"': return '&quot;';
+            }
+        });
+    }
+
+    const todayDate = new Date().toISOString().split('T')[0];
+    const categorySlugs = [
+        'category-south-africa.html',
+        'category-africa-news.html',
+        'category-business.html',
+        'category-technology.html',
+        'category-sport.html',
+        'category-education.html',
+        'category-genz-youth.html',
+        'category-lifestyle.html',
+        'category-automotive.html',
+        'category-world.html'
+    ];
+
+    const sitemapEntries = [
+        `  <url>\n    <loc>https://clarified.co.za/</loc>\n    <lastmod>${todayDate}</lastmod>\n    <changefreq>daily</changefreq>\n    <priority>1.0</priority>\n  </url>`
+    ];
+
+    categorySlugs.forEach(cat => {
+        sitemapEntries.push(`  <url>\n    <loc>https://clarified.co.za/${cat}</loc>\n    <lastmod>${todayDate}</lastmod>\n    <changefreq>daily</changefreq>\n    <priority>0.7</priority>\n  </url>`);
+    });
+
+    published.forEach(a => {
+        const slug = a.slug || a.title.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, '');
+        const aDate = new Date(a.updatedAt || a.date || Date.now()).toISOString().split('T')[0];
+        const priority = (a.homepagePlacement === 'top_story' || a.homepagePlacement === 'editors_pick') ? '0.9' : '0.8';
+        let imgXml = '';
+        if (a.featuredImage) {
+            const imgUrl = a.featuredImage.startsWith('http') ? a.featuredImage : `https://clarified.co.za/${a.featuredImage.replace(/^\//, '')}`;
+            imgXml = `\n    <image:image>\n      <image:loc>${escapeXml(imgUrl)}</image:loc>\n      <image:title>${escapeXml(a.title)}</image:title>\n    </image:image>`;
+        }
+        sitemapEntries.push(`  <url>\n    <loc>https://clarified.co.za/articles/${slug}.html</loc>\n    <lastmod>${aDate}</lastmod>\n    <changefreq>weekly</changefreq>\n    <priority>${priority}</priority>${imgXml}\n  </url>`);
+    });
+
+    ['about.html', 'contact.html', 'privacy.html'].forEach(page => {
+        sitemapEntries.push(`  <url>\n    <loc>https://clarified.co.za/${page}</loc>\n    <lastmod>${todayDate}</lastmod>\n    <changefreq>monthly</changefreq>\n    <priority>0.5</priority>\n  </url>`);
+    });
+
+    const sitemapXml = `<?xml version="1.0" encoding="UTF-8"?>
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"
+        xmlns:image="http://www.google.com/schemas/sitemap-image/1.1">
+${sitemapEntries.join('\n')}
+</urlset>`;
     fs.writeFileSync(path.join(SITE_ROOT, 'sitemap.xml'), sitemapXml);
 
 }

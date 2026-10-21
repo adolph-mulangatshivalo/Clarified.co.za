@@ -1,103 +1,298 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"
+        xmlns:image="http://www.google.com/schemas/sitemap-image/1.1">
   <url>
     <loc>https://clarified.co.za/</loc>
+    <lastmod>2026-10-21</lastmod>
     <changefreq>daily</changefreq>
+    <priority>1.0</priority>
   </url>
   <url>
-    <loc>https://clarified.co.za/about.html</loc>
+    <loc>https://clarified.co.za/category-south-africa.html</loc>
+    <lastmod>2026-10-21</lastmod>
     <changefreq>daily</changefreq>
+    <priority>0.7</priority>
   </url>
   <url>
-    <loc>https://clarified.co.za/contact.html</loc>
+    <loc>https://clarified.co.za/category-africa-news.html</loc>
+    <lastmod>2026-10-21</lastmod>
     <changefreq>daily</changefreq>
+    <priority>0.7</priority>
   </url>
   <url>
-    <loc>https://clarified.co.za/privacy.html</loc>
+    <loc>https://clarified.co.za/category-business.html</loc>
+    <lastmod>2026-10-21</lastmod>
     <changefreq>daily</changefreq>
+    <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://clarified.co.za/category-technology.html</loc>
+    <lastmod>2026-10-21</lastmod>
+    <changefreq>daily</changefreq>
+    <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://clarified.co.za/category-sport.html</loc>
+    <lastmod>2026-10-21</lastmod>
+    <changefreq>daily</changefreq>
+    <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://clarified.co.za/category-education.html</loc>
+    <lastmod>2026-10-21</lastmod>
+    <changefreq>daily</changefreq>
+    <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://clarified.co.za/category-genz-youth.html</loc>
+    <lastmod>2026-10-21</lastmod>
+    <changefreq>daily</changefreq>
+    <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://clarified.co.za/category-lifestyle.html</loc>
+    <lastmod>2026-10-21</lastmod>
+    <changefreq>daily</changefreq>
+    <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://clarified.co.za/category-automotive.html</loc>
+    <lastmod>2026-10-21</lastmod>
+    <changefreq>daily</changefreq>
+    <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://clarified.co.za/category-world.html</loc>
+    <lastmod>2026-10-21</lastmod>
+    <changefreq>daily</changefreq>
+    <priority>0.7</priority>
   </url>
   <url>
     <loc>https://clarified.co.za/articles/degrees-highest-employment-rate-south-africa.html</loc>
-    <changefreq>daily</changefreq>
+    <lastmod>2026-10-21</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.9</priority>
+    <image:image>
+      <image:loc>https://clarified.co.za/images/highest-employment-degrees-south-africa.jpg</image:loc>
+      <image:title>Top Degrees with the Highest Employment Rate in South Africa: 2026 Guide</image:title>
+    </image:image>
   </url>
   <url>
     <loc>https://clarified.co.za/articles/how-to-apply-for-bursaries-south-africa.html</loc>
-    <changefreq>daily</changefreq>
+    <lastmod>2026-09-17</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.9</priority>
+    <image:image>
+      <image:loc>https://clarified.co.za/images/student_bursary_application.jpg</image:loc>
+      <image:title>How to Apply for Bursaries in South Africa: Legit Websites and Funding Guide</image:title>
+    </image:image>
   </url>
   <url>
     <loc>https://clarified.co.za/articles/how-to-pass-your-driving-test-in-south-africa.html</loc>
-    <changefreq>daily</changefreq>
+    <lastmod>2026-09-14</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+    <image:image>
+      <image:loc>https://clarified.co.za/images/tmp_img.jpg</image:loc>
+      <image:title>How to Pass Your Driving Test in South Africa: K53 Tips That Actually Help</image:title>
+    </image:image>
   </url>
   <url>
     <loc>https://clarified.co.za/articles/highest-paying-jobs-by-degree-south-africa.html</loc>
-    <changefreq>daily</changefreq>
+    <lastmod>2026-09-07</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+    <image:image>
+      <image:loc>https://clarified.co.za/images/highest-paying-jobs.jpg</image:loc>
+      <image:title>Which Degrees Lead to the Highest-Paying Jobs in South Africa? 2026 Guide</image:title>
+    </image:image>
   </url>
   <url>
     <loc>https://clarified.co.za/articles/bakkie-side-hustles-south-africa.html</loc>
-    <changefreq>daily</changefreq>
+    <lastmod>2026-09-05</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+    <image:image>
+      <image:loc>https://clarified.co.za/images/bakkie-side-hustle-south-africa.jpg</image:loc>
+      <image:title>10 Bakkie Side Hustles You Can Start in South Africa</image:title>
+    </image:image>
   </url>
   <url>
     <loc>https://clarified.co.za/articles/how-your-phone-tracks-you.html</loc>
-    <changefreq>daily</changefreq>
+    <lastmod>2026-09-02</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+    <image:image>
+      <image:loc>https://clarified.co.za/images/photo-1541560052-3744e48ab80b.avif</image:loc>
+      <image:title>Why Your Phone Knows So Much About You</image:title>
+    </image:image>
   </url>
   <url>
     <loc>https://clarified.co.za/articles/tech-skills-south-africa-2026.html</loc>
-    <changefreq>daily</changefreq>
+    <lastmod>2026-09-01</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+    <image:image>
+      <image:loc>https://clarified.co.za/images/techc.jpg</image:loc>
+      <image:title>7 Tech Skills South African Companies Want in 2026</image:title>
+    </image:image>
   </url>
   <url>
     <loc>https://clarified.co.za/articles/highest-paying-engineering-jobs-south-africa.html</loc>
-    <changefreq>daily</changefreq>
+    <lastmod>2026-08-27</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+    <image:image>
+      <image:loc>https://clarified.co.za/images/highest_paying_engineering_jobs.jpg</image:loc>
+      <image:title>10 Highest Paying Engineering Jobs in South Africa in 2026</image:title>
+    </image:image>
   </url>
   <url>
     <loc>https://clarified.co.za/articles/how-to-pass-matric-maths.html</loc>
-    <changefreq>daily</changefreq>
+    <lastmod>2026-08-26</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+    <image:image>
+      <image:loc>https://clarified.co.za/images/watermarked_img_1225751224220842469.jpg</image:loc>
+      <image:title>How to Pass Matric Maths Easily: 12 Tips That Actually Work</image:title>
+    </image:image>
   </url>
   <url>
     <loc>https://clarified.co.za/articles/why-chinese-cars-are-popular-in-south-africa.html</loc>
-    <changefreq>daily</changefreq>
+    <lastmod>2026-08-22</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+    <image:image>
+      <image:loc>https://clarified.co.za/images/e1dd4a7a-6328-4631-bb2c-d5857767a2ba.jpg</image:loc>
+      <image:title>Chinese Cars in South Africa: Why Are They So Popular in 2026?</image:title>
+    </image:image>
   </url>
   <url>
     <loc>https://clarified.co.za/articles/master-ai-in-south-africa.html</loc>
-    <changefreq>daily</changefreq>
+    <lastmod>2026-08-21</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+    <image:image>
+      <image:loc>https://clarified.co.za/images/c060e4fa-4ae4-47c5-af89-996deaaae880.jpg</image:loc>
+      <image:title>AI in South Africa: Should We Fear What AI Will Take Away?</image:title>
+    </image:image>
   </url>
   <url>
     <loc>https://clarified.co.za/articles/why-petrol-prices-increase-south-africa.html</loc>
-    <changefreq>daily</changefreq>
+    <lastmod>2026-08-20</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+    <image:image>
+      <image:loc>https://clarified.co.za/images/petrol-2.jpeg</image:loc>
+      <image:title>No Man, Why Is Petrol So Expensive? Here’s Why</image:title>
+    </image:image>
   </url>
   <url>
     <loc>https://clarified.co.za/articles/bursaries-for-matriculants-2026.html</loc>
-    <changefreq>daily</changefreq>
+    <lastmod>2026-08-19</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+    <image:image>
+      <image:loc>https://clarified.co.za/images/IMG_6798-2-scaled.jpeg</image:loc>
+      <image:title>Matriculants 2026: Apply for NSFAS, But Don&apos;t Ignore Other Bursaries</image:title>
+    </image:image>
   </url>
   <url>
     <loc>https://clarified.co.za/articles/eskom-data-centres-surplus-power.html</loc>
-    <changefreq>daily</changefreq>
+    <lastmod>2026-08-18</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+    <image:image>
+      <image:loc>https://clarified.co.za/images/big-4.png</image:loc>
+      <image:title>Eskom Data Centres: It Has Power to Spare. Now It Wants Amazon, Microsoft and Google to Buy It</image:title>
+    </image:image>
   </url>
   <url>
     <loc>https://clarified.co.za/articles/springboks-vs-all-blacks-22-august-2026.html</loc>
-    <changefreq>daily</changefreq>
+    <lastmod>2026-08-18</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+    <image:image>
+      <image:loc>https://clarified.co.za/images/springboks.png</image:loc>
+      <image:title>Springboks vs All Blacks: THE BIG GAME</image:title>
+    </image:image>
   </url>
   <url>
     <loc>https://clarified.co.za/articles/mamelodi-sundowns-vs-marumo-gallants-19-august-2026.html</loc>
-    <changefreq>daily</changefreq>
+    <lastmod>2026-08-18</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+    <image:image>
+      <image:loc>https://clarified.co.za/images/sundowns-vs-marumo-gallants.png</image:loc>
+      <image:title>Mamelodi Sundowns vs Marumo Gallants: 2026 Kick-off Time and Preview</image:title>
+    </image:image>
   </url>
   <url>
     <loc>https://clarified.co.za/articles/mtn-ai-job-board-africa-youth-2026.html</loc>
-    <changefreq>daily</changefreq>
+    <lastmod>2026-08-17</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+    <image:image>
+      <image:loc>https://clarified.co.za/images/MTN-AI-JOB.png</image:loc>
+      <image:title>MTN Launches AI Job Board for African Youth</image:title>
+    </image:image>
   </url>
   <url>
     <loc>https://clarified.co.za/articles/sadc-summit-durban-2026.html</loc>
-    <changefreq>daily</changefreq>
+    <lastmod>2026-08-17</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+    <image:image>
+      <image:loc>https://clarified.co.za/images/sadc-summit-durban-2026.png</image:loc>
+      <image:title>SADC Summit 2026: Ramaphosa Takes Over as Chair in Durban</image:title>
+    </image:image>
   </url>
   <url>
     <loc>https://clarified.co.za/articles/dstv-premium-channel-cuts-september-2026.html</loc>
-    <changefreq>daily</changefreq>
+    <lastmod>2026-08-16</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+    <image:image>
+      <image:loc>https://clarified.co.za/images/DSTV.png</image:loc>
+      <image:title>DStv Premium Channel Cuts: 4 Channels Closing in September 2026</image:title>
+    </image:image>
   </url>
   <url>
     <loc>https://clarified.co.za/articles/colombia-earthquake-2026-update.html</loc>
-    <changefreq>daily</changefreq>
+    <lastmod>2026-08-12</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+    <image:image>
+      <image:loc>https://clarified.co.za/images/29733010-d28c-4d47-a5c5-7d75b0037eb6.png</image:loc>
+      <image:title>Colombia Earthquake 2026: What We Know So Far</image:title>
+    </image:image>
   </url>
   <url>
     <loc>https://clarified.co.za/articles/ts-galaxy-2-3-mamelodi-sundowns-mkhulise-late-brace-ends-mbombela-hoodoo.html</loc>
-    <changefreq>daily</changefreq>
+    <lastmod>2026-08-12</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+    <image:image>
+      <image:loc>https://clarified.co.za/images/media_1786527777606.jpg</image:loc>
+      <image:title>TS Galaxy 2-3 Mamelodi Sundowns: Mkhulise late brace ends Mbombela hoodoo</image:title>
+    </image:image>
+  </url>
+  <url>
+    <loc>https://clarified.co.za/about.html</loc>
+    <lastmod>2026-10-21</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.5</priority>
+  </url>
+  <url>
+    <loc>https://clarified.co.za/contact.html</loc>
+    <lastmod>2026-10-21</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.5</priority>
+  </url>
+  <url>
+    <loc>https://clarified.co.za/privacy.html</loc>
+    <lastmod>2026-10-21</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.5</priority>
   </url>
 </urlset>

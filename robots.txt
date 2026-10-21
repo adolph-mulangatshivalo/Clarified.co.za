@@ -1,3 +1,20 @@
 User-agent: *
 Allow: /
+Allow: /articles/
+Allow: /images/
+Allow: /category-*.html
+Disallow: /dashboard/
+Disallow: /api/
+
+User-agent: Googlebot
+Allow: /
+Allow: /articles/
+Allow: /images/
+Allow: /category-*.html
+Disallow: /dashboard/
+Disallow: /api/
+
+User-agent: Googlebot-Image
+Allow: /images/
+
 Sitemap: https://clarified.co.za/sitemap.xml

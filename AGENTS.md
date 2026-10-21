@@ -1,0 +1,53 @@
+# Clarified.co.za &mdash; AI Pair Programming & Editorial Guidelines
+
+Welcome to the **Clarified.co.za** codebase and publishing platform. Clarified is a modern South African digital news, careers, finance, and technology publication.
+
+---
+
+## 1. Editorial Voice & Readability (Accessible to All Ages)
+* **Simple, Everyday English:** Write clearly, warmly, and directly. Avoid bloated academic words, corporate jargon, and dense sentences.
+  * Use "use" instead of "utilize"
+  * Use "start" instead of "commence"
+  * Use "pay" or "salary" instead of "remuneration"
+  * Use "because" instead of "in light of the fact that"
+* **Bite-Sized Paragraphs:** Maximum **2 to 3 sentences** (40–60 words) per paragraph. Never write monolithic blocks of text.
+* **Clarify All Acronyms:** Always spell out and explain South African terms upon first mention (e.g. NSFAS, DHET, SARS, APS score, SETA, K53).
+
+---
+
+## 2. Formatting & Visual Scannability
+* Divide articles with question-driven, actionable `<h2>` and `<h3>` subheadings.
+* Include bullet points (`<ul>`), numbered step-by-step guides (`<ol>`), and summary comparison tables (`<table>`).
+* Highlight critical advice with callout boxes (`<div class="callout-box">`).
+* Ensure `<h2>` elements remain intact so the automatic Table of Contents (`what-to-expect-box`) renders anchor links for Google sitelinks.
+
+---
+
+## 3. Deep Factual Research & Source Citations
+* **Mandatory Fact-Checking:** Before drafting, use `search_web` to verify numbers, dates, admission requirements, legal thresholds, and facts.
+* **Official Sources:** Cite verified South African primary sources (`gov.za`, `statssa.gov.za`, university faculty portals, verified industry bodies).
+* **Outbound Links:** Include 2 to 4 verified external links to the primary official portals (e.g. official NSFAS application portal, SARS eFiling, university admissions) with clear descriptive anchor text.
+* **Contextual Internal Links:** Include 3 to 5 verified internal links to related Clarified stories (`/articles/[slug].html`). Use `suggest_internal_links` or check `list_articles` to verify URLs exist.
+
+---
+
+## 4. Realistic Editorial Imagery
+* Images must look authentic and realistic, featuring real South African contexts (diverse students on university campuses, genuine modern workplaces, city skylines, real vehicles, practical tools).
+* Strictly avoid cartoonish, distorted, or bizarre AI art.
+* Provide descriptive, keyword-rich `imgAlt` text for Google Image search indexing.
+
+---
+
+## 5. Technical SEO, Googlebot Crawling & Sitemaps
+* **High-CTR Titles:** Under 60 characters, with focus keyword, concrete numbers, or current year (2026).
+* **Compelling Meta Description:** 120–155 characters with a clear summary and call to action.
+* **Schema.org Structured Data:** Valid `NewsArticle` or `Article` JSON-LD schema with dates, author, and publisher logo.
+* **Sitemap Auto-Update:** `sitemap.xml` is automatically regenerated with ISO `<lastmod>` timestamps, `<priority>` ratings, image tags, and category hub pages.
+* **Robots.txt Crawl Efficiency:** Explicitly allow articles, images, and category pages while disallowing `/dashboard/` and `/api/` to maximize Googlebot crawl budget.
+
+---
+
+## 6. Pre-Flight Quality Gate & Homepage Placement
+* Run `detect_duplicates` to prevent keyword cannibalization or slug collisions.
+* Run `validate_article_quality` before publishing.
+* Assign explicit `homepagePlacement` (`top_story`, `editors_pick`, `must_read`, etc.) to keep the homepage freshly curated.

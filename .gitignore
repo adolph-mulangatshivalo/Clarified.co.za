@@ -15,7 +15,12 @@ db.json.bak
 .env.*.local
 
 # Agent local configs & secrets
-.agents/
+.agents/mcp_config.json
+!.agents/
+!.agents/skills/
+!.agents/skills/**
+!.agents/rules/
+!.agents/rules/**
 
 # Service account & private keys
 *clarigit-*.json

@@ -278,6 +278,37 @@ export default async function handler(req, res) {
             const indexingContent = `${article.indexing || 'index'}, ${article.followLinks || 'follow'}`;
             const canonicalUrl = article.canonical || absoluteUrl;
 
+            const dateIso = new Date(article.date || Date.now()).toISOString();
+            const dateModifiedIso = new Date(article.updatedAt || article.date || Date.now()).toISOString();
+
+            const jsonLd = {
+                "@context": "https://schema.org",
+                "@type": article.articleType || "NewsArticle",
+                "mainEntityOfPage": {
+                    "@type": "WebPage",
+                    "@id": absoluteUrl
+                },
+                "headline": article.title,
+                "description": (article.metaDesc || article.excerpt || '').slice(0, 160),
+                "image": absoluteImg ? [absoluteImg] : [],
+                "datePublished": dateIso,
+                "dateModified": dateModifiedIso,
+                "author": {
+                    "@type": "Person",
+                    "name": author,
+                    "url": "https://clarified.co.za/about.html"
+                },
+                "publisher": {
+                    "@type": "NewsMediaOrganization",
+                    "name": "Clarified",
+                    "url": "https://clarified.co.za",
+                    "logo": {
+                        "@type": "ImageObject",
+                        "url": "https://clarified.co.za/images/whatsapp-image-2026-08-17-at-12.53.05.jpeg"
+                    }
+                }
+            };
+
             let seoMeta = `
 <meta name="description" content="${metaDesc}">
 <meta name="robots" content="${indexingContent}">
@@ -291,6 +322,9 @@ ${absoluteImg ? `<meta property="og:image" content="${absoluteImg}">` : ''}
 <meta name="twitter:title" content="${seoTitle}">
 <meta name="twitter:description" content="${metaDesc}">
 ${absoluteImg ? `<meta name="twitter:image" content="${absoluteImg}">` : ''}
+<script type="application/ld+json">
+${JSON.stringify(jsonLd, null, 2)}
+</script>
 `;
             out = out.replace('</head>', seoMeta + '</head>');
             filesToCommit.push({
@@ -518,9 +552,68 @@ ${absoluteImg ? `<meta name="twitter:image" content="${absoluteImg}">` : ''}
                 path: 'index.html',
                 content: idx
             });
+
+            // 7. Regenerate sitemap.xml
+            function escapeXml(str) {
+                if (!str) return '';
+                return String(str).replace(/[<>&'"]/g, c => {
+                    switch (c) {
+                        case '<': return '&lt;';
+                        case '>': return '&gt;';
+                        case '&': return '&amp;';
+                        case '\'': return '&apos;';
+                        case '"': return '&quot;';
+                    }
+                });
+            }
+
+            const todayDate = new Date().toISOString().split('T')[0];
+            const categorySlugs = [
+                'category-south-africa.html',
+                'category-africa-news.html',
+                'category-business.html',
+                'category-technology.html',
+                'category-sport.html',
+                'category-education.html',
+                'category-genz-youth.html',
+                'category-lifestyle.html',
+                'category-automotive.html',
+                'category-world.html'
+            ];
+
+            const sitemapEntries = [
+                `  <url>\n    <loc>https://clarified.co.za/</loc>\n    <lastmod>${todayDate}</lastmod>\n    <changefreq>daily</changefreq>\n    <priority>1.0</priority>\n  </url>`
+            ];
+
+            categorySlugs.forEach(cat => {
+                sitemapEntries.push(`  <url>\n    <loc>https://clarified.co.za/${cat}</loc>\n    <lastmod>${todayDate}</lastmod>\n    <changefreq>daily</changefreq>\n    <priority>0.7</priority>\n  </url>`);
+            });
+
+            published.forEach(a => {
+                const aSlug = a.slug || a.title.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, '');
+                const aDate = new Date(a.updatedAt || a.date || Date.now()).toISOString().split('T')[0];
+                const priority = (a.homepagePlacement === 'top_story' || a.homepagePlacement === 'editors_pick') ? '0.9' : '0.8';
+                const absoluteImg = resolveAbsoluteImgUrl(a.featuredImage);
+                let imgXml = '';
+                if (absoluteImg) {
+                    imgXml = `\n    <image:image>\n      <image:loc>${escapeXml(absoluteImg)}</image:loc>\n      <image:title>${escapeXml(a.title)}</image:title>\n    </image:image>`;
+                }
+                sitemapEntries.push(`  <url>\n    <loc>https://clarified.co.za/articles/${aSlug}.html</loc>\n    <lastmod>${aDate}</lastmod>\n    <changefreq>weekly</changefreq>\n    <priority>${priority}</priority>${imgXml}\n  </url>`);
+            });
+
+            ['about.html', 'contact.html', 'privacy.html'].forEach(page => {
+                sitemapEntries.push(`  <url>\n    <loc>https://clarified.co.za/${page}</loc>\n    <lastmod>${todayDate}</lastmod>\n    <changefreq>monthly</changefreq>\n    <priority>0.5</priority>\n  </url>`);
+            });
+
+            const sitemapXml = `<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"\n        xmlns:image="http://www.google.com/schemas/sitemap-image/1.1">\n${sitemapEntries.join('\n')}\n</urlset>`;
+
+            filesToCommit.push({
+                path: 'sitemap.xml',
+                content: sitemapXml
+            });
         }
 
-        // 7. Commit changes to GitHub (triggers automated Vercel deployment)
+        // 8. Commit changes to GitHub (triggers automated Vercel deployment)
         const commitMsg = article.status === 'published'
             ? `Publish: ${article.title}`
             : `Update draft: ${article.title}`;
