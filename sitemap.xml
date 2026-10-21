@@ -68,6 +68,16 @@
     <priority>0.7</priority>
   </url>
   <url>
+    <loc>https://clarified.co.za/articles/high-demand-degrees-south-africa.html</loc>
+    <lastmod>2026-10-21</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.9</priority>
+    <image:image>
+      <image:loc>https://clarified.co.za/images/highest-employment-degrees-south-africa.jpg</image:loc>
+      <image:title>High-Demand Degrees in South Africa: 2026 Career Guide</image:title>
+    </image:image>
+  </url>
+  <url>
     <loc>https://clarified.co.za/articles/how-to-apply-for-bursaries-south-africa.html</loc>
     <lastmod>2026-09-17</lastmod>
     <changefreq>weekly</changefreq>
@@ -81,7 +91,7 @@
     <loc>https://clarified.co.za/articles/how-to-pass-your-driving-test-in-south-africa.html</loc>
     <lastmod>2026-09-14</lastmod>
     <changefreq>weekly</changefreq>
-    <priority>0.9</priority>
+    <priority>0.8</priority>
     <image:image>
       <image:loc>https://clarified.co.za/images/tmp_img.jpg</image:loc>
       <image:title>How to Pass Your Driving Test in South Africa: K53 Tips That Actually Help</image:title>
