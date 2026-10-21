@@ -407,6 +407,7 @@
         </div>
 
         <!-- MCP Connection & Authentication Command Panel -->
+        <!-- MCP Connection & Authentication Command Panel -->
         <div id="connection-panel" class="auth-panel disconnected">
             <div style="display:flex;justify-content:space-between;align-items:flex-start;flex-wrap:wrap;gap:16px;">
                 <div style="flex:1;min-width:280px;">
@@ -416,12 +417,18 @@
                         <span id="panel-status-pill" class="step-badge disabled">Not Connected</span>
                     </div>
                     <p id="panel-status-desc" style="color:var(--muted);font-size:14px;line-height:1.5;margin:0;">
-                        To connect, first configure your MCP server definition in your <code>config.json</code> file, then authenticate below.
+                        Ready for any AI assistant to connect via Stdio (Claude Desktop, Cursor, Antigravity, Cline) or HTTP SSE stream.
                     </p>
                 </div>
-                <div id="panel-action-container" style="display:flex;gap:10px;flex-shrink:0;">
+                <div id="panel-action-container" style="display:flex;gap:10px;flex-shrink:0;align-items:center;flex-wrap:wrap;">
+                    <button id="btn-force-disconnect" onclick="disconnectMcp()" class="btn btn-outline" style="font-size:13px;padding:8px 14px;color:#ef4444;border-color:#ef4444;display:none;">
+                        Force Disconnect &amp; Kill
+                    </button>
+                    <button id="btn-copy-sse" onclick="copySseUrl()" class="btn btn-outline" style="font-size:13px;padding:8px 14px;">
+                        Copy SSE URL
+                    </button>
                     <button id="btn-check-config" onclick="checkConfig(true)" class="btn btn-outline" style="font-size:13px;padding:8px 14px;">
-                        Check Config File
+                        Refresh Status
                     </button>
                 </div>
             </div>
@@ -432,12 +439,12 @@
                 <div class="step-card">
                     <div>
                         <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;">
-                            <span id="badge-step-1" class="step-badge pending">Step 1 &middot; Config</span>
+                            <span id="badge-step-1" class="step-badge pending">Step 1 &middot; Server Config</span>
                             <span id="badge-step-1-file" style="font-size:11px;font-family:monospace;color:var(--muted);">mcp_config.json</span>
                         </div>
-                        <h3 style="font-size:16px;font-weight:700;margin-bottom:6px;font-family:'Space Grotesk',sans-serif;">Configure Server Definition</h3>
+                        <h3 style="font-size:16px;font-weight:700;margin-bottom:6px;font-family:'Space Grotesk',sans-serif;">Server Definition</h3>
                         <p id="step-1-text" style="font-size:13px;color:var(--muted);line-height:1.5;margin-bottom:12px;">
-                            No server definition detected in your config file. Paste your server JSON into <code>config.json</code>.
+                            Checking local configuration file...
                         </p>
                     </div>
                     <div style="display:flex;gap:8px;flex-wrap:wrap;">
@@ -450,19 +457,19 @@
                 <div class="step-card">
                     <div>
                         <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;">
-                            <span id="badge-step-2" class="step-badge disabled">Step 2 &middot; Authentication</span>
-                            <span id="badge-step-2-status" style="font-size:11px;font-weight:600;color:var(--muted);">Awaiting Step 1</span>
+                            <span id="badge-step-2" class="step-badge disabled">Step 2 &middot; AI Pairing</span>
+                            <span id="badge-step-2-status" style="font-size:11px;font-weight:600;color:var(--muted);">Awaiting Connection</span>
                         </div>
-                        <h3 style="font-size:16px;font-weight:700;margin-bottom:6px;font-family:'Space Grotesk',sans-serif;">Authenticate &amp; Connect</h3>
+                        <h3 style="font-size:16px;font-weight:700;margin-bottom:6px;font-family:'Space Grotesk',sans-serif;">Universal AI Integration</h3>
                         <p id="step-2-text" style="font-size:13px;color:var(--muted);line-height:1.5;margin-bottom:12px;">
-                            Verify credentials and establish active connection to Clarified AI Editorial engine.
+                            Connect any AI assistant via local Stdio process or HTTP SSE stream.
                         </p>
                     </div>
-                    <div id="auth-controls" style="display:flex;gap:10px;align-items:center;">
-                        <button id="btn-authenticate" onclick="authenticateMcp()" class="btn btn-primary" style="font-size:13px;padding:8px 18px;" disabled>
-                            Authenticate &amp; Connect
-                        </button>
-                        <button id="btn-disconnect" onclick="disconnectMcp()" class="btn btn-outline" style="font-size:13px;padding:8px 14px;color:var(--danger);border-color:var(--danger);display:none;">
+                    <div id="auth-controls" style="display:flex;gap:10px;align-items:center;flex-wrap:wrap;">
+                        <a href="#playground" class="btn btn-primary" style="font-size:13px;padding:8px 18px;text-decoration:none;">
+                            Open Live Tool Playground ↓
+                        </a>
+                        <button id="btn-panel-disconnect" onclick="disconnectMcp()" class="btn btn-outline" style="font-size:13px;padding:8px 14px;color:#ef4444;border-color:#ef4444;display:none;">
                             Disconnect
                         </button>
                     </div>
@@ -474,18 +481,21 @@
         <div id="instructions" class="panel">
             <div class="panel-header" style="margin-bottom:16px;">
                 <div>
-                    <h2 class="panel-title">Add MCP Server to Config JSON</h2>
+                    <h2 class="panel-title">Universal AI Connection Hub (Any AI with MCP)</h2>
                     <p style="color:var(--muted);font-size:14px;margin-top:4px;">
-                        Copy the exact JSON configuration block below into your MCP config file. Once saved, click <b>Check Config File</b> above to authenticate.
+                        Select your preferred AI editor or client below to copy the verified, ready-to-run configuration block.
                     </p>
                 </div>
             </div>
 
-            <div class="tab-nav">
+            <div class="tab-nav" style="flex-wrap:wrap;">
                 <button class="tab-link active" onclick="switchTab('antigravity', this)">Antigravity / Gemini</button>
                 <button class="tab-link" onclick="switchTab('claude', this)">Claude Desktop</button>
                 <button class="tab-link" onclick="switchTab('cursor', this)">Cursor IDE</button>
-                <button class="tab-link" onclick="switchTab('cline', this)">VS Code (Cline / Roo)</button>
+                <button class="tab-link" onclick="switchTab('cline', this)">VS Code (Cline / Roo / Continue)</button>
+                <button class="tab-link" onclick="switchTab('windsurf', this)">Windsurf</button>
+                <button class="tab-link" onclick="switchTab('zed', this)">Zed Editor</button>
+                <button class="tab-link" onclick="switchTab('sse', this)">Web AI / SSE (LibreChat / Open-WebUI)</button>
             </div>
 
             <!-- Tab: Antigravity -->
@@ -522,7 +532,7 @@
             <!-- Tab: Claude Desktop -->
             <div id="tab-claude" class="tab-content" style="display:none;">
                 <p style="font-size:14px;color:var(--muted);line-height:1.6;">
-                    Add this to your <code>claude_desktop_config.json</code> file:
+                    Add this to your <code>%APPDATA%\Claude\claude_desktop_config.json</code> (Windows) or <code>~/Library/Application Support/Claude/claude_desktop_config.json</code> (Mac):
                 </p>
                 <div class="code-terminal">
                     <div class="code-terminal-header">
@@ -538,12 +548,7 @@
   "mcpServers": {
     "clarified": {
       "command": "node",
-      "args": ["d:/VS CODE PROJECTS/Clarified.co.za/mcp/server.js"],
-      "env": {
-        "GITHUB_OWNER": "adolph-mulangatshivalo",
-        "GITHUB_REPO": "Clarified.co.za",
-        "GITHUB_BRANCH": "main"
-      }
+      "args": ["d:/VS CODE PROJECTS/Clarified.co.za/mcp/server.js"]
     }
   }
 }</pre>
@@ -553,7 +558,7 @@
             <!-- Tab: Cursor -->
             <div id="tab-cursor" class="tab-content" style="display:none;">
                 <p style="font-size:14px;color:var(--muted);line-height:1.6;">
-                    Add to your workspace <code>.cursor/mcp.json</code> or Cursor Settings &gt; Features &gt; MCP:
+                    Add to your workspace <code>.cursor/mcp.json</code> or Cursor Settings &gt; Features &gt; MCP (supports both Stdio &amp; SSE):
                 </p>
                 <div class="code-terminal">
                     <div class="code-terminal-header">
@@ -561,9 +566,9 @@
                             <span class="code-dot red"></span>
                             <span class="code-dot yellow"></span>
                             <span class="code-dot green"></span>
-                            <span class="code-terminal-title">.cursor/mcp.json</span>
+                            <span class="code-terminal-title">.cursor/mcp.json (Stdio)</span>
                         </div>
-                        <button class="btn-copy-flush" onclick="copySnippet('code-cursor', this)">Copy JSON</button>
+                        <button class="btn-copy-flush" onclick="copySnippet('code-cursor', this)">Copy Stdio JSON</button>
                     </div>
                     <pre class="code-terminal-body" id="code-cursor">{
   "mcpServers": {
@@ -574,12 +579,30 @@
   }
 }</pre>
                 </div>
+                <div class="code-terminal" style="margin-top:14px;">
+                    <div class="code-terminal-header">
+                        <div class="code-terminal-dots">
+                            <span class="code-dot red"></span>
+                            <span class="code-dot yellow"></span>
+                            <span class="code-dot green"></span>
+                            <span class="code-terminal-title">.cursor/mcp.json (SSE Stream)</span>
+                        </div>
+                        <button class="btn-copy-flush" onclick="copySnippet('code-cursor-sse', this)">Copy SSE JSON</button>
+                    </div>
+                    <pre class="code-terminal-body" id="code-cursor-sse">{
+  "mcpServers": {
+    "clarified": {
+      "url": "http://localhost:3000/api/mcp/sse"
+    }
+  }
+}</pre>
+                </div>
             </div>
 
-            <!-- Tab: Cline -->
+            <!-- Tab: Cline / Roo / Continue -->
             <div id="tab-cline" class="tab-content" style="display:none;">
                 <p style="font-size:14px;color:var(--muted);line-height:1.6;">
-                    Add to your VS Code Cline or Roo Code MCP configuration:
+                    Add to your VS Code Cline / Roo Code (<code>cline_mcp_settings.json</code>) or Continue (<code>~/.continue/config.json</code>):
                 </p>
                 <div class="code-terminal">
                     <div class="code-terminal-header">
@@ -593,12 +616,174 @@
                     </div>
                     <pre class="code-terminal-body" id="code-cline">{
   "mcpServers": {
-    "clarified-editorial": {
+    "clarified": {
       "command": "node",
       "args": ["d:/VS CODE PROJECTS/Clarified.co.za/mcp/server.js"]
     }
   }
 }</pre>
+                </div>
+            </div>
+
+            <!-- Tab: Windsurf -->
+            <div id="tab-windsurf" class="tab-content" style="display:none;">
+                <p style="font-size:14px;color:var(--muted);line-height:1.6;">
+                    Add to your Windsurf configuration at <code>~/.codeium/windsurf/mcp_config.json</code>:
+                </p>
+                <div class="code-terminal">
+                    <div class="code-terminal-header">
+                        <div class="code-terminal-dots">
+                            <span class="code-dot red"></span>
+                            <span class="code-dot yellow"></span>
+                            <span class="code-dot green"></span>
+                            <span class="code-terminal-title">~/.codeium/windsurf/mcp_config.json</span>
+                        </div>
+                        <button class="btn-copy-flush" onclick="copySnippet('code-windsurf', this)">Copy Config</button>
+                    </div>
+                    <pre class="code-terminal-body" id="code-windsurf">{
+  "mcpServers": {
+    "clarified": {
+      "command": "node",
+      "args": ["d:/VS CODE PROJECTS/Clarified.co.za/mcp/server.js"]
+    }
+  }
+}</pre>
+                </div>
+            </div>
+
+            <!-- Tab: Zed -->
+            <div id="tab-zed" class="tab-content" style="display:none;">
+                <p style="font-size:14px;color:var(--muted);line-height:1.6;">
+                    Add to your Zed configuration at <code>~/.config/zed/settings.json</code> under <code>context_servers</code>:
+                </p>
+                <div class="code-terminal">
+                    <div class="code-terminal-header">
+                        <div class="code-terminal-dots">
+                            <span class="code-dot red"></span>
+                            <span class="code-dot yellow"></span>
+                            <span class="code-dot green"></span>
+                            <span class="code-terminal-title">settings.json (Zed)</span>
+                        </div>
+                        <button class="btn-copy-flush" onclick="copySnippet('code-zed', this)">Copy Config</button>
+                    </div>
+                    <pre class="code-terminal-body" id="code-zed">{
+  "context_servers": {
+    "clarified": {
+      "command": {
+        "path": "node",
+        "args": ["d:/VS CODE PROJECTS/Clarified.co.za/mcp/server.js"]
+      }
+    }
+  }
+}</pre>
+                </div>
+            </div>
+
+            <!-- Tab: SSE (Web AI) -->
+            <div id="tab-sse" class="tab-content" style="display:none;">
+                <p style="font-size:14px;color:var(--muted);line-height:1.6;">
+                    Connect any web-based or networked AI (LibreChat, Open-WebUI, Dify, LangChain, Flowise, or remote scripts) directly via HTTP Server-Sent Events without spawning local subprocesses:
+                </p>
+                <div class="code-terminal">
+                    <div class="code-terminal-header">
+                        <div class="code-terminal-dots">
+                            <span class="code-dot red"></span>
+                            <span class="code-dot yellow"></span>
+                            <span class="code-dot green"></span>
+                            <span class="code-terminal-title">SSE Endpoint URL</span>
+                        </div>
+                        <button class="btn-copy-flush" onclick="copySnippet('code-sse', this)">Copy URL</button>
+                    </div>
+                    <pre class="code-terminal-body" id="code-sse">http://localhost:3000/api/mcp/sse</pre>
+                </div>
+                <div class="code-terminal" style="margin-top:14px;">
+                    <div class="code-terminal-header">
+                        <div class="code-terminal-dots">
+                            <span class="code-dot red"></span>
+                            <span class="code-dot yellow"></span>
+                            <span class="code-dot green"></span>
+                            <span class="code-terminal-title">LibreChat / MCP SSE Config JSON</span>
+                        </div>
+                        <button class="btn-copy-flush" onclick="copySnippet('code-sse-json', this)">Copy JSON</button>
+                    </div>
+                    <pre class="code-terminal-body" id="code-sse-json">{
+  "mcpServers": {
+    "clarified": {
+      "type": "sse",
+      "url": "http://localhost:3000/api/mcp/sse"
+    }
+  }
+}</pre>
+                </div>
+            </div>
+        </div>
+
+        <!-- Interactive Tool Playground (Direct Live MCP Testing) -->
+        <div id="playground" class="panel" style="margin-top:28px;">
+            <div class="panel-header" style="margin-bottom:16px;">
+                <div>
+                    <h2 class="panel-title">Interactive Tool Playground</h2>
+                    <p style="color:var(--muted);font-size:14px;margin-top:4px;">
+                        Execute and test any of Clarified's 10 MCP tools live from the dashboard to verify results instantly.
+                    </p>
+                </div>
+                <span class="tool-badge" style="font-size:12px;padding:6px 12px;background:rgba(16,185,129,0.1);color:#10b981;">Live Execution</span>
+            </div>
+
+            <div style="display:grid;grid-template-columns:1fr 1fr;gap:24px;">
+                <!-- Left: Tool Selector & Arguments -->
+                <div>
+                    <label style="font-size:13px;font-weight:700;display:block;margin-bottom:6px;">Select MCP Tool</label>
+                    <select id="tool-select" onchange="onToolChange()" style="width:100%;padding:10px 14px;border:1px solid var(--line);border-radius:8px;font-size:14px;background:var(--white);font-family:inherit;margin-bottom:14px;">
+                        <option value="list_articles">list_articles — Filter and retrieve Clarified articles</option>
+                        <option value="validate_article_quality">validate_article_quality — Pre-flight Quality Gate audit</option>
+                        <option value="detect_duplicates">detect_duplicates — Scan for cannibalization and collisions</option>
+                        <option value="suggest_internal_links">suggest_internal_links — Verified anchor link suggestions</option>
+                        <option value="get_article">get_article — Retrieve complete article HTML and meta</option>
+                        <option value="publish_article">publish_article — Safe draft-first or live publishing</option>
+                        <option value="edit_article">edit_article — Update article metadata or body</option>
+                        <option value="delete_article">delete_article — Permanently delete with safety check</option>
+                        <option value="get_search_analytics">get_search_analytics — Live Google Search Console metrics</option>
+                        <option value="get_content_opportunities">get_content_opportunities — Click magnets &amp; striking distance</option>
+                    </select>
+
+                    <label style="font-size:13px;font-weight:700;display:block;margin-bottom:6px;">
+                        Tool Arguments (JSON)
+                        <span id="tool-desc-short" style="font-weight:400;color:var(--muted);font-size:12px;margin-left:8px;"></span>
+                    </label>
+                    <textarea id="tool-args-input" rows="8" style="width:100%;font-family:ui-monospace,Menlo,monospace;font-size:13px;padding:12px;border:1px solid var(--line);border-radius:8px;background:#090d16;color:#f8fafc;box-sizing:border-box;"></textarea>
+
+                    <div style="margin-top:14px;display:flex;gap:10px;align-items:center;">
+                        <button id="btn-run-tool" onclick="runToolTest()" class="btn btn-primary" style="font-size:13px;padding:9px 20px;">
+                            ▶ Run Tool Now
+                        </button>
+                        <button onclick="resetToolArgs()" class="btn btn-outline" style="font-size:13px;padding:9px 14px;">
+                            Reset Example Arguments
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Right: Live Result Viewer -->
+                <div>
+                    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px;">
+                        <label style="font-size:13px;font-weight:700;">Live Tool Output</label>
+                        <span id="tool-run-time" style="font-size:12px;color:var(--muted);font-family:monospace;"></span>
+                    </div>
+                    <div class="code-terminal" style="margin-top:0;">
+                        <div class="code-terminal-header">
+                            <div class="code-terminal-dots">
+                                <span class="code-dot red"></span>
+                                <span class="code-dot yellow"></span>
+                                <span class="code-dot green"></span>
+                                <span id="tool-status-badge" class="code-terminal-title">Awaiting execution</span>
+                            </div>
+                            <button class="btn-copy-flush" onclick="copySnippet('tool-output-pre', this)">Copy Output</button>
+                        </div>
+                        <pre id="tool-output-pre" class="code-terminal-body" style="max-height:280px;overflow-y:auto;font-size:12px;">{
+  "status": "Ready",
+  "message": "Select a tool and click 'Run Tool Now' to view real-time MCP response."
+}</pre>
+                    </div>
                 </div>
             </div>
         </div>
@@ -826,16 +1011,148 @@
 <script>
 let currentMcpData = null;
 
-async function fetchMcpStatus() {
+const TOOL_EXAMPLES = {
+    list_articles: {
+        status: "all",
+        limit: 5,
+        category: ""
+    },
+    validate_article_quality: {
+        title: "Top Emerging Engineering Fields Shaping South Africa in 2026",
+        content: "<h2>Introduction to Engineering Growth</h2><p>South Africa is experiencing substantial expansion in renewable energy, mechatronics, and infrastructure development. With over six hundred engineering firms scaling operations across Gauteng and the Western Cape, skilled graduates are in high demand.</p><h2>Key Specializations</h2><p>Solar photovoltaic design, grid storage, and automated robotics represent the fastest-growing hiring categories.</p>",
+        slug: "top-emerging-engineering-fields-south-africa-2026",
+        seoTitle: "Top Engineering Fields in South Africa 2026 — Careers Guide",
+        metaDesc: "Discover the highest-growth engineering sectors in South Africa for 2026, including renewable energy, automation, and infrastructure salaries.",
+        featuredImage: "/images/engineering-sa.jpg",
+        imgAlt: "South African engineers on site at a renewable solar facility"
+    },
+    detect_duplicates: {
+        title: "Highest Paying Engineering Jobs in South Africa",
+        focusKw: "engineering jobs south africa",
+        slug: "highest-paying-engineering-jobs-south-africa"
+    },
+    suggest_internal_links: {
+        content: "<p>Students preparing for the matric exams and national senior certificate should also consider university degree paths and engineering bursaries in South Africa.</p>",
+        currentSlug: "matric-exam-tips-2026"
+    },
+    get_article: {
+        id: 1728394012,
+        slug: ""
+    },
+    publish_article: {
+        title: "Test Draft Created via Clarified MCP Universal Engine",
+        content: "<h2>Overview</h2><p>This is a live test article dispatched through Clarified's Model Context Protocol pipeline. It demonstrates safe draft validation and automated CMS ingestion.</p><h2>Editorial Check</h2><p>All standards, word count thresholds, and SEO metadata fields are checked automatically.</p>",
+        excerpt: "A live demonstration article created through the Clarified MCP Editorial AI protocol.",
+        category: "Technology",
+        status: "draft",
+        seoTitle: "Clarified MCP Test Draft Article",
+        metaDesc: "Live test demonstration article processed by Clarified Model Context Protocol editorial engine.",
+        focusKw: "clarified mcp",
+        tags: "AI, MCP, Clarified"
+    },
+    edit_article: {
+        slug: "highest-paying-engineering-jobs-in-south-africa",
+        excerpt: "Updated summary dek focusing on high-demand 2026 engineering salaries across South Africa."
+    },
+    delete_article: {
+        id: 999999999,
+        confirm: false
+    },
+    get_search_analytics: {
+        dimension: "query",
+        days: 28,
+        limit: 10,
+        siteUrl: "https://clarified.co.za/"
+    },
+    get_content_opportunities: {
+        days: 28,
+        siteUrl: "https://clarified.co.za/"
+    }
+};
+
+const TOOL_DESCRIPTIONS = {
+    list_articles: "Filter and inspect existing articles from the database.",
+    validate_article_quality: "Runs the complete Pre-Flight Quality Gate (headings, word count, SEO limits).",
+    detect_duplicates: "Checks title, focus keyword, and slug against existing articles.",
+    suggest_internal_links: "Scans content and finds verified anchor links to published articles.",
+    get_article: "Retrieves complete article data by numerical ID or URL slug.",
+    publish_article: "Creates a new article (defaults to safe draft mode).",
+    edit_article: "Edits an existing article and regenerates static pages.",
+    delete_article: "Safely removes an article (requires 'confirm: true').",
+    get_search_analytics: "Pulls queries, clicks, impressions, and CTR from Search Console.",
+    get_content_opportunities: "Finds high-impression low-CTR queries and page 2 opportunities."
+};
+
+function onToolChange() {
+    const sel = document.getElementById('tool-select');
+    const tool = sel ? sel.value : 'list_articles';
+    const descSpan = document.getElementById('tool-desc-short');
+    if (descSpan) {
+        descSpan.textContent = TOOL_DESCRIPTIONS[tool] || '';
+    }
+    const input = document.getElementById('tool-args-input');
+    if (input) {
+        input.value = JSON.stringify(TOOL_EXAMPLES[tool] || {}, null, 2);
+    }
+}
+
+function resetToolArgs() {
+    onToolChange();
+}
+
+async function runToolTest() {
+    const sel = document.getElementById('tool-select');
+    const tool = sel ? sel.value : 'list_articles';
+    const input = document.getElementById('tool-args-input');
+    const btn = document.getElementById('btn-run-tool');
+    const outPre = document.getElementById('tool-output-pre');
+    const timeSpan = document.getElementById('tool-run-time');
+    const badge = document.getElementById('tool-status-badge');
+
+    let args = {};
     try {
-        const token = localStorage.getItem('clarified_mcp_auth') || '';
-        const headers = {};
-        if (token) {
-            headers['Authorization'] = 'Bearer ' + token;
-            headers['x-mcp-auth'] = token;
+        args = JSON.parse(input.value || '{}');
+    } catch (e) {
+        alert('Invalid JSON in tool arguments: ' + e.message);
+        return;
+    }
+
+    btn.disabled = true;
+    btn.textContent = 'Executing…';
+    if (badge) badge.textContent = 'Running ' + tool + '…';
+    const startTime = performance.now();
+
+    try {
+        const res = await fetch('/api/mcp/test-tool', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ tool, args })
+        });
+        const elapsed = Math.round(performance.now() - startTime);
+        const data = await res.json();
+
+        if (timeSpan) timeSpan.textContent = `${elapsed}ms`;
+        if (badge) {
+            badge.textContent = data.success ? `✓ Completed (${elapsed}ms)` : `⚠ Error (${elapsed}ms)`;
         }
 
-        const res = await fetch('/api/mcp-status', { headers });
+        if (outPre) {
+            outPre.textContent = JSON.stringify(data.result !== undefined ? data.result : data, null, 2);
+        }
+    } catch (err) {
+        const elapsed = Math.round(performance.now() - startTime);
+        if (timeSpan) timeSpan.textContent = `${elapsed}ms`;
+        if (badge) badge.textContent = 'Failed';
+        if (outPre) outPre.textContent = JSON.stringify({ error: err.message }, null, 2);
+    } finally {
+        btn.disabled = false;
+        btn.textContent = '▶ Run Tool Now';
+    }
+}
+
+async function fetchMcpStatus() {
+    try {
+        const res = await fetch('/api/mcp-status');
         const data = await res.json();
         currentMcpData = data;
         applyMcpState(data);
@@ -849,16 +1166,19 @@ async function fetchMcpStatus() {
 function applyMcpState(data) {
     const isConnected = Boolean(data && data.connected);
     const isConfigured = Boolean(data && data.configured);
+    const clientName = (data && data.client) || 'AI Assistant (MCP)';
+    const transport = (data && data.transport) ? data.transport.toUpperCase() : 'STDIO';
+    const toolCount = (data && data.toolCount) || 10;
 
     // 1. Topbar Button & Dot
     const topbarPulse = document.getElementById('topbar-pulse');
     const pingText = document.getElementById('ping-text');
     if (isConnected) {
         topbarPulse.className = 'pulse-dot online';
-        pingText.textContent = 'Connected (10 Tools)';
+        pingText.textContent = `${clientName} Live (${toolCount} Tools)`;
     } else if (isConfigured) {
         topbarPulse.className = 'pulse-dot amber';
-        pingText.textContent = 'Auth Required';
+        pingText.textContent = 'Standby (Ready for Any AI)';
     } else {
         topbarPulse.className = 'pulse-dot offline';
         pingText.textContent = 'Disconnected';
@@ -868,11 +1188,11 @@ function applyMcpState(data) {
     const sidebarBadge = document.getElementById('sidebar-mcp-badge');
     if (sidebarBadge) {
         if (isConnected) {
-            sidebarBadge.textContent = (data.toolCount || 10) + ' Tools';
+            sidebarBadge.textContent = toolCount + ' Tools';
             sidebarBadge.className = 'nav-badge connected';
         } else {
-            sidebarBadge.textContent = 'Offline';
-            sidebarBadge.className = 'nav-badge disconnected';
+            sidebarBadge.textContent = isConfigured ? 'Standby' : 'Offline';
+            sidebarBadge.className = isConfigured ? 'nav-badge pending' : 'nav-badge disconnected';
         }
     }
 
@@ -887,14 +1207,14 @@ function applyMcpState(data) {
     const iconGit = document.getElementById('stat-icon-git');
 
     if (isConnected) {
-        statStatus.textContent = 'Online';
+        statStatus.textContent = clientName;
         statStatus.style.color = '#10B981';
         if (iconStatus) {
             iconStatus.style.background = 'rgba(16,185,129,0.1)';
             iconStatus.style.color = '#10B981';
         }
 
-        statTools.textContent = (data.toolCount || 10) + ' Active';
+        statTools.textContent = toolCount + ' Active';
 
         statSearch.textContent = 'Synced';
         statSearch.style.color = '#0284c7';
@@ -910,14 +1230,14 @@ function applyMcpState(data) {
             iconGit.style.color = '#d97706';
         }
     } else {
-        statStatus.textContent = isConfigured ? 'Auth Required' : 'Disconnected';
+        statStatus.textContent = isConfigured ? 'Standby' : 'Disconnected';
         statStatus.style.color = isConfigured ? '#d97706' : '#64748b';
         if (iconStatus) {
             iconStatus.style.background = isConfigured ? 'rgba(245,158,11,0.1)' : '#f1f5f9';
             iconStatus.style.color = isConfigured ? '#d97706' : '#64748b';
         }
 
-        statTools.textContent = '0 Active';
+        statTools.textContent = isConfigured ? `${toolCount} Ready` : '0 Active';
 
         statSearch.textContent = 'Standby';
         statSearch.style.color = '#64748b';
@@ -947,172 +1267,140 @@ function applyMcpState(data) {
     const badgeStep2 = document.getElementById('badge-step-2');
     const badgeStep2Status = document.getElementById('badge-step-2-status');
     const step2Text = document.getElementById('step-2-text');
-    const btnAuth = document.getElementById('btn-authenticate');
-    const btnDisc = document.getElementById('btn-disconnect');
+
+    const btnForceDisc = document.getElementById('btn-force-disconnect');
+    const btnPanelDisc = document.getElementById('btn-panel-disconnect');
 
     if (isConnected) {
         connPanel.className = 'auth-panel connected';
         panelPulse.className = 'pulse-dot online';
-        panelHeading.textContent = 'MCP Server Connected & Operational';
-        panelPill.textContent = '● Connected';
+        panelHeading.textContent = `MCP Server Connected to ${clientName}`;
+        panelPill.textContent = `● Live in ${clientName} (${transport})`;
         panelPill.className = 'step-badge ready';
-        panelDesc.innerHTML = `Active connection established with server <b><code>${data.serverName || 'clarified'}</code></b>. All 10 editorial and SEO tools are unlocked and ready for AI prompts.`;
+        panelDesc.innerHTML = `Active <b>${transport}</b> connection established with <b>${clientName}</b>${data.pid ? ` (PID: ${data.pid})` : ''}. All 10 editorial and SEO tools are available. Closing the AI client or clicking Disconnect releases all resources immediately.`;
 
         badgeStep1.className = 'step-badge ready';
         badgeStep1.textContent = 'Step 1 · Configured';
-        step1Text.innerHTML = `✓ Server definition detected: <b><code>${data.serverName || 'clarified'}</code></b> in config file.`;
+        step1Text.innerHTML = `✓ Server definition active: <b><code>${data.serverName || 'clarified'}</code></b> (${data.configPath || 'mcp_config.json'}).`;
 
         badgeStep2.className = 'step-badge ready';
-        badgeStep2.textContent = 'Step 2 · Authenticated';
-        badgeStep2Status.textContent = 'Session Active';
+        badgeStep2.textContent = 'Step 2 · Live';
+        badgeStep2Status.textContent = 'Heartbeat Active';
         badgeStep2Status.style.color = '#10B981';
-        step2Text.textContent = 'Authenticated. You can disconnect at any time to lock the MCP tools.';
+        step2Text.textContent = `Connected to ${clientName} via ${transport} transport.`;
 
-        btnAuth.style.display = 'none';
-        btnDisc.style.display = 'inline-flex';
+        if (btnForceDisc) btnForceDisc.style.display = 'inline-flex';
+        if (btnPanelDisc) btnPanelDisc.style.display = 'inline-flex';
     } else if (isConfigured) {
         connPanel.className = 'auth-panel disconnected';
         panelPulse.className = 'pulse-dot amber';
-        panelHeading.textContent = 'Server Config Detected — Authentication Required';
-        panelPill.textContent = 'Ready to Auth';
+        panelHeading.textContent = 'MCP Server Standby — Ready for Any AI';
+        panelPill.textContent = '○ Standby';
         panelPill.className = 'step-badge pending';
-        panelDesc.innerHTML = `Found server definition <b><code>${data.serverName || 'clarified'}</code></b> in mcp_config.json. Click <b>Authenticate &amp; Connect</b> below to connect the dashboard.`;
+        panelDesc.innerHTML = `Server definition detected: <b><code>${data.serverName || 'clarified'}</code></b>. Connect any AI assistant via local Stdio process (Claude Desktop, Cursor, Antigravity, Cline) or HTTP SSE stream (<code>${data.sseUrl || 'http://localhost:3000/api/mcp/sse'}</code>).`;
 
         badgeStep1.className = 'step-badge ready';
         badgeStep1.textContent = 'Step 1 · Configured';
-        step1Text.innerHTML = `✓ Server definition found: <b><code>${data.serverName || 'clarified'}</code></b>.`;
+        step1Text.innerHTML = `✓ Server definition detected: <b><code>${data.serverName || 'clarified'}</code></b>.`;
 
         badgeStep2.className = 'step-badge pending';
-        badgeStep2.textContent = 'Step 2 · Ready';
-        badgeStep2Status.textContent = 'Ready to connect';
+        badgeStep2.textContent = 'Step 2 · Standby';
+        badgeStep2Status.textContent = 'Ready for Connection';
         badgeStep2Status.style.color = '#d97706';
-        step2Text.textContent = 'Click Authenticate & Connect below to establish the connection.';
+        step2Text.textContent = 'Opens instantly when you start or interact with any MCP-enabled AI client.';
 
-        btnAuth.style.display = 'inline-flex';
-        btnAuth.disabled = false;
-        btnDisc.style.display = 'none';
+        if (btnForceDisc) btnForceDisc.style.display = 'none';
+        if (btnPanelDisc) btnPanelDisc.style.display = 'none';
     } else {
         connPanel.className = 'auth-panel disconnected';
         panelPulse.className = 'pulse-dot offline';
         panelHeading.textContent = 'MCP Server Disconnected';
         panelPill.textContent = 'Not Connected';
         panelPill.className = 'step-badge disabled';
-        panelDesc.textContent = 'Currently, the dashboard is not connected to any MCP server. To connect, add your server configuration to your mcp_config.json file and authenticate below.';
+        panelDesc.textContent = 'Currently, no MCP server definition was found in your configuration file. Copy any of the configurations below into mcp_config.json to connect.';
 
         badgeStep1.className = 'step-badge pending';
         badgeStep1.textContent = 'Step 1 · Required';
-        step1Text.innerHTML = 'No server found in mcp_config.json. Copy the template below and save it to your config file.';
+        step1Text.innerHTML = 'No server found. Copy one of the templates below and save it to your config file.';
 
         badgeStep2.className = 'step-badge disabled';
         badgeStep2.textContent = 'Step 2 · Locked';
         badgeStep2Status.textContent = 'Awaiting Step 1';
         badgeStep2Status.style.color = '#64748b';
-        step2Text.textContent = 'Requires a valid server definition in mcp_config.json before authentication.';
+        step2Text.textContent = 'Requires a server definition in mcp_config.json.';
 
-        btnAuth.style.display = 'inline-flex';
-        btnAuth.disabled = true;
-        btnDisc.style.display = 'none';
+        if (btnForceDisc) btnForceDisc.style.display = 'none';
+        if (btnPanelDisc) btnPanelDisc.style.display = 'none';
     }
 }
 
 async function checkConfig(isUserClick = false) {
     const btn = document.getElementById('btn-check-config');
-    const originalText = btn.textContent;
-    btn.textContent = 'Checking…';
-    btn.disabled = true;
+    const originalText = btn ? btn.textContent : 'Refresh Status';
+    if (btn) {
+        btn.textContent = 'Checking…';
+        btn.disabled = true;
+    }
 
     try {
         const data = await fetchMcpStatus();
-        btn.textContent = 'Updated!';
-        setTimeout(() => {
-            btn.textContent = originalText;
-            btn.disabled = false;
-        }, 1500);
+        if (btn) {
+            btn.textContent = 'Updated!';
+            setTimeout(() => {
+                btn.textContent = originalText;
+                btn.disabled = false;
+            }, 1200);
+        }
 
         if (isUserClick) {
             if (data.connected) {
-                alert('MCP Status: Connected\n\nActive server: ' + data.serverName);
+                alert(`MCP Server Status: Connected\n\n• Client: ${data.client}\n• Transport: ${data.transport || 'stdio'}\n• Server: ${data.serverName}\n• Tools: ${data.toolCount || 10} active`);
             } else if (data.configured) {
-                alert('MCP Config Detected!\n\nFound server: ' + data.serverName + '\nStatus: Ready to authenticate. Click "Authenticate & Connect" to connect.');
+                alert(`MCP Server Status: Standby\n\n• Config: ${data.serverName} verified\n• Ready for any AI client to connect.\n• SSE Endpoint: ${data.sseUrl}`);
             } else {
-                alert('MCP Config Check:\n\n' + data.message + '\n\nPlease add a server to your config file to proceed.');
+                alert(`MCP Status: Not Configured\n\n${data.message}`);
             }
         }
     } catch(e) {
-        btn.textContent = originalText;
-        btn.disabled = false;
-        alert('Could not check config: ' + e.message);
-    }
-}
-
-async function authenticateMcp() {
-    const btn = document.getElementById('btn-authenticate');
-    btn.textContent = 'Authenticating…';
-    btn.disabled = true;
-
-    try {
-        const res = await fetch('/api/mcp-auth', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ action: 'authenticate' })
-        });
-        const data = await res.json();
-
-        if (data.success && data.connected) {
-            if (data.token) {
-                localStorage.setItem('clarified_mcp_auth', data.token);
-            }
-            await fetchMcpStatus();
-            alert('✓ MCP Connected Successfully!\n\nConnected to: ' + data.serverName + '\n10 Editorial & SEO tools are now operational.');
-        } else {
-            alert('Authentication Failed:\n\n' + (data.error || 'Could not authenticate. Check config.json.'));
-            btn.textContent = 'Authenticate & Connect';
+        if (btn) {
+            btn.textContent = originalText;
             btn.disabled = false;
         }
-    } catch(e) {
-        btn.textContent = 'Authenticate & Connect';
-        btn.disabled = false;
-        alert('Authentication error: ' + e.message);
+        alert('Could not check MCP status: ' + e.message);
     }
 }
 
 async function disconnectMcp() {
-    if (!confirm('Are you sure you want to disconnect the MCP server?')) return;
+    if (!confirm('Are you sure you want to disconnect the MCP server and terminate any background processes?')) return;
     try {
-        const token = localStorage.getItem('clarified_mcp_auth') || '';
+        await fetch('/api/mcp-disconnect', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ action: 'disconnect' })
+        });
+    } catch(e) {}
+    try {
         await fetch('/api/mcp-auth', {
             method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-                'Authorization': 'Bearer ' + token
-            },
+            headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ action: 'disconnect' })
         });
     } catch(e) {}
 
     localStorage.removeItem('clarified_mcp_auth');
     await fetchMcpStatus();
-    alert('MCP Server has been disconnected.');
+    alert('✓ MCP Server disconnected successfully. Any background processes have been terminated.');
 }
 
 async function pingMcpStatus() {
-    const data = await fetchMcpStatus();
-    if (data.connected) {
-        alert('Clarified MCP Server Status: Operational\n\n' +
-              '• Server: ' + data.serverName + ' (' + (data.serverScript || 'active') + ')\n' +
-              '• Protocol: ' + data.protocol + '\n' +
-              '• Available Tools: ' + (data.toolCount || 10) + ' tools active\n' +
-              '• Status: Connected & Authenticated');
-    } else if (data.configured) {
-        alert('Clarified MCP Server Status: Not Connected\n\n' +
-              '• Detected in Config: ' + data.serverName + '\n' +
-              '• Status: Authentication Required\n\n' +
-              'Click "Authenticate & Connect" on the dashboard to connect.');
-    } else {
-        alert('Clarified MCP Server Status: Disconnected\n\n' +
-              '• Status: No servers in config.json\n\n' +
-              'Please add an MCP server configuration to your config.json file to connect.');
-    }
+    await checkConfig(true);
+}
+
+function copySseUrl() {
+    const url = 'http://localhost:3000/api/mcp/sse';
+    navigator.clipboard.writeText(url).then(() => {
+        alert('MCP SSE URL copied to clipboard:\n\n' + url + '\n\nPaste this URL into any SSE-compatible AI client (Cursor, LibreChat, Open-WebUI, Dify).');
+    });
 }
 
 function switchTab(tabId, btn) {
@@ -1139,8 +1427,10 @@ function copyPrompt(text) {
     });
 }
 
-// Initial state load
+// Initial state load & rapid real-time sync
+onToolChange();
 fetchMcpStatus();
+setInterval(fetchMcpStatus, 1500);
 </script>
 
 </body>

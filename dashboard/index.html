@@ -263,7 +263,10 @@ async function loadDashboard() {
         console.error(e);
     }
 
-    // Dynamic MCP status & live banner
+    await loadMcpStatus();
+}
+
+async function loadMcpStatus() {
     try {
         const token = localStorage.getItem('clarified_mcp_auth') || '';
         const headers = {};
@@ -281,25 +284,27 @@ async function loadDashboard() {
         const liveIcon  = document.getElementById('mcp-live-icon');
         const liveActions = document.getElementById('mcp-live-actions');
 
+        const clientName = mcpData.client || 'Antigravity 2.0';
+
         if (mcpData.connected) {
             if (badgeEl) {
                 badgeEl.textContent = (mcpData.toolCount || 10) + ' Tools';
                 badgeEl.className = 'nav-badge connected';
             }
             if (liveBadge) {
-                liveBadge.textContent = '● Connected (10 Tools)';
+                liveBadge.textContent = `● ${clientName} Live (10 Tools)`;
                 liveBadge.className = 'nav-badge connected';
             }
-            if (liveTitle) liveTitle.textContent = 'Clarified AI Editorial MCP Server';
-            if (liveDesc) liveDesc.textContent = 'Connected to Google Search Console (clarified.co.za) & GitHub CD. Automated editorial quality gates, duplicate checks, and search analytics active.';
+            if (liveTitle) liveTitle.textContent = `Clarified AI Editorial MCP (${clientName} Active)`;
+            if (liveDesc) liveDesc.textContent = `Active connection established with ${clientName}. Editorial quality gates, duplicate checks, and search analytics are live.`;
             if (liveIcon) {
                 liveIcon.style.background = 'var(--cyan-soft)';
                 liveIcon.style.color = 'var(--cyan-dark)';
             }
             if (liveActions) {
                 liveActions.innerHTML = `
-                    <a href="/dashboard/mcp.html" class="btn btn-outline" style="font-size:14px;">Everything We Can Do</a>
-                    <a href="/dashboard/mcp.html#instructions" class="btn btn-primary" style="font-size:14px;">Connect AI Assistant →</a>
+                    <a href="/dashboard/mcp.html" class="btn btn-primary" style="font-size:14px;">MCP Command Center →</a>
+                    <a href="/dashboard/mcp.html#capabilities" class="btn btn-outline" style="font-size:14px;">Everything We Can Do</a>
                 `;
             }
         } else {
@@ -308,21 +313,21 @@ async function loadDashboard() {
                 badgeEl.className = 'nav-badge disconnected';
             }
             if (liveBadge) {
-                liveBadge.textContent = mcpData.configured ? '○ Auth Required' : '○ Disconnected';
+                liveBadge.textContent = mcpData.configured ? '○ Standby (Ready to Connect)' : '○ Disconnected';
                 liveBadge.className = 'nav-badge disconnected';
             }
             if (liveTitle) liveTitle.textContent = 'Clarified AI Editorial MCP';
             if (liveDesc) {
                 liveDesc.textContent = mcpData.configured
-                    ? `Server "${mcpData.serverName}" detected in config.json. Authentication required to connect.`
-                    : 'Currently disconnected. Configure your server in config.json and authenticate to enable AI tools and automated quality gates.';
+                    ? `Server "${mcpData.serverName}" detected and ready. Connect with any AI assistant (Antigravity, Claude Desktop, Cursor, Cline, or SSE).`
+                    : 'Currently disconnected. Configure your server in mcp_config.json to enable AI tools.';
             }
             if (liveIcon) {
                 liveIcon.style.background = '#f1f5f9';
                 liveIcon.style.color = '#64748b';
             }
             if (liveActions) {
-                liveActions.innerHTML = `<a href="/dashboard/mcp.html" class="btn btn-primary" style="font-size:14px;">${mcpData.configured ? 'Authenticate & Connect →' : 'Setup & Connect →'}</a>`;
+                liveActions.innerHTML = `<a href="/dashboard/mcp.html" class="btn btn-primary" style="font-size:14px;">MCP Command Center →</a>`;
             }
         }
     } catch(err) {
@@ -349,6 +354,7 @@ async function del(id) {
 }
 
 loadDashboard();
+setInterval(loadMcpStatus, 1500);
 </script>
 
 </body>

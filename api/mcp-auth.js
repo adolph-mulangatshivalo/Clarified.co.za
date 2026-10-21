@@ -118,6 +118,23 @@ export default async function handler(req, res) {
         const sessionPath = path.join(process.cwd(), 'dashboard', '.mcp-session.json');
 
         if (action === 'disconnect') {
+            const candidatePaths = [
+                path.join(process.cwd(), 'dashboard', '.mcp-active.json'),
+                path.join(process.cwd(), 'Clarified Dashboard', '.mcp-active.json'),
+                path.join(process.cwd(), '.mcp-active.json')
+            ];
+            for (const p of candidatePaths) {
+                try {
+                    if (fs.existsSync(p)) {
+                        const d = JSON.parse(fs.readFileSync(p, 'utf8'));
+                        if (d && d.pid && d.pid !== process.pid) {
+                            try { process.kill(d.pid, 'SIGKILL'); } catch(e) {}
+                        }
+                        fs.unlinkSync(p);
+                    }
+                } catch(e) {}
+            }
+
             try {
                 if (fs.existsSync(sessionPath)) {
                     fs.unlinkSync(sessionPath);

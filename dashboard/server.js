@@ -8,6 +8,15 @@ const SITE_ROOT      = path.join(__dirname, '..');
 const DASHBOARD_ROOT = __dirname;
 const DB_PATH        = path.join(__dirname, 'db.json');
 
+// ─── MCP Engine & SSE Client Tracking ─────────────────────────────────────────
+let mcpEngine = null;
+try {
+    mcpEngine = require('../mcp/server.js');
+} catch (e) {
+    console.warn('Clarified MCP engine not loaded:', e.message);
+}
+const activeSseClients = new Map();
+
 // ─── DB helpers ──────────────────────────────────────────────────────────────
 function getDB() {
     if (!fs.existsSync(DB_PATH)) { const d = { articles: [] }; saveDB(d); return d; }
@@ -722,27 +731,102 @@ const server = http.createServer(async (req, res) => {
         };
     }
 
-    function checkMcpAuth(req, serverName) {
-        try {
-            const sessionPath = path.join(DASHBOARD_ROOT, '.mcp-session.json');
-            if (fs.existsSync(sessionPath)) {
-                const session = JSON.parse(fs.readFileSync(sessionPath, 'utf8'));
-                if (session && session.connected) {
-                    return { authenticated: true, session };
+    function checkLiveMcpProcess() {
+        // 1. Check for live SSE clients connected directly to the dashboard
+        if (activeSseClients.size > 0) {
+            const firstClient = activeSseClients.values().next().value;
+            return {
+                isLive: true,
+                data: {
+                    connected: true,
+                    client: (firstClient && firstClient.clientName) || 'Web AI (SSE)',
+                    transport: 'sse',
+                    pid: process.pid,
+                    startedAt: (firstClient && firstClient.connectedAt) || Date.now(),
+                    lastHeartbeat: Date.now(),
+                    toolCount: (mcpEngine && mcpEngine.TOOLS) ? mcpEngine.TOOLS.length : 10
                 }
-            }
-        } catch(e) {}
-
-        const authHeader = req.headers.authorization || req.headers.Authorization || '';
-        let mcpToken = '';
-        if (authHeader && authHeader.startsWith('Bearer mcp_')) {
-            mcpToken = authHeader.replace('Bearer ', '').trim();
-        } else if (req.headers['x-mcp-auth'] && req.headers['x-mcp-auth'].startsWith('mcp_')) {
-            mcpToken = req.headers['x-mcp-auth'].trim();
+            };
         }
 
-        if (mcpToken && verifyMcpToken(mcpToken, serverName)) {
-            return { authenticated: true, session: { token: mcpToken } };
+        // 2. Check candidate status files written by Stdio or standalone MCP processes
+        const candidatePaths = [
+            path.join(DASHBOARD_ROOT, '.mcp-active.json'),
+            path.join(SITE_ROOT, 'dashboard', '.mcp-active.json'),
+            path.join(SITE_ROOT, 'Clarified Dashboard', '.mcp-active.json'),
+            path.join(process.cwd(), 'dashboard', '.mcp-active.json'),
+            path.join(process.cwd(), 'Clarified Dashboard', '.mcp-active.json'),
+            path.join(process.cwd(), '.mcp-active.json')
+        ].filter((p, i, arr) => arr.indexOf(p) === i);
+
+        for (const p of candidatePaths) {
+            try {
+                if (fs.existsSync(p)) {
+                    const data = JSON.parse(fs.readFileSync(p, 'utf8'));
+                    if (data && data.connected) {
+                        const age = Date.now() - (data.lastHeartbeat || 0);
+                        // 1. Freshness check: if no heartbeat for > 4s, it's stale
+                        if (age > 4000) {
+                            try { fs.unlinkSync(p); } catch (e) {}
+                            continue;
+                        }
+
+                        // 2. Is the MCP node server process still running?
+                        if (data.pid) {
+                            try {
+                                process.kill(data.pid, 0);
+                            } catch (err) {
+                                try { fs.unlinkSync(p); } catch (e) {}
+                                continue;
+                            }
+                        }
+
+                        // 3. Is the root IDE process (Antigravity, Cursor, Claude Desktop, etc.) still alive?
+                        if (data.rootPid) {
+                            try {
+                                process.kill(data.rootPid, 0);
+                            } catch (err) {
+                                if (data.pid && data.pid !== process.pid) {
+                                    try { process.kill(data.pid, 'SIGKILL'); } catch (k) {}
+                                }
+                                try { fs.unlinkSync(p); } catch (e) {}
+                                continue;
+                            }
+                        }
+
+                        // 4. Is the parent process still alive?
+                        if (data.parentPid) {
+                            try {
+                                process.kill(data.parentPid, 0);
+                            } catch (err) {
+                                if (data.pid && data.pid !== process.pid) {
+                                    try { process.kill(data.pid, 'SIGKILL'); } catch (k) {}
+                                }
+                                try { fs.unlinkSync(p); } catch (e) {}
+                                continue;
+                            }
+                        }
+
+                        return { isLive: true, data };
+                    }
+                }
+            } catch (e) {}
+        }
+        return { isLive: false, data: null };
+    }
+
+    function checkMcpAuth(req, serverName) {
+        const live = checkLiveMcpProcess();
+        if (live.isLive) {
+            return {
+                authenticated: true,
+                session: {
+                    live: true,
+                    client: live.data.client || 'AI Assistant (MCP)',
+                    pid: live.data.pid,
+                    transport: live.data.transport || 'stdio'
+                }
+            };
         }
 
         return { authenticated: false, session: null };
@@ -848,6 +932,8 @@ const server = http.createServer(async (req, res) => {
             const totalArticles = articles.length;
             const publishedArticles = articles.filter(a => a.status === 'published').length;
             const draftArticles = articles.filter(a => a.status === 'draft').length;
+            const toolsCatalog = (mcpEngine && mcpEngine.TOOLS) ? mcpEngine.TOOLS : mcpToolsCatalog;
+            const sseUrl = `http://localhost:${PORT}/api/mcp/sse`;
 
             if (!configInfo.hasServers) {
                 return json(res, {
@@ -857,11 +943,12 @@ const server = http.createServer(async (req, res) => {
                     configPath: configInfo.path,
                     serverName: null,
                     serverNames: [],
-                    message: `No MCP server configured in config.json (${path.basename(configInfo.path)} is empty). Add your server configuration to connect.`,
-                    protocol: "Model Context Protocol (MCP) v1.0",
+                    message: `No MCP server configured in config.json. Add your clarified server configuration to connect any AI.`,
+                    protocol: "Model Context Protocol (MCP) v2024-11-05",
+                    sseUrl,
                     toolCount: 0,
                     tools: [],
-                    allTools: mcpToolsCatalog
+                    allTools: toolsCatalog
                 });
             }
 
@@ -869,28 +956,38 @@ const server = http.createServer(async (req, res) => {
                 return json(res, {
                     connected: false,
                     configured: true,
-                    status: "unauthenticated",
+                    status: "standby",
                     configPath: configInfo.path,
                     serverName: configInfo.serverName,
                     serverNames: configInfo.serverNames,
-                    message: `Server definition found in ${path.basename(configInfo.path)}: "${configInfo.serverName}". Authentication required to connect.`,
-                    protocol: "Model Context Protocol (MCP) v1.0",
-                    toolCount: 0,
+                    message: `Server "${configInfo.serverName}" is in standby. Ready for any AI client (Antigravity, Claude, Cursor, Cline, or SSE) to connect.`,
+                    protocol: "Model Context Protocol (MCP) v2024-11-05",
+                    sseUrl,
+                    toolCount: toolsCatalog.length,
                     tools: [],
-                    allTools: mcpToolsCatalog
+                    allTools: toolsCatalog
                 });
             }
+
+            const clientName = (authInfo.session && authInfo.session.client) || 'AI Assistant (MCP)';
+            const pid = authInfo.session && authInfo.session.pid;
+            const transport = (authInfo.session && authInfo.session.transport) || 'stdio';
 
             return json(res, {
                 connected: true,
                 configured: true,
                 status: "ready",
+                client: clientName,
+                transport,
+                pid,
+                live: true,
                 configPath: configInfo.path,
                 serverName: configInfo.serverName,
                 serverNames: configInfo.serverNames,
-                message: `Connected to ${configInfo.serverName}`,
-                protocol: "Model Context Protocol (MCP) v1.0",
+                message: `Connected: ${clientName} (${transport.toUpperCase()} Transport Active)`,
+                protocol: "Model Context Protocol (MCP) v2024-11-05",
                 serverScript: "mcp/server.js",
+                sseUrl,
                 environment: {
                     githubOwner: 'adolph-mulangatshivalo',
                     githubRepo: 'Clarified.co.za',
@@ -902,23 +999,179 @@ const server = http.createServer(async (req, res) => {
                     publishedArticles,
                     draftArticles
                 },
-                toolCount: mcpToolsCatalog.length,
-                tools: mcpToolsCatalog,
-                allTools: mcpToolsCatalog
+                toolCount: toolsCatalog.length,
+                tools: toolsCatalog,
+                allTools: toolsCatalog
             });
         } catch(e) {
             return json(res, { connected: false, configured: false, status: "error", error: e.message }, 500);
         }
     }
 
-    // ── POST /api/mcp-auth ──────────────────────────────────────────────────
+    // ── MCP SSE Transport Stream (GET /api/mcp/sse) ───────────────────────────
+    if (method === 'GET' && url === '/api/mcp/sse') {
+        const sessionId = crypto.randomBytes(16).toString('hex');
+        res.writeHead(200, {
+            'Content-Type': 'text/event-stream',
+            'Cache-Control': 'no-cache, no-transform',
+            'Connection': 'keep-alive',
+            'Access-Control-Allow-Origin': '*'
+        });
+
+        activeSseClients.set(sessionId, {
+            res,
+            clientName: 'Web AI (SSE)',
+            connectedAt: Date.now()
+        });
+
+        // Send official MCP endpoint event declaring POST URL for JSON-RPC messages
+        res.write(`event: endpoint\ndata: /api/mcp/messages?sessionId=${sessionId}\n\n`);
+
+        req.on('close', () => {
+            activeSseClients.delete(sessionId);
+        });
+        return;
+    }
+
+    // ── MCP SSE Messages (POST /api/mcp/messages) ─────────────────────────────
+    if (method === 'POST' && url.startsWith('/api/mcp/messages')) {
+        try {
+            const parsedUrl = new URL(url, `http://localhost:${PORT}`);
+            const sessionId = parsedUrl.searchParams.get('sessionId');
+            const client = activeSseClients.get(sessionId);
+
+            const rpcReq = await readBody(req);
+            let rpcRes = null;
+
+            if (mcpEngine && mcpEngine.executeRpc) {
+                rpcRes = await mcpEngine.executeRpc(rpcReq, { transport: 'sse' });
+                if (rpcReq.params && rpcReq.params.clientInfo && client) {
+                    client.clientName = rpcReq.params.clientInfo.name || 'Web AI (SSE)';
+                }
+            } else {
+                rpcRes = { jsonrpc: '2.0', id: rpcReq.id, error: { code: -32603, message: 'MCP engine unavailable' } };
+            }
+
+            if (client && !rpcRes.notification) {
+                client.res.write(`event: message\ndata: ${JSON.stringify(rpcRes)}\n\n`);
+            }
+
+            return json(res, { accepted: true }, 202);
+        } catch (e) {
+            return json(res, { error: e.message }, 400);
+        }
+    }
+
+    // ── Interactive Tool Test Endpoint (POST /api/mcp/test-tool) ──────────────
+    if (method === 'POST' && url === '/api/mcp/test-tool') {
+        try {
+            const data = await readBody(req);
+            const toolName = data.tool;
+            const toolArgs = data.args || {};
+
+            if (!toolName) {
+                return json(res, { success: false, error: 'Missing "tool" name parameter.' }, 400);
+            }
+
+            if (!mcpEngine || !mcpEngine.executeTool) {
+                return json(res, { success: false, error: 'MCP Engine is not available.' }, 500);
+            }
+
+            const result = await mcpEngine.executeTool(toolName, toolArgs);
+            return json(res, { success: true, tool: toolName, result });
+        } catch (err) {
+            return json(res, { success: false, error: err.message }, 500);
+        }
+    }
+
+    // ── MCP Disconnect & Force Kill (POST /api/mcp-disconnect & /api/mcp-kill) ─
+    if (method === 'POST' && (url === '/api/mcp-disconnect' || url === '/api/mcp-kill')) {
+        try {
+            const candidatePaths = [
+                path.join(DASHBOARD_ROOT, '.mcp-active.json'),
+                path.join(SITE_ROOT, 'dashboard', '.mcp-active.json'),
+                path.join(SITE_ROOT, 'Clarified Dashboard', '.mcp-active.json'),
+                path.join(process.cwd(), 'dashboard', '.mcp-active.json'),
+                path.join(process.cwd(), 'Clarified Dashboard', '.mcp-active.json'),
+                path.join(process.cwd(), '.mcp-active.json')
+            ].filter((p, i, arr) => arr.indexOf(p) === i);
+
+            // 1. Terminate any active background MCP child process if found
+            for (const p of candidatePaths) {
+                try {
+                    if (fs.existsSync(p)) {
+                        const data = JSON.parse(fs.readFileSync(p, 'utf8'));
+                        if (data && data.pid && data.pid !== process.pid) {
+                            try { process.kill(data.pid, 'SIGTERM'); } catch (e) {}
+                            setTimeout(() => {
+                                try { process.kill(data.pid, 'SIGKILL'); } catch (e) {}
+                            }, 300);
+                        }
+                        fs.unlinkSync(p);
+                    }
+                } catch (e) {}
+            }
+
+            // Also forcefully stop any orphaned node processes running mcp/server.js
+            try {
+                if (process.platform === 'win32') {
+                    const killCmd = 'powershell -NoProfile -Command "Get-CimInstance Win32_Process | Where-Object { $_.CommandLine -like \'*mcp/server.js*\' -and $_.ProcessId -ne ' + process.pid + ' } | ForEach-Object { Stop-Process -Id $_.ProcessId -Force -ErrorAction SilentlyContinue }"';
+                    require('child_process').execSync(killCmd, { timeout: 3000, stdio: 'ignore' });
+                }
+            } catch(e) {}
+
+            // 2. Remove session cache
+            const sessionPath = path.join(DASHBOARD_ROOT, '.mcp-session.json');
+            if (fs.existsSync(sessionPath)) {
+                try { fs.unlinkSync(sessionPath); } catch (e) {}
+            }
+
+            // 3. Close any active SSE streams
+            for (const [id, client] of activeSseClients.entries()) {
+                try {
+                    client.res.end();
+                } catch (e) {}
+            }
+            activeSseClients.clear();
+
+            if (mcpEngine && mcpEngine.cleanupLiveStatus) {
+                mcpEngine.cleanupLiveStatus();
+            }
+
+            return json(res, {
+                success: true,
+                connected: false,
+                message: 'MCP server disconnected cleanly. All background processes and sessions terminated.'
+            });
+        } catch (e) {
+            return json(res, { success: false, error: e.message }, 500);
+        }
+    }
+
+    // ── POST /api/mcp-auth (Compatibility) ───────────────────────────────────
     if (method === 'POST' && url === '/api/mcp-auth') {
         try {
             const data = await readBody(req);
             const action = data.action || 'authenticate';
-            const sessionPath = path.join(DASHBOARD_ROOT, '.mcp-session.json');
 
             if (action === 'disconnect') {
+                const candidatePaths = [
+                    path.join(DASHBOARD_ROOT, '.mcp-active.json'),
+                    path.join(SITE_ROOT, 'dashboard', '.mcp-active.json'),
+                    path.join(SITE_ROOT, 'Clarified Dashboard', '.mcp-active.json')
+                ];
+                for (const p of candidatePaths) {
+                    try {
+                        if (fs.existsSync(p)) {
+                            const d = JSON.parse(fs.readFileSync(p, 'utf8'));
+                            if (d && d.pid && d.pid !== process.pid) {
+                                try { process.kill(d.pid, 'SIGTERM'); } catch(e) {}
+                            }
+                            fs.unlinkSync(p);
+                        }
+                    } catch(e) {}
+                }
+                const sessionPath = path.join(DASHBOARD_ROOT, '.mcp-session.json');
                 if (fs.existsSync(sessionPath)) fs.unlinkSync(sessionPath);
                 return json(res, { success: true, connected: false, message: 'MCP disconnected successfully.' });
             }
@@ -941,6 +1194,7 @@ const server = http.createServer(async (req, res) => {
                 authenticatedAt: Date.now(),
                 token
             };
+            const sessionPath = path.join(DASHBOARD_ROOT, '.mcp-session.json');
             fs.writeFileSync(sessionPath, JSON.stringify(sessionData, null, 2), 'utf8');
 
             return json(res, {

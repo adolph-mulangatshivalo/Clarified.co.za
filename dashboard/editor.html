@@ -787,6 +787,28 @@ document.addEventListener('input', markDirty);
 document.getElementById('editor-body').addEventListener('input', markDirty);
 document.getElementById('category-checkboxes').addEventListener('change', markDirty);
 
+// ── Sidebar MCP Badge ──────────────────────────────────────────────────────────
+async function updateSidebarMcpBadge() {
+    try {
+        const res = await fetch('/api/mcp-status');
+        const data = await res.json();
+        const badgeEl = document.getElementById('sidebar-mcp-badge');
+        if (badgeEl) {
+            if (data && data.connected) {
+                badgeEl.textContent = (data.toolCount || 10) + ' Tools';
+                badgeEl.className = 'nav-badge connected';
+            } else if (data && data.configured) {
+                badgeEl.textContent = 'Standby';
+                badgeEl.className = 'nav-badge pending';
+            } else {
+                badgeEl.textContent = 'Offline';
+                badgeEl.className = 'nav-badge disconnected';
+            }
+        }
+    } catch(e) {}
+}
+updateSidebarMcpBadge();
+
 // ── Init checks ───────────────────────────────────────────────────────────────
 runSeoChecks();
 </script>

@@ -3,39 +3,82 @@ import path from 'path';
 import { findMcpConfig, verifyMcpToken } from './mcp-auth.js';
 import { verifyAdminAuth } from './auth-verify.js';
 
-async function checkMcpAuth(req, serverName) {
-    // 1. Check local session file
-    try {
-        const sessionPath = path.join(process.cwd(), 'dashboard', '.mcp-session.json');
-        if (fs.existsSync(sessionPath)) {
-            const session = JSON.parse(fs.readFileSync(sessionPath, 'utf8'));
-            if (session && session.connected) {
-                return { authenticated: true, session };
-            }
-        }
-    } catch(e) {}
+function checkLiveMcpProcess() {
+    const candidatePaths = [
+        path.join(process.cwd(), 'dashboard', '.mcp-active.json'),
+        path.join(process.cwd(), 'Clarified Dashboard', '.mcp-active.json'),
+        path.join(process.cwd(), '.mcp-active.json')
+    ];
 
-    // 2. Check headers / token for signed MCP session
-    const authHeader = req.headers.authorization || req.headers.Authorization || '';
-    let mcpToken = '';
-    if (authHeader && authHeader.startsWith('Bearer mcp_')) {
-        mcpToken = authHeader.replace('Bearer ', '').trim();
-    } else if (req.headers['x-mcp-auth'] && req.headers['x-mcp-auth'].startsWith('mcp_')) {
-        mcpToken = req.headers['x-mcp-auth'].trim();
-    }
-
-    if (mcpToken && verifyMcpToken(mcpToken, serverName)) {
-        return { authenticated: true, session: { token: mcpToken } };
-    }
-
-    // 3. Fallback: verify if caller is an authorized Firebase Admin
-    if (authHeader.startsWith('Bearer ') && !authHeader.startsWith('Bearer mcp_')) {
+    for (const p of candidatePaths) {
         try {
-            const adminCheck = await verifyAdminAuth(req);
-            if (adminCheck && adminCheck.authorized) {
-                return { authenticated: true, session: { user: adminCheck.user, type: 'admin' } };
+            if (fs.existsSync(p)) {
+                const data = JSON.parse(fs.readFileSync(p, 'utf8'));
+                if (data && data.connected) {
+                    const age = Date.now() - (data.lastHeartbeat || 0);
+                    // 1. Freshness check: if no heartbeat for > 4s, it's stale
+                    if (age > 4000) {
+                        try { fs.unlinkSync(p); } catch(e) {}
+                        continue;
+                    }
+
+                    // 2. Is the MCP node server process still running?
+                    if (data.pid) {
+                        try {
+                            process.kill(data.pid, 0);
+                        } catch (err) {
+                            try { fs.unlinkSync(p); } catch(e) {}
+                            continue;
+                        }
+                    }
+
+                    // 3. Is the root IDE process (Antigravity, Cursor, Claude Desktop, etc.) still alive?
+                    // If rootPid was recorded and is dead, the IDE was closed. Clean up orphan node process immediately.
+                    if (data.rootPid) {
+                        try {
+                            process.kill(data.rootPid, 0);
+                        } catch (err) {
+                            if (data.pid && data.pid !== process.pid) {
+                                try { process.kill(data.pid, 'SIGKILL'); } catch(k) {}
+                            }
+                            try { fs.unlinkSync(p); } catch(e) {}
+                            continue;
+                        }
+                    }
+
+                    // 4. Is the parent process still alive?
+                    if (data.parentPid) {
+                        try {
+                            process.kill(data.parentPid, 0);
+                        } catch (err) {
+                            if (data.pid && data.pid !== process.pid) {
+                                try { process.kill(data.pid, 'SIGKILL'); } catch(k) {}
+                            }
+                            try { fs.unlinkSync(p); } catch(e) {}
+                            continue;
+                        }
+                    }
+
+                    return { isLive: true, data };
+                }
             }
         } catch(e) {}
+    }
+    return { isLive: false, data: null };
+}
+
+async function checkMcpAuth(req, serverName) {
+    const live = checkLiveMcpProcess();
+    if (live.isLive) {
+        return {
+            authenticated: true,
+            session: {
+                live: true,
+                client: live.data.client || 'AI Assistant (MCP)',
+                pid: live.data.pid,
+                transport: live.data.transport || 'stdio'
+            }
+        };
     }
 
     return { authenticated: false, session: null };
@@ -181,38 +224,45 @@ export default async function handler(req, res) {
             });
         }
 
-        // CASE 2: Server configured, but NOT authenticated yet
+        // CASE 2: Server configured, but Antigravity NOT connected right now
         if (!authInfo.authenticated) {
             return res.status(200).json({
                 connected: false,
                 configured: true,
-                status: "unauthenticated",
+                status: "standby",
                 configPath: configInfo.path,
                 serverName: configInfo.serverName,
                 serverNames: configInfo.serverNames,
-                message: `Server definition found in ${path.basename(configInfo.path)}: "${configInfo.serverName}". Authentication required to connect.`,
-                protocol: "Model Context Protocol (MCP) v1.0",
+                message: `Server "${configInfo.serverName}" is ready. Connect with any AI assistant (Antigravity, Claude Desktop, Cursor, Cline, or SSE).`,
+                protocol: "Model Context Protocol (MCP) v2024-11-05",
                 toolCount: 0,
                 tools: [],
                 allTools: tools
             });
         }
 
-        // CASE 3: Configured AND authenticated -> CONNECTED
+        // CASE 3: Configured AND connected -> LIVE
         const hasGithubToken = Boolean(process.env.GITHUB_TOKEN);
         const githubOwner = process.env.GITHUB_OWNER || 'adolph-mulangatshivalo';
         const githubRepo = process.env.GITHUB_REPO || 'Clarified.co.za';
         const githubBranch = process.env.GITHUB_BRANCH || 'main';
+        const clientName = (authInfo.session && authInfo.session.client) || 'AI Assistant (MCP)';
+        const pid = authInfo.session && authInfo.session.pid;
+        const transport = (authInfo.session && authInfo.session.transport) || 'stdio';
 
         return res.status(200).json({
             connected: true,
             configured: true,
             status: "ready",
+            client: clientName,
+            transport,
+            pid,
+            live: true,
             configPath: configInfo.path,
             serverName: configInfo.serverName,
             serverNames: configInfo.serverNames,
-            message: `Connected to ${configInfo.serverName}`,
-            protocol: "Model Context Protocol (MCP) v1.0",
+            message: `Connected: ${clientName} (${transport.toUpperCase()} Transport Active)`,
+            protocol: "Model Context Protocol (MCP) v2024-11-05",
             serverScript: "mcp/server.js",
             environment: {
                 githubOwner,

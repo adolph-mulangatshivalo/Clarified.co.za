@@ -21,3 +21,9 @@ db.json.bak
 *clarigit-*.json
 *-key.json
 service-account*.json
+
+# MCP Runtime status & session files
+*.mcp-active.json
+*.mcp-session.json
+.mcp-active.json
+.mcp-session.json

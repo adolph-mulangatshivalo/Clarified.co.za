@@ -1,7 +1,10 @@
 #!/usr/bin/env node
 /**
  * Clarified.co.za Model Context Protocol (MCP) Server
- * Production-Grade Editorial AI Engine
+ * Universal AI Editorial Engine (Stdio + SSE Transports)
+ *
+ * Fully compliant with Model Context Protocol specification.
+ * Connectable to ANY AI assistant (Claude Desktop, Cursor, Antigravity, Cline, Windsurf, Zed, LibreChat, Open-WebUI).
  *
  * Core Capabilities:
  * 1. Safe, Reversible Publishing (Draft-First & Git/Vercel Sync)
@@ -9,10 +12,14 @@
  * 3. Duplicate Content & Keyword Cannibalization Detector
  * 4. Verified Internal Linking Engine
  * 5. Full SEO & Structured Data Management
+ * 6. Live Google Search Console Integration
+ * 7. Universal Transports: Stdio (NDJSON & LSP framing) + HTTP Server-Sent Events (SSE)
+ * 8. Zero-Zombie Process Lifecycle: Auto-cleans on parent exit, pipe close, or disconnect
  */
 
 const fs = require('fs');
 const path = require('path');
+const http = require('http');
 const { execSync } = require('child_process');
 const crypto = require('crypto');
 
@@ -22,6 +29,214 @@ const DB_PATH = fs.existsSync(path.join(PROJECT_ROOT, 'dashboard', 'db.json'))
     : path.join(PROJECT_ROOT, 'Clarified Dashboard', 'db.json');
 const ARTICLES_DIR = path.join(PROJECT_ROOT, 'articles');
 const ABOUT_TEMPLATE = path.join(PROJECT_ROOT, 'about.html');
+
+// ── Status Files Management & Process Lifecycle ──────────────────────────────
+const LIVE_STATUS_PATHS = [
+    path.join(PROJECT_ROOT, 'dashboard', '.mcp-active.json'),
+    path.join(PROJECT_ROOT, 'Clarified Dashboard', '.mcp-active.json')
+];
+
+let isClientConnected = false;
+let currentClient = null;
+let activeTransport = 'stdio';
+let sessionStartedAt = null;
+let lastHeartbeatTime = null;
+let heartbeatInterval = null;
+let parentWatchTimer = null;
+let parentPid = process.ppid;
+let rootPid = null;
+let rootName = null;
+
+function resolveProcessAncestors() {
+    parentPid = process.ppid;
+    if (process.platform !== 'win32') {
+        return;
+    }
+    try {
+        const cmd = 'powershell -NoProfile -Command "Get-CimInstance Win32_Process | Select-Object ProcessId, ParentProcessId, Name | ConvertTo-Json -Compress"';
+        const raw = require('child_process').execSync(cmd, { encoding: 'utf8', timeout: 5000, stdio: ['pipe', 'pipe', 'ignore'] });
+        const list = JSON.parse(raw);
+        const map = new Map(list.map(p => [p.ProcessId, p]));
+        const chain = [];
+        let curr = map.get(process.pid);
+        while (curr && curr.ParentProcessId) {
+            const parent = map.get(curr.ParentProcessId);
+            if (parent) {
+                chain.push(parent);
+                curr = parent;
+            } else {
+                break;
+            }
+        }
+        if (chain.length > 0) {
+            parentPid = chain[0].ProcessId;
+            const knownApps = ['antigravity', 'claude', 'cursor', 'code', 'windsurf', 'zed'];
+            for (const p of chain) {
+                const nameLower = (p.Name || '').toLowerCase();
+                for (const app of knownApps) {
+                    if (nameLower.includes(app)) {
+                        rootPid = p.ProcessId;
+                        rootName = p.Name;
+                        if (!currentClient) {
+                            if (app === 'antigravity') currentClient = 'Antigravity';
+                            else if (app === 'claude') currentClient = 'Claude Desktop';
+                            else if (app === 'cursor') currentClient = 'Cursor IDE';
+                            else if (app === 'code') currentClient = 'Cline (VS Code)';
+                            else if (app === 'windsurf') currentClient = 'Windsurf';
+                            else if (app === 'zed') currentClient = 'Zed Editor';
+                        }
+                        return;
+                    }
+                }
+            }
+            const outer = chain[chain.length - 1];
+            if (outer && !outer.Name.toLowerCase().includes('explorer')) {
+                rootPid = outer.ProcessId;
+                rootName = outer.Name;
+            }
+        }
+    } catch(e) {
+        parentPid = process.ppid;
+    }
+}
+
+function checkLifecycle() {
+    // 1. Is immediate parent alive?
+    if (parentPid && parentPid > 1) {
+        try {
+            process.kill(parentPid, 0);
+        } catch (e) {
+            cleanupLiveStatus();
+            process.exit(0);
+            return false;
+        }
+    }
+    // 2. Is root IDE process alive?
+    if (rootPid && rootPid !== parentPid) {
+        try {
+            process.kill(rootPid, 0);
+        } catch (e) {
+            cleanupLiveStatus();
+            process.exit(0);
+            return false;
+        }
+    }
+    // 3. Stdio pipe destroyed check
+    if (activeTransport === 'stdio' && process.stdin.destroyed) {
+        cleanupLiveStatus();
+        process.exit(0);
+        return false;
+    }
+    return true;
+}
+
+function formatClientName(raw) {
+    if (!raw) return 'AI Assistant (MCP)';
+    const name = String(raw).trim();
+    const lower = name.toLowerCase();
+    if (lower.includes('antigravity')) return 'Antigravity';
+    if (lower.includes('claude')) return 'Claude Desktop';
+    if (lower.includes('cursor')) return 'Cursor IDE';
+    if (lower.includes('cline')) return 'Cline (VS Code)';
+    if (lower.includes('roo')) return 'Roo Code';
+    if (lower.includes('zed')) return 'Zed Editor';
+    if (lower.includes('windsurf')) return 'Windsurf';
+    if (lower.includes('continue')) return 'Continue';
+    if (lower.includes('librechat')) return 'LibreChat';
+    if (lower.includes('open-webui')) return 'Open-WebUI';
+    return name;
+}
+
+function touchLiveStatus(clientInfo = null, transport = 'stdio') {
+    if (clientInfo) {
+        const clientName = clientInfo.name || clientInfo.title || (typeof clientInfo === 'string' ? clientInfo : null);
+        if (clientName) {
+            currentClient = formatClientName(clientName);
+        }
+    }
+
+    if (!isClientConnected && clientInfo) {
+        isClientConnected = true;
+        sessionStartedAt = Date.now();
+    }
+
+    if (transport) {
+        activeTransport = transport;
+    }
+
+    if (!isClientConnected) {
+        return; // Don't falsely report connected before a client initializes
+    }
+
+    lastHeartbeatTime = Date.now();
+    const statusData = {
+        connected: true,
+        pid: process.pid,
+        parentPid: parentPid || process.ppid,
+        rootPid: rootPid || null,
+        rootName: rootName || null,
+        serverName: 'clarified',
+        client: currentClient || 'AI Assistant (MCP)',
+        transport: activeTransport,
+        startedAt: sessionStartedAt || Date.now(),
+        lastHeartbeat: lastHeartbeatTime,
+        toolCount: TOOLS.length
+    };
+
+    for (const sp of LIVE_STATUS_PATHS) {
+        try {
+            const dir = path.dirname(sp);
+            if (!fs.existsSync(dir)) fs.mkdirSync(dir, { recursive: true });
+            fs.writeFileSync(sp, JSON.stringify(statusData, null, 2), 'utf8');
+        } catch (e) {}
+    }
+}
+
+function cleanupLiveStatus() {
+    isClientConnected = false;
+    currentClient = null;
+    if (heartbeatInterval) {
+        clearInterval(heartbeatInterval);
+        heartbeatInterval = null;
+    }
+    if (parentWatchTimer) {
+        clearInterval(parentWatchTimer);
+        parentWatchTimer = null;
+    }
+    for (const sp of LIVE_STATUS_PATHS) {
+        try {
+            if (fs.existsSync(sp)) {
+                // Only unlink if it was written by this process PID
+                try {
+                    const data = JSON.parse(fs.readFileSync(sp, 'utf8'));
+                    if (data && data.pid && data.pid !== process.pid) {
+                        continue;
+                    }
+                } catch(e) {}
+                fs.unlinkSync(sp);
+            }
+        } catch (e) {}
+    }
+}
+
+// Hook process exit at top level so that any termination immediately unlinks .mcp-active.json
+process.on('exit', cleanupLiveStatus);
+['SIGINT', 'SIGTERM', 'SIGHUP'].forEach(sig => {
+    process.on(sig, () => {
+        cleanupLiveStatus();
+        process.exit(0);
+    });
+});
+
+function startHeartbeatEngine() {
+    if (heartbeatInterval) clearInterval(heartbeatInterval);
+    heartbeatInterval = setInterval(() => {
+        if (!isClientConnected) return;
+        if (!checkLifecycle()) return;
+        touchLiveStatus();
+    }, 1500);
+    if (heartbeatInterval.unref) heartbeatInterval.unref();
+}
 
 // ── Database Helpers ────────────────────────────────────────────────────────
 function getDB() {
@@ -171,7 +386,6 @@ function regenerateSite() {
         out = out.replace(/<title>.*?<\/title>/, `<title>${seoTitle} &mdash; Clarified</title>`);
         out = out.replace(/href="style\.css"/g, 'href="/style.css"');
 
-        const isoDate = new Date(a.date || Date.now()).toISOString();
         const absoluteUrl = `https://clarified.co.za/articles/${slug}.html`;
         const absoluteImg = resolveAbsoluteImgUrl(a.featuredImage);
 
@@ -284,7 +498,7 @@ function runQualityGate(article, existingArticles = [], isNew = false) {
         warnings.push('Featured image is set but missing descriptive "imgAlt" text. Alt text is essential for Google Image search and accessibility.');
     }
 
-    // 7. Internal Link Integrity: Verify that all Clarified internal links actually exist
+    // 7. Internal Link Integrity
     const internalLinkRegex = /href=["'](?:\/articles\/|https?:\/\/clarified\.co\.za\/articles\/)([a-zA-Z0-9_-]+)\.html["']/gi;
     let match;
     const checkedSlugs = new Set();
@@ -323,31 +537,26 @@ function detectDuplicates(proposedTitle, proposedFocusKw = '', proposedSlug = ''
     const normalizedKw = (proposedFocusKw || '').toLowerCase().trim();
     const targetSlug = proposedSlug || generateSlug(proposedTitle);
 
-    // Stop words to remove from title similarity
     const stopWords = new Set(['the', 'and', 'for', 'with', 'how', 'what', 'why', 'in', 'of', 'on', 'at', 'to', 'a', 'is', 'are', 'that', 'this', 'south', 'africa']);
     const getWords = text => (text || '').toLowerCase().replace(/[^a-z0-9\s]/g, '').split(/\s+/).filter(w => w.length > 2 && !stopWords.has(w));
 
     const proposedWords = new Set(getWords(proposedTitle));
-
     const conflicts = [];
 
     articles.forEach(a => {
         let conflictType = null;
         let score = 0;
 
-        // Check exact slug collision
         if (a.slug === targetSlug) {
             conflictType = 'EXACT_SLUG_COLLISION';
             score = 100;
         }
 
-        // Check focus keyword clash
         if (normalizedKw && a.focusKw && a.focusKw.toLowerCase().trim() === normalizedKw) {
             conflictType = conflictType || 'KEYWORD_CANNIBALIZATION';
             score = Math.max(score, 90);
         }
 
-        // Check title word overlap (Jaccard similarity)
         const existingWords = getWords(a.title);
         const overlap = existingWords.filter(w => proposedWords.has(w));
         const unionSize = new Set([...proposedWords, ...existingWords]).size;
@@ -386,20 +595,18 @@ function suggestInternalLinks(content, currentSlug = '') {
     const db = getDB();
     const articles = (db.articles || []).filter(a => a.status === 'published' && a.slug !== currentSlug);
     const suggestions = [];
-    const textLower = content.toLowerCase();
+    const textLower = (content || '').toLowerCase();
 
     articles.forEach(a => {
         const candidates = [];
         if (a.focusKw && a.focusKw.length > 3) candidates.push(a.focusKw);
-        // Also candidate title fragments (e.g. "highest paying engineering jobs", "k53 driving test")
         const cleanTitle = a.title.replace(/[:\-–—].*$/, '').trim();
         if (cleanTitle.length > 10) candidates.push(cleanTitle);
 
         for (const candidate of candidates) {
             const pattern = candidate.toLowerCase();
             if (textLower.includes(pattern)) {
-                // Ensure link isn't already inside the content
-                const alreadyLinked = content.includes(a.slug);
+                const alreadyLinked = (content || '').includes(a.slug);
                 if (!alreadyLinked) {
                     suggestions.push({
                         anchorText: candidate,
@@ -421,7 +628,7 @@ function suggestInternalLinks(content, currentSlug = '') {
 }
 
 // ── Tool Handlers ────────────────────────────────────────────────────────────
-function handlePublishArticle(params) {
+function handlePublishArticle(params = {}) {
     const {
         title,
         content,
@@ -431,7 +638,7 @@ function handlePublishArticle(params) {
         author = 'Clarified Editorial',
         featuredImage = '',
         imgAlt = '',
-        status = 'draft', // Default is safe draft mode
+        status = 'draft',
         seoTitle = '',
         metaDesc = '',
         focusKw = '',
@@ -466,14 +673,12 @@ function handlePublishArticle(params) {
         focusKw,
         imgAlt: imgAlt || title,
         featuredImage,
-        status: status,
+        status,
         date: id
     };
 
-    // 1. Run Pre-Flight Quality Gate
     const qualityGate = runQualityGate(articleDraft, db.articles, isNew);
 
-    // If publishing live was requested but quality gate failed (and not forced), downgrade to draft
     let actualStatus = status;
     let downgradeReason = null;
     if (status === 'published' && !qualityGate.canPublish && !forcePublish) {
@@ -482,10 +687,8 @@ function handlePublishArticle(params) {
         downgradeReason = 'Quality Gate blocked live publication due to critical errors. Saved safely as draft.';
     }
 
-    // 2. Check for Duplicate / Cannibalization
     const duplicateReport = detectDuplicates(title, focusKw, finalSlug);
 
-    // 3. Save to database
     const existingIdx = db.articles.findIndex(a => a.slug === finalSlug);
     if (existingIdx >= 0) {
         db.articles[existingIdx] = { ...db.articles[existingIdx], ...articleDraft, id: db.articles[existingIdx].id };
@@ -495,7 +698,6 @@ function handlePublishArticle(params) {
 
     saveDB(db);
 
-    // Regenerate static pages if published
     if (actualStatus === 'published') {
         regenerateSite();
     }
@@ -518,7 +720,7 @@ function handlePublishArticle(params) {
     };
 }
 
-function handleEditArticle(params) {
+function handleEditArticle(params = {}) {
     const { id, slug, forcePublish = false, ...updates } = params;
     if (!id && !slug) {
         throw new Error('Please specify an "id" or "slug" to locate the article to edit.');
@@ -534,7 +736,6 @@ function handleEditArticle(params) {
     const current = db.articles[idx];
     const updatedArticle = { ...current, ...updates };
 
-    // Run quality gate if being published
     let qualityGate = null;
     if (updatedArticle.status === 'published') {
         qualityGate = runQualityGate(updatedArticle, db.articles.filter((_, i) => i !== idx), false);
@@ -580,12 +781,12 @@ function handleListArticles(params = {}) {
         slug: a.slug,
         status: a.status,
         category: a.category,
-        date: new Date(a.date).toLocaleDateString(),
+        date: new Date(a.date || Date.now()).toLocaleDateString(),
         url: `https://clarified.co.za/articles/${a.slug}.html`
     }));
 }
 
-function handleGetArticle(params) {
+function handleGetArticle(params = {}) {
     const { id, slug } = params;
     const db = getDB();
     const article = db.articles.find(a => (id && String(a.id) === String(id)) || (slug && a.slug === slug));
@@ -595,7 +796,7 @@ function handleGetArticle(params) {
     return article;
 }
 
-function handleDeleteArticle(params) {
+function handleDeleteArticle(params = {}) {
     const { id, confirm: userConfirmed } = params;
     if (!id) throw new Error('Article ID is required to delete.');
 
@@ -616,7 +817,7 @@ function handleDeleteArticle(params) {
 
     const articleHtmlPath = path.join(ARTICLES_DIR, `${removed.slug}.html`);
     if (fs.existsSync(articleHtmlPath)) {
-        fs.unlinkSync(articleHtmlPath);
+        try { fs.unlinkSync(articleHtmlPath); } catch (e) {}
     }
 
     regenerateSite();
@@ -641,12 +842,14 @@ function findGscCredentials() {
             try { return JSON.parse(fs.readFileSync(f, 'utf8')); } catch (e) {}
         }
     }
-    const rootFiles = fs.readdirSync(PROJECT_ROOT);
-    for (const f of rootFiles) {
-        if (f.startsWith('clarigit-') && f.endsWith('.json')) {
-            try { return JSON.parse(fs.readFileSync(path.join(PROJECT_ROOT, f), 'utf8')); } catch (e) {}
+    try {
+        const rootFiles = fs.readdirSync(PROJECT_ROOT);
+        for (const f of rootFiles) {
+            if (f.startsWith('clarigit-') && f.endsWith('.json')) {
+                try { return JSON.parse(fs.readFileSync(path.join(PROJECT_ROOT, f), 'utf8')); } catch (e) {}
+            }
         }
-    }
+    } catch (e) {}
     return null;
 }
 
@@ -808,20 +1011,20 @@ const TOOLS = [
         inputSchema: {
             type: 'object',
             properties: {
-                title: { type: 'string' },
-                content: { type: 'string' },
-                slug: { type: 'string' },
-                seoTitle: { type: 'string' },
-                metaDesc: { type: 'string' },
-                featuredImage: { type: 'string' },
-                imgAlt: { type: 'string' }
+                title: { type: 'string', description: 'Article title' },
+                content: { type: 'string', description: 'Article HTML content with <h2> subheadings' },
+                slug: { type: 'string', description: 'Proposed URL slug' },
+                seoTitle: { type: 'string', description: 'SEO Meta Title (max 60 chars)' },
+                metaDesc: { type: 'string', description: 'SEO Meta Description (max 160 chars)' },
+                featuredImage: { type: 'string', description: 'Image URL or path' },
+                imgAlt: { type: 'string', description: 'Descriptive alt text for image' }
             },
             required: ['title', 'content', 'slug']
         }
     },
     {
         name: 'detect_duplicates',
-        description: 'Scan Clarified archive for keyword cannibalization and topical overlap before creating a new article.',
+        description: 'Scan Clarified archive for keyword cannibalization, duplicate slugs, and topical overlap before creating a new article.',
         inputSchema: {
             type: 'object',
             properties: {
@@ -951,123 +1154,550 @@ const TOOLS = [
     }
 ];
 
-function sendResponse(id, result) {
-    const msg = JSON.stringify({ jsonrpc: '2.0', id, result });
-    process.stdout.write(`Content-Length: ${Buffer.byteLength(msg, 'utf8')}\r\n\r\n${msg}`);
-}
+// ── MCP Resources & Prompts Definitions ───────────────────────────────────────
 
-function sendError(id, code, message) {
-    const msg = JSON.stringify({ jsonrpc: '2.0', id, error: { code, message } });
-    process.stdout.write(`Content-Length: ${Buffer.byteLength(msg, 'utf8')}\r\n\r\n${msg}`);
-}
-
-// ── Stdio Protocol Engine ────────────────────────────────────────────────────
-let buffer = Buffer.alloc(0);
-
-process.stdin.on('data', chunk => {
-    buffer = Buffer.concat([buffer, chunk]);
-
-    while (true) {
-        const headerEnd = buffer.indexOf('\r\n\r\n');
-        if (headerEnd === -1) break;
-
-        const headerStr = buffer.slice(0, headerEnd).toString('utf8');
-        const match = headerStr.match(/Content-Length:\s*(\d+)/i);
-        if (!match) {
-            buffer = buffer.slice(headerEnd + 4);
-            continue;
-        }
-
-        const contentLength = parseInt(match[1], 10);
-        const bodyStart = headerEnd + 4;
-        const bodyEnd = bodyStart + contentLength;
-
-        if (buffer.length < bodyEnd) break;
-
-        const bodyStr = buffer.slice(bodyStart, bodyEnd).toString('utf8');
-        buffer = buffer.slice(bodyEnd);
-
-        try {
-            const req = JSON.parse(bodyStr);
-            handleRpc(req);
-        } catch (e) {
-            console.error('Failed to parse RPC request:', e);
-        }
+const RESOURCES = [
+    {
+        uri: 'clarified://articles/all',
+        name: 'All Clarified Articles',
+        description: 'Catalog of all published and draft articles in Clarified.co.za database',
+        mimeType: 'application/json'
+    },
+    {
+        uri: 'clarified://guidelines',
+        name: 'Clarified Editorial & SEO Standards',
+        description: 'Official quality standards: word counts, heading hierarchy, snippet limits, tone of voice',
+        mimeType: 'text/markdown'
+    },
+    {
+        uri: 'clarified://categories',
+        name: 'Content Categories & Taxonomy',
+        description: 'List of accepted editorial categories on Clarified.co.za',
+        mimeType: 'application/json'
     }
-});
+];
 
-async function handleRpc(req) {
+const PROMPTS = [
+    {
+        name: 'write_article',
+        description: 'Generate a complete, publishing-ready article that strictly adheres to Clarified editorial quality standards.',
+        arguments: [
+            { name: 'topic', description: 'Topic or headline idea', required: true },
+            { name: 'focusKeyword', description: 'Target SEO focus keyword', required: true },
+            { name: 'category', description: 'Category (South Africa, Business, Tech, etc.)', required: false }
+        ]
+    },
+    {
+        name: 'seo_audit',
+        description: 'Run comprehensive pre-flight SEO checks on draft content.',
+        arguments: [
+            { name: 'content', description: 'Draft text or HTML', required: true },
+            { name: 'focusKeyword', description: 'Focus keyword', required: true }
+        ]
+    },
+    {
+        name: 'content_opportunities',
+        description: 'Analyze live Search Console queries to find low CTR click-magnets and page 2 opportunities.',
+        arguments: [
+            { name: 'days', description: 'Number of days (default 28)', required: false }
+        ]
+    }
+];
+
+// ── Tool Execution Dispatcher ────────────────────────────────────────────────
+async function executeTool(name, args = {}) {
+    switch (name) {
+        case 'validate_article_quality':
+            const db = getDB();
+            return runQualityGate(args, db.articles || [], false);
+        case 'detect_duplicates':
+            return detectDuplicates(args.title, args.focusKw, args.slug);
+        case 'suggest_internal_links':
+            return suggestInternalLinks(args.content, args.currentSlug);
+        case 'publish_article':
+            return handlePublishArticle(args);
+        case 'edit_article':
+            return handleEditArticle(args);
+        case 'list_articles':
+            return handleListArticles(args);
+        case 'get_article':
+            return handleGetArticle(args);
+        case 'delete_article':
+            return handleDeleteArticle(args);
+        case 'get_search_analytics':
+            return await handleGetSearchAnalytics(args);
+        case 'get_content_opportunities':
+            return await handleGetContentOpportunities(args);
+        default:
+            throw new Error(`Tool not found: ${name}`);
+    }
+}
+
+// ── Resource Reader ──────────────────────────────────────────────────────────
+function readResource(uri) {
+    if (uri === 'clarified://articles/all') {
+        const db = getDB();
+        return {
+            contents: [{
+                uri,
+                mimeType: 'application/json',
+                text: JSON.stringify(db.articles || [], null, 2)
+            }]
+        };
+    }
+    if (uri === 'clarified://categories') {
+        return {
+            contents: [{
+                uri,
+                mimeType: 'application/json',
+                text: JSON.stringify([
+                    'South Africa',
+                    'Africa News',
+                    'World News',
+                    'Business & Finance',
+                    'Technology & AI',
+                    'Sport',
+                    'Education & Careers',
+                    'GenZ & Youth',
+                    'Lifestyle & Culture',
+                    'Automotive'
+                ], null, 2)
+            }]
+        };
+    }
+    if (uri === 'clarified://guidelines') {
+        const guidelines = `# Clarified Editorial & SEO Quality Standards
+1. **Word Count**: Minimum 250 words, ideal depth 600-1,200 words.
+2. **Structure**: Exactly one <h1> (the article title). Body content must use <h2> subheadings and optional <h3>.
+3. **Headlines**: Clear, factual, engaging without clickbait. Maximum 60 characters for SEO Title.
+4. **Meta Description**: Mandatory, concise summary between 120 and 160 characters.
+5. **Internal Links**: Must point to verified published articles on Clarified.co.za.
+6. **Images**: Descriptive \`imgAlt\` text required for all featured images.
+7. **Draft-First Safeguard**: Articles default to draft unless explicitly marked as published.`;
+        return {
+            contents: [{
+                uri,
+                mimeType: 'text/markdown',
+                text: guidelines
+            }]
+        };
+    }
+    throw new Error(`Resource not found: ${uri}`);
+}
+
+// ── Universal JSON-RPC 2.0 Dispatcher ─────────────────────────────────────────
+async function executeRpc(req, transportContext = {}) {
+    if (!req || typeof req !== 'object') {
+        return { jsonrpc: '2.0', id: null, error: { code: -32600, message: 'Invalid Request' } };
+    }
+
     const { id, method, params } = req;
+    const transport = transportContext.transport || 'stdio';
+
+    // Heartbeat on any valid incoming request
+    touchLiveStatus(params && params.clientInfo, transport);
 
     if (method === 'initialize') {
-        sendResponse(id, {
-            protocolVersion: '2024-11-05',
-            capabilities: { tools: {} },
-            serverInfo: { name: 'clarified-editorial-mcp', version: '2.0.0' }
-        });
-        return;
+        startHeartbeatEngine();
+        const clientProto = (params && params.protocolVersion) || '2024-11-05';
+        return {
+            jsonrpc: '2.0',
+            id,
+            result: {
+                protocolVersion: clientProto,
+                capabilities: {
+                    tools: { listChanged: false },
+                    resources: { subscribe: false, listChanged: false },
+                    prompts: { listChanged: false },
+                    logging: {}
+                },
+                serverInfo: {
+                    name: 'clarified-editorial-mcp',
+                    version: '2.1.0'
+                }
+            }
+        };
     }
 
-    if (method === 'notifications/initialized') return;
-    if (method === 'ping') { sendResponse(id, {}); return; }
+    if (method === 'notifications/initialized') {
+        return { notification: true };
+    }
 
+    if (method === 'ping') {
+        return { jsonrpc: '2.0', id, result: {} };
+    }
+
+    // Tools List
     if (method === 'tools/list') {
-        sendResponse(id, { tools: TOOLS });
-        return;
+        return { jsonrpc: '2.0', id, result: { tools: TOOLS } };
     }
 
+    // Tools Call
     if (method === 'tools/call') {
         const { name, arguments: args = {} } = params || {};
         try {
-            let resultData;
-            switch (name) {
-                case 'validate_article_quality':
-                    const db = getDB();
-                    resultData = runQualityGate(args, db.articles || [], false);
-                    break;
-                case 'detect_duplicates':
-                    resultData = detectDuplicates(args.title, args.focusKw, args.slug);
-                    break;
-                case 'suggest_internal_links':
-                    resultData = suggestInternalLinks(args.content, args.currentSlug);
-                    break;
-                case 'publish_article':
-                    resultData = handlePublishArticle(args);
-                    break;
-                case 'edit_article':
-                    resultData = handleEditArticle(args);
-                    break;
-                case 'list_articles':
-                    resultData = handleListArticles(args);
-                    break;
-                case 'get_article':
-                    resultData = handleGetArticle(args);
-                    break;
-                case 'delete_article':
-                    resultData = handleDeleteArticle(args);
-                    break;
-                case 'get_search_analytics':
-                    resultData = await handleGetSearchAnalytics(args);
-                    break;
-                case 'get_content_opportunities':
-                    resultData = await handleGetContentOpportunities(args);
-                    break;
-                default:
-                    sendError(id, -32601, `Tool not found: ${name}`);
-                    return;
-            }
-
-            sendResponse(id, {
-                content: [{ type: 'text', text: JSON.stringify(resultData, null, 2) }]
-            });
+            const resultData = await executeTool(name, args);
+            return {
+                jsonrpc: '2.0',
+                id,
+                result: {
+                    content: [{
+                        type: 'text',
+                        text: typeof resultData === 'string' ? resultData : JSON.stringify(resultData, null, 2)
+                    }]
+                }
+            };
         } catch (err) {
-            sendResponse(id, {
-                content: [{ type: 'text', text: `Error: ${err.message}` }],
-                isError: true
-            });
+            return {
+                jsonrpc: '2.0',
+                id,
+                result: {
+                    content: [{ type: 'text', text: `Error: ${err.message}` }],
+                    isError: true
+                }
+            };
         }
-        return;
     }
 
-    sendError(id, -32601, `Method not found: ${method}`);
+    // Resources List & Read
+    if (method === 'resources/list') {
+        return { jsonrpc: '2.0', id, result: { resources: RESOURCES } };
+    }
+
+    if (method === 'resources/read') {
+        const uri = params && params.uri;
+        try {
+            const result = readResource(uri);
+            return { jsonrpc: '2.0', id, result };
+        } catch (err) {
+            return { jsonrpc: '2.0', id, error: { code: -32602, message: err.message } };
+        }
+    }
+
+    // Prompts List & Get
+    if (method === 'prompts/list') {
+        return { jsonrpc: '2.0', id, result: { prompts: PROMPTS } };
+    }
+
+    if (method === 'prompts/get') {
+        const name = params && params.name;
+        const promptArgs = (params && params.arguments) || {};
+        if (name === 'write_article') {
+            return {
+                jsonrpc: '2.0',
+                id,
+                result: {
+                    description: 'Instructions for writing a Clarified article',
+                    messages: [
+                        {
+                            role: 'user',
+                            content: {
+                                type: 'text',
+                                text: `Please write a comprehensive, publishing-ready article for Clarified.co.za on: "${promptArgs.topic}".
+Focus Keyword: "${promptArgs.focusKeyword}".
+Category: "${promptArgs.category || 'South Africa'}".
+
+Requirements:
+1. Minimum 600 words with informative <h2> subheadings.
+2. Include an engagingdek excerpt (100-150 characters).
+3. Optimized SEO Title (max 60 chars) and Meta Description (120-160 chars).
+4. Run validate_article_quality and detect_duplicates before saving.`
+                            }
+                        }
+                    ]
+                }
+            };
+        }
+        return {
+            jsonrpc: '2.0',
+            id,
+            result: {
+                messages: [{ role: 'user', content: { type: 'text', text: `Execute prompt: ${name}` } }]
+            }
+        };
+    }
+
+    if (id === undefined || id === null) {
+        return { notification: true };
+    }
+
+    return {
+        jsonrpc: '2.0',
+        id,
+        error: { code: -32601, message: `Method not found: ${method}` }
+    };
 }
+
+// ── Stdio Protocol Runner ────────────────────────────────────────────────────
+function runStdioServer() {
+    activeTransport = 'stdio';
+    let inputBuffer = '';
+    let useContentLengthFraming = false;
+
+    // Safety: redirect console.log to stderr in stdio mode so stdout is purely JSON-RPC messages
+    console.log = (...args) => console.error(...args);
+
+    resolveProcessAncestors();
+
+    function send(msgObj) {
+        if (!msgObj || msgObj.notification) return;
+        const msg = JSON.stringify(msgObj);
+        if (useContentLengthFraming) {
+            process.stdout.write(`Content-Length: ${Buffer.byteLength(msg, 'utf8')}\r\n\r\n${msg}`);
+        } else {
+            process.stdout.write(msg + '\n');
+        }
+    }
+
+    // Zero-Zombie Parent & Root Monitoring:
+    // If the parent process or grandparent IDE exits, exit cleanly immediately!
+    parentWatchTimer = setInterval(() => {
+        checkLifecycle();
+    }, 1000);
+    if (parentWatchTimer.unref) parentWatchTimer.unref();
+
+    process.stdin.resume();
+    process.stdin.setEncoding('utf8');
+
+    process.stdin.on('data', async chunk => {
+        inputBuffer += chunk;
+
+        while (inputBuffer.length > 0) {
+            if (inputBuffer.startsWith('\r\n')) { inputBuffer = inputBuffer.slice(2); continue; }
+            if (inputBuffer.startsWith('\n')) { inputBuffer = inputBuffer.slice(1); continue; }
+
+            // Content-Length header framing
+            if (/^\s*Content-Length:/i.test(inputBuffer)) {
+                useContentLengthFraming = true;
+                const headerEnd = inputBuffer.indexOf('\r\n\r\n');
+                if (headerEnd === -1) break;
+
+                const headerStr = inputBuffer.slice(0, headerEnd);
+                const match = headerStr.match(/Content-Length:\s*(\d+)/i);
+                if (!match) {
+                    inputBuffer = inputBuffer.slice(headerEnd + 4);
+                    continue;
+                }
+
+                const contentLength = parseInt(match[1], 10);
+                const bodyStart = headerEnd + 4;
+                const bodyEnd = bodyStart + contentLength;
+                if (inputBuffer.length < bodyEnd) break;
+
+                const bodyStr = inputBuffer.slice(bodyStart, bodyEnd);
+                inputBuffer = inputBuffer.slice(bodyEnd);
+
+                try {
+                    const req = JSON.parse(bodyStr);
+                    const res = await executeRpc(req, { transport: 'stdio' });
+                    send(res);
+                } catch (e) {
+                    send({ jsonrpc: '2.0', id: null, error: { code: -32700, message: 'Parse error' } });
+                }
+            } else {
+                // Newline-delimited JSON
+                const newlineIndex = inputBuffer.indexOf('\n');
+                if (newlineIndex === -1) break;
+
+                const line = inputBuffer.slice(0, newlineIndex).trim();
+                inputBuffer = inputBuffer.slice(newlineIndex + 1);
+
+                if (!line) continue;
+
+                try {
+                    const req = JSON.parse(line);
+                    const res = await executeRpc(req, { transport: 'stdio' });
+                    send(res);
+                } catch (e) {
+                    send({ jsonrpc: '2.0', id: null, error: { code: -32700, message: 'Parse error' } });
+                }
+            }
+        }
+    });
+
+    process.stdin.on('end', () => { cleanupLiveStatus(); process.exit(0); });
+    process.stdin.on('close', () => { cleanupLiveStatus(); process.exit(0); });
+    process.stdin.on('error', () => { cleanupLiveStatus(); process.exit(0); });
+    process.stdout.on('error', err => {
+        if (err.code === 'EPIPE' || err.code === 'ERR_STREAM_DESTROYED') {
+            cleanupLiveStatus();
+            process.exit(0);
+        }
+    });
+
+    ['SIGINT', 'SIGTERM', 'SIGHUP', 'exit'].forEach(sig => {
+        process.on(sig, () => {
+            cleanupLiveStatus();
+            if (sig !== 'exit') process.exit(0);
+        });
+    });
+}
+
+// ── SSE / HTTP Protocol Runner ───────────────────────────────────────────────
+function runSseServer(port = 3333) {
+    activeTransport = 'sse';
+    const sseClients = new Map();
+
+    const server = http.createServer(async (req, res) => {
+        // CORS
+        res.setHeader('Access-Control-Allow-Origin', '*');
+        res.setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS');
+        res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization');
+
+        if (req.method === 'OPTIONS') {
+            res.writeHead(204);
+            res.end();
+            return;
+        }
+
+        const parsedUrl = new URL(req.url, `http://localhost:${port}`);
+        const pathname = parsedUrl.pathname;
+
+        // Health / Status
+        if (pathname === '/health' || pathname === '/status') {
+            res.writeHead(200, { 'Content-Type': 'application/json' });
+            res.end(JSON.stringify({
+                status: 'operational',
+                server: 'clarified-editorial-mcp',
+                version: '2.1.0',
+                activeSseClients: sseClients.size,
+                tools: TOOLS.length
+            }, null, 2));
+            return;
+        }
+
+        // Tools Catalog
+        if (pathname === '/tools') {
+            res.writeHead(200, { 'Content-Type': 'application/json' });
+            res.end(JSON.stringify({ tools: TOOLS }, null, 2));
+            return;
+        }
+
+        // SSE Stream (GET /sse)
+        if (pathname === '/sse') {
+            const sessionId = crypto.randomBytes(16).toString('hex');
+            res.writeHead(200, {
+                'Content-Type': 'text/event-stream',
+                'Cache-Control': 'no-cache, no-transform',
+                'Connection': 'keep-alive'
+            });
+
+            sseClients.set(sessionId, { res, connectedAt: Date.now() });
+            touchLiveStatus({ name: 'Web AI (SSE)' }, 'sse');
+            startHeartbeatEngine();
+
+            // Send standard MCP endpoint event pointing to messages POST endpoint
+            res.write(`event: endpoint\ndata: /messages?sessionId=${sessionId}\n\n`);
+
+            req.on('close', () => {
+                sseClients.delete(sessionId);
+                if (sseClients.size === 0) {
+                    cleanupLiveStatus();
+                }
+            });
+            return;
+        }
+
+        // MCP Messages (POST /messages)
+        if (pathname === '/messages' && req.method === 'POST') {
+            const sessionId = parsedUrl.searchParams.get('sessionId');
+            const client = sseClients.get(sessionId);
+
+            let body = '';
+            req.on('data', chunk => { body += chunk; });
+            req.on('end', async () => {
+                try {
+                    const reqObj = JSON.parse(body);
+                    const rpcRes = await executeRpc(reqObj, { transport: 'sse' });
+
+                    if (client && !rpcRes.notification) {
+                        client.res.write(`event: message\ndata: ${JSON.stringify(rpcRes)}\n\n`);
+                    }
+
+                    res.writeHead(202, { 'Content-Type': 'application/json' });
+                    res.end(JSON.stringify({ accepted: true }));
+                } catch (e) {
+                    res.writeHead(400, { 'Content-Type': 'application/json' });
+                    res.end(JSON.stringify({ error: e.message }));
+                }
+            });
+            return;
+        }
+
+        res.writeHead(404, { 'Content-Type': 'application/json' });
+        res.end(JSON.stringify({ error: 'Not Found' }));
+    });
+
+    server.listen(port, () => {
+        console.log(`Clarified MCP SSE Server listening on http://localhost:${port}/sse`);
+    });
+
+    ['SIGINT', 'SIGTERM'].forEach(sig => {
+        process.on(sig, () => {
+            cleanupLiveStatus();
+            server.close(() => process.exit(0));
+        });
+    });
+}
+
+// ── CLI / Main Execution ─────────────────────────────────────────────────────
+if (require.main === module) {
+    const args = process.argv.slice(2);
+
+    if (args.includes('--help') || args.includes('-h')) {
+        console.log(`
+Clarified Model Context Protocol (MCP) Server v2.1.0
+Universal Editorial & SEO AI Engine for Clarified.co.za
+
+Usage:
+  node mcp/server.js               Start MCP server in Stdio mode (Default)
+  node mcp/server.js --sse [port]  Start MCP server in SSE HTTP mode (Default port: 3333)
+
+Supported AI Clients:
+  - Antigravity / Gemini 2.0 (mcp_config.json)
+  - Claude Desktop (claude_desktop_config.json)
+  - Cursor IDE (.cursor/mcp.json or SSE)
+  - VS Code Cline / Roo Code / Continue (settings.json)
+  - Windsurf (Codeium)
+  - Zed Editor (settings.json)
+  - LibreChat / Open-WebUI / Remote AI (SSE Transport)
+`);
+        process.exit(0);
+    }
+
+    if (args.includes('--sse') || args.includes('--http')) {
+        const portIdx = args.findIndex(a => a === '--port') !== -1 
+            ? args.findIndex(a => a === '--port') + 1 
+            : args.findIndex(a => a === '--sse' || a === '--http') + 1;
+        const port = (portIdx > 0 && args[portIdx] && !args[portIdx].startsWith('--'))
+            ? parseInt(args[portIdx], 10)
+            : (process.env.MCP_PORT ? parseInt(process.env.MCP_PORT, 10) : 3333);
+        runSseServer(port);
+    } else {
+        runStdioServer();
+    }
+}
+
+// ── Exports for Dashboard Integration ────────────────────────────────────────
+module.exports = {
+    TOOLS,
+    RESOURCES,
+    PROMPTS,
+    executeRpc,
+    executeTool,
+    runQualityGate,
+    detectDuplicates,
+    suggestInternalLinks,
+    handlePublishArticle,
+    handleEditArticle,
+    handleListArticles,
+    handleGetArticle,
+    handleDeleteArticle,
+    handleGetSearchAnalytics,
+    handleGetContentOpportunities,
+    getDB,
+    saveDB,
+    regenerateSite,
+    touchLiveStatus,
+    cleanupLiveStatus
+};
