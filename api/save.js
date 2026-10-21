@@ -306,23 +306,141 @@ ${absoluteImg ? `<meta name="twitter:image" content="${absoluteImg}">` : ''}
             const spans = published.slice(0, 8).map(a => `<span><a href="${articleUrl(a)}" style="color:inherit;text-decoration:none;">${a.title}</a></span>`).join('');
             idx = idx.replace(/<div class="brief-track"[^>]*>[\s\S]*?<\/div>/, `<div class="brief-track" id="brief-track">\n${spans}${spans}\n</div>`);
 
-            // Top story
-            let hero = published.find(a => a.homepagePlacement === 'top_story') || published[0];
-            shown.add(hero.id);
+            // Two-phase homepage slot resolution
+            const slots = {
+                topStory: null,
+                heroSide: [],
+                latest: [],
+                mustRead: [],
+                editorsPick: null,
+                business: null,
+                sport: null
+            };
 
-            // Hero side
-            let sideArticles = published.filter(a => !shown.has(a.id) && a.homepagePlacement === 'hero_side').slice(0, 2);
-            if (sideArticles.length < 2) {
-                const spaceCategory = published.filter(a => !shown.has(a.id) && !sideArticles.some(s => s.id === a.id) && a.category && a.category.split(',').some(c => c.trim().toLowerCase().replace(/[^a-z0-9]+/g, '-') === 'homepage-space')).slice(0, 2 - sideArticles.length);
-                sideArticles = sideArticles.concat(spaceCategory);
+            // Phase 1: Lock in explicit placements first
+            const explicitHero = published.find(a => a.homepagePlacement === 'top_story');
+            if (explicitHero) {
+                slots.topStory = explicitHero;
+                shown.add(explicitHero.id);
             }
-            if (sideArticles.length < 2) {
-                const extra = published.filter(a => !shown.has(a.id) && !sideArticles.some(s => s.id === a.id)).slice(0, 2 - sideArticles.length);
-                sideArticles = sideArticles.concat(extra);
-            }
-            sideArticles.forEach(a => shown.add(a.id));
 
-            const heroSideHtml = sideArticles.map(a => `<div class="list-card">
+            const explicitEp = published.find(a => !shown.has(a.id) && a.homepagePlacement === 'editors_pick');
+            if (explicitEp) {
+                slots.editorsPick = explicitEp;
+                shown.add(explicitEp.id);
+            }
+
+            const explicitHeroSide = published.filter(a => !shown.has(a.id) && a.homepagePlacement === 'hero_side').slice(0, 2);
+            explicitHeroSide.forEach(a => {
+                slots.heroSide.push(a);
+                shown.add(a.id);
+            });
+
+            const explicitMustRead = published.filter(a => !shown.has(a.id) && a.homepagePlacement === 'must_read').slice(0, 3);
+            explicitMustRead.forEach(a => {
+                slots.mustRead.push(a);
+                shown.add(a.id);
+            });
+
+            const explicitLatest = published.filter(a => !shown.has(a.id) && a.homepagePlacement === 'latest').slice(0, 4);
+            explicitLatest.forEach(a => {
+                slots.latest.push(a);
+                shown.add(a.id);
+            });
+
+            const explicitBusiness = published.find(a => !shown.has(a.id) && a.homepagePlacement === 'business');
+            if (explicitBusiness) {
+                slots.business = explicitBusiness;
+                shown.add(explicitBusiness.id);
+            }
+
+            const explicitSport = published.find(a => !shown.has(a.id) && a.homepagePlacement === 'sport');
+            if (explicitSport) {
+                slots.sport = explicitSport;
+                shown.add(explicitSport.id);
+            }
+
+            // Phase 2: Fallback filling for unassigned slots
+            function getAvailable() {
+                return published.filter(a => !shown.has(a.id));
+            }
+
+            if (!slots.topStory) {
+                const heroFallback = getAvailable()[0] || published[0];
+                if (heroFallback) {
+                    slots.topStory = heroFallback;
+                    shown.add(heroFallback.id);
+                }
+            }
+
+            if (slots.heroSide.length < 2) {
+                const needed = 2 - slots.heroSide.length;
+                let sideFill = getAvailable().filter(a => a.category && a.category.split(',').some(c => c.trim().toLowerCase().replace(/[^a-z0-9]+/g, '-') === 'homepage-space')).slice(0, needed);
+                if (sideFill.length < needed) {
+                    const extra = getAvailable().filter(a => !sideFill.some(s => s.id === a.id)).slice(0, needed - sideFill.length);
+                    sideFill = sideFill.concat(extra);
+                }
+                sideFill.forEach(a => {
+                    slots.heroSide.push(a);
+                    shown.add(a.id);
+                });
+            }
+
+            if (slots.latest.length < 4) {
+                const needed = 4 - slots.latest.length;
+                const fillLatest = getAvailable().slice(0, needed);
+                fillLatest.forEach(a => {
+                    slots.latest.push(a);
+                    shown.add(a.id);
+                });
+            }
+
+            if (slots.mustRead.length < 3) {
+                const needed = 3 - slots.mustRead.length;
+                let fill = getAvailable().filter(a => a.category && a.category.split(',').some(c => {
+                    const s = c.trim().toLowerCase().replace(/[^a-z0-9]+/g, '-');
+                    return s === 'lifestyle' || s === 'entertainment' || s === 'education' || s === 'genz-youth';
+                })).slice(0, needed);
+                if (fill.length < needed) {
+                    const extra = getAvailable().filter(a => !fill.some(f => f.id === a.id)).slice(0, needed - fill.length);
+                    fill = fill.concat(extra);
+                }
+                fill.forEach(a => {
+                    slots.mustRead.push(a);
+                    shown.add(a.id);
+                });
+            }
+
+            if (!slots.editorsPick) {
+                let ep = getAvailable().find(a => a.category && (a.category.split(',').some(c => c.trim().toLowerCase().replace(/[^a-z0-9]+/g, '-') === 'editors-pick') || (a.tags && a.tags.includes("Editor's Pick"))));
+                if (!ep) ep = getAvailable()[0];
+                if (ep) {
+                    slots.editorsPick = ep;
+                    shown.add(ep.id);
+                }
+            }
+
+            if (!slots.business) {
+                let bus = getAvailable().find(a => a.category && a.category.split(',').some(c => c.trim().toLowerCase().replace(/[^a-z0-9]+/g, '-') === 'business'));
+                if (!bus) bus = published.find(a => a.category && a.category.split(',').some(c => c.trim().toLowerCase().replace(/[^a-z0-9]+/g, '-') === 'business'));
+                if (bus) {
+                    slots.business = bus;
+                    shown.add(bus.id);
+                }
+            }
+
+            if (!slots.sport) {
+                let sp = getAvailable().find(a => a.category && a.category.split(',').some(c => c.trim().toLowerCase().replace(/[^a-z0-9]+/g, '-') === 'sport'));
+                if (!sp) sp = published.find(a => a.category && a.category.split(',').some(c => c.trim().toLowerCase().replace(/[^a-z0-9]+/g, '-') === 'sport'));
+                if (sp) {
+                    slots.sport = sp;
+                    shown.add(sp.id);
+                }
+            }
+
+            // Render Hero section
+            const hero = slots.topStory;
+            const heroSideHtml = slots.heroSide.map(a => `<div class="list-card">
               <a class="list-card-img" href="${articleUrl(a)}"><img src="${resolveImgUrl(a.featuredImage)}" alt="${a.imgAlt || a.title}"></a>
               <div>
                 <div class="eyebrow">${(a.category || '').split(',')[0].trim()}</div>
@@ -343,33 +461,13 @@ ${absoluteImg ? `<meta name="twitter:image" content="${absoluteImg}">` : ''}
             <aside class="hero-side" id="hero-side">\n${heroSideHtml}\n</aside>`;
             idx = idx.replace(/<section class="container hero-grid"[^>]*>[\s\S]*?<\/section>/, `<section class="container hero-grid" id="hero-section">\n${heroHtml}\n</section>`);
 
-            // Latest articles
-            let latest = published.filter(a => !shown.has(a.id) && a.homepagePlacement === 'latest').slice(0, 4);
-            if (latest.length < 4) {
-                const fillLatest = published.filter(a => !shown.has(a.id) && !latest.some(l => l.id === a.id)).slice(0, 4 - latest.length);
-                latest = latest.concat(fillLatest);
-            }
-            latest.forEach(a => shown.add(a.id));
-            idx = idx.replace(/<div class="news-grid" id="latest-grid">[\s\S]*?<\/div>/, `<div class="news-grid" id="latest-grid">\n${latest.map(cardHTML).join('\n')}\n</div>`);
+            // Render Latest section
+            idx = idx.replace(/<div class="news-grid" id="latest-grid">[\s\S]*?<\/div>/, `<div class="news-grid" id="latest-grid">\n${slots.latest.map(cardHTML).join('\n')}\n</div>`);
 
-            // Must Read / Featured (3 articles)
-            let featuredPosts = published.filter(a => !shown.has(a.id) && a.homepagePlacement === 'must_read').slice(0, 3);
-            if (featuredPosts.length < 3) {
-                const fill = published.filter(a => !shown.has(a.id) && !featuredPosts.some(f => f.id === a.id) && a.category && a.category.split(',').some(c => {
-                    const s = c.trim().toLowerCase().replace(/[^a-z0-9]+/g, '-');
-                    return s === 'lifestyle' || s === 'entertainment' || s === 'education' || s === 'genz-youth';
-                })).slice(0, 3 - featuredPosts.length);
-                featuredPosts = featuredPosts.concat(fill);
-            }
-            if (featuredPosts.length < 3) {
-                const extra = published.filter(a => !shown.has(a.id) && !featuredPosts.some(f => f.id === a.id)).slice(0, 3 - featuredPosts.length);
-                featuredPosts = featuredPosts.concat(extra);
-            }
-            if (featuredPosts.length) {
-                const large = featuredPosts[0];
-                const compact = featuredPosts.slice(1);
-                shown.add(large.id);
-                compact.forEach(a => shown.add(a.id));
+            // Render Must Read / Featured section
+            if (slots.mustRead.length) {
+                const large = slots.mustRead[0];
+                const compact = slots.mustRead.slice(1);
                 const largeHtml = `<article class="large-story" id="featured">
                   <img src="${resolveImgUrl(large.featuredImage)}" alt="${large.title}">
                   <div class="story-overlay">
@@ -390,12 +488,9 @@ ${absoluteImg ? `<meta name="twitter:image" content="${absoluteImg}">` : ''}
                 idx = idx.replace(/<div class="featured-grid" id="featured-grid">[\s\S]*?<\/div>/, `<div class="featured-grid" id="featured-grid">\n${largeHtml}\n<div class="two-stories" id="compact">\n${compactHtml}\n</div>\n</div>`);
             }
 
-            // Editor's Pick
-            let ep = published.find(a => !shown.has(a.id) && a.homepagePlacement === 'editors_pick');
-            if (!ep) ep = published.find(a => !shown.has(a.id) && a.category && (a.category.split(',').some(c => c.trim().toLowerCase().replace(/[^a-z0-9]+/g, '-') === 'editors-pick') || (a.tags && a.tags.includes("Editor's Pick"))));
-            if (!ep) ep = published.find(a => !shown.has(a.id));
-            if (ep) {
-                shown.add(ep.id);
+            // Render Editor's Pick
+            if (slots.editorsPick) {
+                const ep = slots.editorsPick;
                 const epHtml = `<section class="container section" id="editors-pick-section">
                   <div class="section-head"><div><span class="eyebrow">EDITORIAL</span><h2>Editor's Pick</h2></div><a href="/category-south-africa.html">View all <span class="ui-arrow">→</span></a></div>
                   <article class="editor-pick" id="editors-pick">
@@ -411,20 +506,12 @@ ${absoluteImg ? `<meta name="twitter:image" content="${absoluteImg}">` : ''}
                 idx = idx.replace(/<section class="container section" id="editors-pick-section"[^>]*>[\s\S]*?<\/section>/, epHtml);
             }
 
-            // Business & Sport
-            let business = published.find(a => !shown.has(a.id) && (a.homepagePlacement === 'business' || (a.category && a.category.split(',').some(c => c.trim().toLowerCase().replace(/[^a-z0-9]+/g, '-') === 'business'))));
-            if (!business) business = published.find(a => a.category && a.category.split(',').some(c => c.trim().toLowerCase().replace(/[^a-z0-9]+/g, '-') === 'business'));
-
-            let sport = published.find(a => !shown.has(a.id) && (a.homepagePlacement === 'sport' || (a.category && a.category.split(',').some(c => c.trim().toLowerCase().replace(/[^a-z0-9]+/g, '-') === 'sport'))));
-            if (!sport) sport = published.find(a => a.category && a.category.split(',').some(c => c.trim().toLowerCase().replace(/[^a-z0-9]+/g, '-') === 'sport'));
-
-            if (business) {
-                shown.add(business.id);
-                idx = idx.replace(/<div class="small-grid" id="business-grid">[\s\S]*?<\/div>/, `<div class="small-grid" id="business-grid">\n${cardHTML(business)}\n</div>`);
+            // Render Business & Sport
+            if (slots.business) {
+                idx = idx.replace(/<div class="small-grid" id="business-grid">[\s\S]*?<\/div>/, `<div class="small-grid" id="business-grid">\n${cardHTML(slots.business)}\n</div>`);
             }
-            if (sport) {
-                shown.add(sport.id);
-                idx = idx.replace(/<div class="small-grid" id="sport-grid">[\s\S]*?<\/div>/, `<div class="small-grid" id="sport-grid">\n${cardHTML(sport)}\n</div>`);
+            if (slots.sport) {
+                idx = idx.replace(/<div class="small-grid" id="sport-grid">[\s\S]*?<\/div>/, `<div class="small-grid" id="sport-grid">\n${cardHTML(slots.sport)}\n</div>`);
             }
 
             filesToCommit.push({

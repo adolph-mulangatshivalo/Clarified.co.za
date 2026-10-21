@@ -299,72 +299,126 @@ function resolveHomepageSlots(published) {
 
     if (!published || !published.length) return slots;
 
-    // 1. TOP STORY (Hero)
-    let hero = published.find(a => a.homepagePlacement === 'top_story');
-    if (!hero) hero = published[0];
-    slots.topStory = hero;
-    shown.add(hero.id);
-
-    // 2. HERO SIDE (2 stories)
-    let sideArticles = published.filter(a => !shown.has(a.id) && a.homepagePlacement === 'hero_side').slice(0, 2);
-    if (sideArticles.length < 2) {
-        const spaceCategory = published.filter(a => !shown.has(a.id) && !sideArticles.some(s => s.id === a.id) && a.category && a.category.split(',').some(c => c.trim().toLowerCase().replace(/[^a-z0-9]+/g, '-') === 'homepage-space')).slice(0, 2 - sideArticles.length);
-        sideArticles = sideArticles.concat(spaceCategory);
+    // Phase 1: Lock in explicit placements first so fallback fillers cannot steal them
+    const explicitHero = published.find(a => a.homepagePlacement === 'top_story');
+    if (explicitHero) {
+        slots.topStory = explicitHero;
+        shown.add(explicitHero.id);
     }
-    if (sideArticles.length < 2) {
-        const extra = published.filter(a => !shown.has(a.id) && !sideArticles.some(s => s.id === a.id)).slice(0, 2 - sideArticles.length);
-        sideArticles = sideArticles.concat(extra);
-    }
-    sideArticles.forEach(a => shown.add(a.id));
-    slots.heroSide = sideArticles;
 
-    // 3. LATEST ARTICLES (4 articles)
-    let latest = published.filter(a => !shown.has(a.id) && a.homepagePlacement === 'latest').slice(0, 4);
-    if (latest.length < 4) {
-        const fillLatest = published.filter(a => !shown.has(a.id) && !latest.some(l => l.id === a.id)).slice(0, 4 - latest.length);
-        latest = latest.concat(fillLatest);
+    const explicitEp = published.find(a => !shown.has(a.id) && a.homepagePlacement === 'editors_pick');
+    if (explicitEp) {
+        slots.editorsPick = explicitEp;
+        shown.add(explicitEp.id);
     }
-    latest.forEach(a => shown.add(a.id));
-    slots.latest = latest;
 
-    // 4. MUST READ / FEATURED (3 articles: 1 large + 2 compact)
-    let featuredPosts = published.filter(a => !shown.has(a.id) && a.homepagePlacement === 'must_read').slice(0, 3);
-    if (featuredPosts.length < 3) {
-        const fill = published.filter(a => !shown.has(a.id) && !featuredPosts.some(f => f.id === a.id) && a.category && a.category.split(',').some(c => {
+    const explicitHeroSide = published.filter(a => !shown.has(a.id) && a.homepagePlacement === 'hero_side').slice(0, 2);
+    explicitHeroSide.forEach(a => {
+        slots.heroSide.push(a);
+        shown.add(a.id);
+    });
+
+    const explicitMustRead = published.filter(a => !shown.has(a.id) && a.homepagePlacement === 'must_read').slice(0, 3);
+    explicitMustRead.forEach(a => {
+        slots.mustRead.push(a);
+        shown.add(a.id);
+    });
+
+    const explicitLatest = published.filter(a => !shown.has(a.id) && a.homepagePlacement === 'latest').slice(0, 4);
+    explicitLatest.forEach(a => {
+        slots.latest.push(a);
+        shown.add(a.id);
+    });
+
+    const explicitBusiness = published.find(a => !shown.has(a.id) && a.homepagePlacement === 'business');
+    if (explicitBusiness) {
+        slots.business = explicitBusiness;
+        shown.add(explicitBusiness.id);
+    }
+
+    const explicitSport = published.find(a => !shown.has(a.id) && a.homepagePlacement === 'sport');
+    if (explicitSport) {
+        slots.sport = explicitSport;
+        shown.add(explicitSport.id);
+    }
+
+    // Helper to find available unassigned articles
+    function getAvailable() {
+        return published.filter(a => !shown.has(a.id));
+    }
+
+    // Phase 2: Fallback filling for unassigned slots
+    if (!slots.topStory) {
+        const heroFallback = getAvailable()[0] || published[0];
+        if (heroFallback) {
+            slots.topStory = heroFallback;
+            shown.add(heroFallback.id);
+        }
+    }
+
+    if (slots.heroSide.length < 2) {
+        const needed = 2 - slots.heroSide.length;
+        let sideFill = getAvailable().filter(a => a.category && a.category.split(',').some(c => c.trim().toLowerCase().replace(/[^a-z0-9]+/g, '-') === 'homepage-space')).slice(0, needed);
+        if (sideFill.length < needed) {
+            const extra = getAvailable().filter(a => !sideFill.some(s => s.id === a.id)).slice(0, needed - sideFill.length);
+            sideFill = sideFill.concat(extra);
+        }
+        sideFill.forEach(a => {
+            slots.heroSide.push(a);
+            shown.add(a.id);
+        });
+    }
+
+    if (slots.latest.length < 4) {
+        const needed = 4 - slots.latest.length;
+        const fillLatest = getAvailable().slice(0, needed);
+        fillLatest.forEach(a => {
+            slots.latest.push(a);
+            shown.add(a.id);
+        });
+    }
+
+    if (slots.mustRead.length < 3) {
+        const needed = 3 - slots.mustRead.length;
+        let fill = getAvailable().filter(a => a.category && a.category.split(',').some(c => {
             const s = c.trim().toLowerCase().replace(/[^a-z0-9]+/g, '-');
             return s === 'lifestyle' || s === 'entertainment' || s === 'education' || s === 'genz-youth';
-        })).slice(0, 3 - featuredPosts.length);
-        featuredPosts = featuredPosts.concat(fill);
-    }
-    if (featuredPosts.length < 3) {
-        const extra = published.filter(a => !shown.has(a.id) && !featuredPosts.some(f => f.id === a.id)).slice(0, 3 - featuredPosts.length);
-        featuredPosts = featuredPosts.concat(extra);
-    }
-    featuredPosts.forEach(a => shown.add(a.id));
-    slots.mustRead = featuredPosts;
-
-    // 5. EDITOR'S PICK
-    let ep = published.find(a => !shown.has(a.id) && a.homepagePlacement === 'editors_pick');
-    if (!ep) ep = published.find(a => !shown.has(a.id) && a.category && (a.category.split(',').some(c => c.trim().toLowerCase().replace(/[^a-z0-9]+/g, '-') === 'editors-pick') || (a.tags && a.tags.includes("Editor's Pick"))));
-    if (!ep) ep = published.find(a => !shown.has(a.id));
-    if (ep) {
-        shown.add(ep.id);
-        slots.editorsPick = ep;
+        })).slice(0, needed);
+        if (fill.length < needed) {
+            const extra = getAvailable().filter(a => !fill.some(f => f.id === a.id)).slice(0, needed - fill.length);
+            fill = fill.concat(extra);
+        }
+        fill.forEach(a => {
+            slots.mustRead.push(a);
+            shown.add(a.id);
+        });
     }
 
-    // 6. BUSINESS & SPORT
-    let business = published.find(a => !shown.has(a.id) && (a.homepagePlacement === 'business' || (a.category && a.category.split(',').some(c => c.trim().toLowerCase().replace(/[^a-z0-9]+/g, '-') === 'business'))));
-    if (!business) business = published.find(a => a.category && a.category.split(',').some(c => c.trim().toLowerCase().replace(/[^a-z0-9]+/g, '-') === 'business'));
-    if (business) {
-        shown.add(business.id);
-        slots.business = business;
+    if (!slots.editorsPick) {
+        let ep = getAvailable().find(a => a.category && (a.category.split(',').some(c => c.trim().toLowerCase().replace(/[^a-z0-9]+/g, '-') === 'editors-pick') || (a.tags && a.tags.includes("Editor's Pick"))));
+        if (!ep) ep = getAvailable()[0];
+        if (ep) {
+            slots.editorsPick = ep;
+            shown.add(ep.id);
+        }
     }
 
-    let sport = published.find(a => !shown.has(a.id) && (a.homepagePlacement === 'sport' || (a.category && a.category.split(',').some(c => c.trim().toLowerCase().replace(/[^a-z0-9]+/g, '-') === 'sport'))));
-    if (!sport) sport = published.find(a => a.category && a.category.split(',').some(c => c.trim().toLowerCase().replace(/[^a-z0-9]+/g, '-') === 'sport'));
-    if (sport) {
-        shown.add(sport.id);
-        slots.sport = sport;
+    if (!slots.business) {
+        let bus = getAvailable().find(a => a.category && a.category.split(',').some(c => c.trim().toLowerCase().replace(/[^a-z0-9]+/g, '-') === 'business'));
+        if (!bus) bus = published.find(a => a.category && a.category.split(',').some(c => c.trim().toLowerCase().replace(/[^a-z0-9]+/g, '-') === 'business'));
+        if (bus) {
+            slots.business = bus;
+            shown.add(bus.id);
+        }
+    }
+
+    if (!slots.sport) {
+        let sp = getAvailable().find(a => a.category && a.category.split(',').some(c => c.trim().toLowerCase().replace(/[^a-z0-9]+/g, '-') === 'sport'));
+        if (!sp) sp = published.find(a => a.category && a.category.split(',').some(c => c.trim().toLowerCase().replace(/[^a-z0-9]+/g, '-') === 'sport'));
+        if (sp) {
+            slots.sport = sp;
+            shown.add(sp.id);
+        }
     }
 
     return slots;
