@@ -33,6 +33,14 @@ function readingTime(content) {
 
 // ─── Static site regeneration ─────────────────────────────────────────────────
 function regenerateStaticSite() {
+    if (mcpEngine && typeof mcpEngine.regenerateSite === 'function') {
+        try {
+            mcpEngine.regenerateSite();
+            return;
+        } catch (e) {
+            console.warn('mcpEngine.regenerateSite failed, falling back to local:', e.message);
+        }
+    }
     const db = getDB();
     const published = db.articles
         .filter(a => a.status === 'published')
@@ -571,6 +579,7 @@ const server = http.createServer(async (req, res) => {
                     tags:     data.tags     || '',
                     slug:     slug,
                     status:   data.status   || 'draft',
+                    homepagePlacement: data.homepagePlacement || article.homepagePlacement || 'standard',
                     seoTitle: data.seoTitle || '',
                     metaDesc: data.metaDesc || '',
                     focusKw:  data.focusKw  || '',
@@ -584,6 +593,14 @@ const server = http.createServer(async (req, res) => {
                     date:     article.date || Date.now(),
                     updatedAt: Date.now()
                 });
+
+                if (['top_story', 'editors_pick', 'business', 'sport'].includes(article.homepagePlacement)) {
+                    db.articles.forEach(a => {
+                        if (String(a.id) !== String(article.id) && a.homepagePlacement === article.homepagePlacement) {
+                            a.homepagePlacement = 'standard';
+                        }
+                    });
+                }
             } else {
                 // Create new
                 article = {
@@ -596,6 +613,7 @@ const server = http.createServer(async (req, res) => {
                     tags:     data.tags     || '',
                     slug:     slug,
                     status:   data.status   || 'draft',
+                    homepagePlacement: data.homepagePlacement || 'standard',
                     seoTitle: data.seoTitle || '',
                     metaDesc: data.metaDesc || '',
                     focusKw:  data.focusKw  || '',
@@ -609,6 +627,15 @@ const server = http.createServer(async (req, res) => {
                     date:     Date.now(),
                     updatedAt: Date.now()
                 };
+
+                if (['top_story', 'editors_pick', 'business', 'sport'].includes(article.homepagePlacement)) {
+                    db.articles.forEach(a => {
+                        if (a.homepagePlacement === article.homepagePlacement) {
+                            a.homepagePlacement = 'standard';
+                        }
+                    });
+                }
+
                 db.articles.push(article);
             }
 

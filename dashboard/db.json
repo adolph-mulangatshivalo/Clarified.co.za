@@ -15,7 +15,8 @@
       "imgAlt": "Top Degrees with the Highest Employment Rate in South Africa",
       "featuredImage": "images/highest-employment-degrees-south-africa.jpg",
       "status": "published",
-      "date": 1792582238654
+      "date": 1792582238654,
+      "homepagePlacement": "top_story"
     },
     {
       "id": "415",
@@ -36,7 +37,8 @@
       "imgAlt": "South African student applying for university bursaries online",
       "indexing": "index",
       "followLinks": "follow",
-      "articleType": "NewsArticle"
+      "articleType": "NewsArticle",
+      "homepagePlacement": "editors_pick"
     },
     {
       "id": "410",
@@ -141,7 +143,8 @@
       "imgAlt": "tech skills in South Africa",
       "indexing": "index",
       "followLinks": "follow",
-      "articleType": "NewsArticle"
+      "articleType": "NewsArticle",
+      "homepagePlacement": "must_read"
     },
     {
       "id": "339",
@@ -183,7 +186,8 @@
       "imgAlt": "Watermarked graphic",
       "indexing": "index",
       "followLinks": "follow",
-      "articleType": "NewsArticle"
+      "articleType": "NewsArticle",
+      "homepagePlacement": "must_read"
     },
     {
       "id": "312",
@@ -246,7 +250,8 @@
       "imgAlt": "Petrol station pump",
       "indexing": "index",
       "followLinks": "follow",
-      "articleType": "NewsArticle"
+      "articleType": "NewsArticle",
+      "homepagePlacement": "must_read"
     },
     {
       "id": "272",

@@ -29,6 +29,11 @@ const DB_PATH = fs.existsSync(path.join(PROJECT_ROOT, 'dashboard', 'db.json'))
     : path.join(PROJECT_ROOT, 'Clarified Dashboard', 'db.json');
 const ARTICLES_DIR = path.join(PROJECT_ROOT, 'articles');
 const ABOUT_TEMPLATE = path.join(PROJECT_ROOT, 'about.html');
+const INDEX_TEMPLATE = fs.existsSync(path.join(PROJECT_ROOT, 'dashboard', 'index-template.html'))
+    ? path.join(PROJECT_ROOT, 'dashboard', 'index-template.html')
+    : (fs.existsSync(path.join(PROJECT_ROOT, 'Clarified Dashboard', 'index-template.html'))
+        ? path.join(PROJECT_ROOT, 'Clarified Dashboard', 'index-template.html')
+        : path.join(PROJECT_ROOT, 'index-template.html'));
 
 // ── Status Files Management & Process Lifecycle ──────────────────────────────
 const LIVE_STATUS_PATHS = [
@@ -258,6 +263,11 @@ function generateSlug(text) {
 }
 
 // ── Static Site Regeneration ─────────────────────────────────────────────────
+function articleUrl(a) {
+    const slug = a.slug || generateSlug(a.title);
+    return `/articles/${slug}.html`;
+}
+
 function cardHTML(a) {
     const slug = a.slug || generateSlug(a.title);
     const url = `/articles/${slug}.html`;
@@ -274,6 +284,92 @@ function cardHTML(a) {
     </article>`;
 }
 
+function resolveHomepageSlots(published) {
+    const shown = new Set();
+    const slots = {
+        topStory: null,
+        heroSide: [],
+        latest: [],
+        mustRead: [],
+        editorsPick: null,
+        business: null,
+        sport: null,
+        briefTicker: (published || []).slice(0, 8)
+    };
+
+    if (!published || !published.length) return slots;
+
+    // 1. TOP STORY (Hero)
+    let hero = published.find(a => a.homepagePlacement === 'top_story');
+    if (!hero) hero = published[0];
+    slots.topStory = hero;
+    shown.add(hero.id);
+
+    // 2. HERO SIDE (2 stories)
+    let sideArticles = published.filter(a => !shown.has(a.id) && a.homepagePlacement === 'hero_side').slice(0, 2);
+    if (sideArticles.length < 2) {
+        const spaceCategory = published.filter(a => !shown.has(a.id) && !sideArticles.some(s => s.id === a.id) && a.category && a.category.split(',').some(c => c.trim().toLowerCase().replace(/[^a-z0-9]+/g, '-') === 'homepage-space')).slice(0, 2 - sideArticles.length);
+        sideArticles = sideArticles.concat(spaceCategory);
+    }
+    if (sideArticles.length < 2) {
+        const extra = published.filter(a => !shown.has(a.id) && !sideArticles.some(s => s.id === a.id)).slice(0, 2 - sideArticles.length);
+        sideArticles = sideArticles.concat(extra);
+    }
+    sideArticles.forEach(a => shown.add(a.id));
+    slots.heroSide = sideArticles;
+
+    // 3. LATEST ARTICLES (4 articles)
+    let latest = published.filter(a => !shown.has(a.id) && a.homepagePlacement === 'latest').slice(0, 4);
+    if (latest.length < 4) {
+        const fillLatest = published.filter(a => !shown.has(a.id) && !latest.some(l => l.id === a.id)).slice(0, 4 - latest.length);
+        latest = latest.concat(fillLatest);
+    }
+    latest.forEach(a => shown.add(a.id));
+    slots.latest = latest;
+
+    // 4. MUST READ / FEATURED (3 articles: 1 large + 2 compact)
+    let featuredPosts = published.filter(a => !shown.has(a.id) && a.homepagePlacement === 'must_read').slice(0, 3);
+    if (featuredPosts.length < 3) {
+        const fill = published.filter(a => !shown.has(a.id) && !featuredPosts.some(f => f.id === a.id) && a.category && a.category.split(',').some(c => {
+            const s = c.trim().toLowerCase().replace(/[^a-z0-9]+/g, '-');
+            return s === 'lifestyle' || s === 'entertainment' || s === 'education' || s === 'genz-youth';
+        })).slice(0, 3 - featuredPosts.length);
+        featuredPosts = featuredPosts.concat(fill);
+    }
+    if (featuredPosts.length < 3) {
+        const extra = published.filter(a => !shown.has(a.id) && !featuredPosts.some(f => f.id === a.id)).slice(0, 3 - featuredPosts.length);
+        featuredPosts = featuredPosts.concat(extra);
+    }
+    featuredPosts.forEach(a => shown.add(a.id));
+    slots.mustRead = featuredPosts;
+
+    // 5. EDITOR'S PICK
+    let ep = published.find(a => !shown.has(a.id) && a.homepagePlacement === 'editors_pick');
+    if (!ep) ep = published.find(a => !shown.has(a.id) && a.category && (a.category.split(',').some(c => c.trim().toLowerCase().replace(/[^a-z0-9]+/g, '-') === 'editors-pick') || (a.tags && a.tags.includes("Editor's Pick"))));
+    if (!ep) ep = published.find(a => !shown.has(a.id));
+    if (ep) {
+        shown.add(ep.id);
+        slots.editorsPick = ep;
+    }
+
+    // 6. BUSINESS & SPORT
+    let business = published.find(a => !shown.has(a.id) && (a.homepagePlacement === 'business' || (a.category && a.category.split(',').some(c => c.trim().toLowerCase().replace(/[^a-z0-9]+/g, '-') === 'business'))));
+    if (!business) business = published.find(a => a.category && a.category.split(',').some(c => c.trim().toLowerCase().replace(/[^a-z0-9]+/g, '-') === 'business'));
+    if (business) {
+        shown.add(business.id);
+        slots.business = business;
+    }
+
+    let sport = published.find(a => !shown.has(a.id) && (a.homepagePlacement === 'sport' || (a.category && a.category.split(',').some(c => c.trim().toLowerCase().replace(/[^a-z0-9]+/g, '-') === 'sport'))));
+    if (!sport) sport = published.find(a => a.category && a.category.split(',').some(c => c.trim().toLowerCase().replace(/[^a-z0-9]+/g, '-') === 'sport'));
+    if (sport) {
+        shown.add(sport.id);
+        slots.sport = sport;
+    }
+
+    return slots;
+}
+
 function regenerateSite() {
     const db = getDB();
     const published = (db.articles || [])
@@ -288,7 +384,7 @@ function regenerateSite() {
     let template = fs.readFileSync(ABOUT_TEMPLATE, 'utf8');
     template = template.replace(/<a href="\/about\.html" class="active">About<\/a>/g, '<a href="/about.html">About</a>');
 
-    // Populate brief ticker
+    // Populate brief ticker in about template
     if (published.length) {
         const spans = published.slice(0, 8).map(a => {
             const slug = a.slug || generateSlug(a.title);
@@ -386,6 +482,98 @@ ${absoluteImg ? `<meta name="twitter:image" content="${absoluteImg}">` : ''}`;
         out = out.replace('</head>', `${seoMeta}\n</head>`);
         fs.writeFileSync(path.join(ARTICLES_DIR, `${slug}.html`), out, 'utf8');
     });
+
+    // ── Generate index.html statically (Homepage placement) ────────────────────
+    if (fs.existsSync(INDEX_TEMPLATE)) {
+        let idx = fs.readFileSync(INDEX_TEMPLATE, 'utf8');
+
+        if (published.length) {
+            const slots = resolveHomepageSlots(published);
+
+            // 1. Brief ticker
+            const spans = slots.briefTicker.map(a => `<span><a href="${articleUrl(a)}" style="color:inherit;text-decoration:none;">${a.title}</a></span>`).join('');
+            idx = idx.replace(/<div class="brief-track"[^>]*>[\s\S]*?<\/div>/, `<div class="brief-track" id="brief-track">\n${spans}${spans}\n</div>`);
+
+            // 2. Top Story & Hero Side
+            const hero = slots.topStory || published[0];
+            const heroSideHtml = slots.heroSide.map(a => `<div class="list-card">
+              <a class="list-card-img" href="${articleUrl(a)}"><img src="${resolveImgUrl(a.featuredImage)}" alt="${a.imgAlt || a.title}"></a>
+              <div>
+                <div class="eyebrow">${(a.category || '').split(',')[0].trim()}</div>
+                <h3><a href="${articleUrl(a)}">${a.title}</a></h3>
+                <p>${(a.excerpt || '').substring(0, 80)}…</p>
+              </div>
+            </div>`).join('');
+
+            const heroHtml = `<article class="hero-story" id="hero-story">
+              <img id="hero-img" src="${resolveImgUrl(hero.featuredImage)}" alt="${hero.title}">
+              <div class="hero-content">
+                <div class="meta" id="hero-meta"><span class="tag">TOP STORY</span> ${(hero.category || '').split(',')[0].trim()} &middot; ${readingTime(hero.content)} min read</div>
+                <h2><a id="hero-link" href="${articleUrl(hero)}">${hero.title}</a></h2>
+                <p id="hero-excerpt">${(hero.excerpt || '').substring(0, 160)}</p>
+                <a class="read-link" id="hero-read" href="${articleUrl(hero)}">Read the story <span class="ui-arrow">→</span></a>
+              </div>
+            </article>
+            <aside class="hero-side" id="hero-side">\n${heroSideHtml}\n</aside>`;
+
+            idx = idx.replace(/<section class="container hero-grid"[^>]*>[\s\S]*?<\/section>/, `<section class="container hero-grid" id="hero-section">\n${heroHtml}\n</section>`);
+
+            // 3. Latest Articles (4 articles)
+            idx = idx.replace(/<div class="news-grid" id="latest-grid">[\s\S]*?<\/div>/, `<div class="news-grid" id="latest-grid">\n${slots.latest.map(cardHTML).join('\n')}\n</div>`);
+
+            // 4. Must Read / Featured (3 articles: 1 large + 2 compact)
+            if (slots.mustRead.length) {
+                const large = slots.mustRead[0];
+                const compact = slots.mustRead.slice(1);
+                const largeHtml = `<article class="large-story" id="featured">
+                  <img src="${resolveImgUrl(large.featuredImage)}" alt="${large.title}">
+                  <div class="story-overlay">
+                    <div class="meta">${(large.category || '').split(',')[0].trim()} · ${readingTime(large.content)} min read</div>
+                    <h3><a href="${articleUrl(large)}">${large.title}</a></h3>
+                    <p>${(large.excerpt || '').substring(0, 130)}…</p>
+                    <a class="read-link" href="${articleUrl(large)}">Read story <span class="ui-arrow">→</span></a>
+                  </div>
+                </article>`;
+                const compactHtml = compact.map(a => `<article class="compact-story">
+                  <a href="${articleUrl(a)}"><img src="${resolveImgUrl(a.featuredImage)}" alt="${a.imgAlt || a.title}" style="height:145px;border-radius:9px;object-fit:cover;width:100%;"></a>
+                  <div>
+                    <div class="eyebrow">${(a.category || '').split(',')[0].trim()}</div>
+                    <h3><a href="${articleUrl(a)}">${a.title}</a></h3>
+                    <a class="read-meta" href="${articleUrl(a)}">Read story →</a>
+                  </div>
+                </article>`).join('');
+                idx = idx.replace(/<div class="featured-grid" id="featured-grid">[\s\S]*?<\/div>/, `<div class="featured-grid" id="featured-grid">\n${largeHtml}\n<div class="two-stories" id="compact">\n${compactHtml}\n</div>\n</div>`);
+            }
+
+            // 5. Editor's Pick (Always rendered and visible)
+            if (slots.editorsPick) {
+                const ep = slots.editorsPick;
+                const epHtml = `<section class="container section" id="editors-pick-section">
+                  <div class="section-head"><div><span class="eyebrow">EDITORIAL</span><h2>Editor's Pick</h2></div><a href="/category-south-africa.html">View all <span class="ui-arrow">→</span></a></div>
+                  <article class="editor-pick" id="editors-pick">
+                    <img id="ep-img" src="${resolveImgUrl(ep.featuredImage)}" alt="${ep.title}">
+                    <div class="editor-content">
+                      <div class="meta" id="ep-meta">${(ep.category || '').split(',')[0].trim()} · ${readingTime(ep.content)} min read</div>
+                      <h3><a id="ep-link" href="${articleUrl(ep)}">${ep.title}</a></h3>
+                      <p id="ep-excerpt">${(ep.excerpt || '').substring(0, 150)}</p>
+                      <a class="read-link" id="ep-read" href="${articleUrl(ep)}">Read story <span class="ui-arrow">→</span></a>
+                    </div>
+                  </article>
+                </section>`;
+                idx = idx.replace(/<section class="container section" id="editors-pick-section"[^>]*>[\s\S]*?<\/section>/, epHtml);
+            }
+
+            // 6. Business & Sport
+            if (slots.business) {
+                idx = idx.replace(/<div class="small-grid" id="business-grid">[\s\S]*?<\/div>/, `<div class="small-grid" id="business-grid">\n${cardHTML(slots.business)}\n</div>`);
+            }
+            if (slots.sport) {
+                idx = idx.replace(/<div class="small-grid" id="sport-grid">[\s\S]*?<\/div>/, `<div class="small-grid" id="sport-grid">\n${cardHTML(slots.sport)}\n</div>`);
+            }
+        }
+
+        fs.writeFileSync(path.join(PROJECT_ROOT, 'index.html'), idx, 'utf8');
+    }
 
     // Update sitemap.xml
     const sitemapUrls = [
@@ -619,6 +807,7 @@ function handlePublishArticle(params = {}) {
         featuredImage = '',
         imgAlt = '',
         status = 'draft',
+        homepagePlacement = 'standard',
         seoTitle = '',
         metaDesc = '',
         focusKw = '',
@@ -654,8 +843,18 @@ function handlePublishArticle(params = {}) {
         imgAlt: imgAlt || title,
         featuredImage,
         status,
+        homepagePlacement: homepagePlacement || 'standard',
         date: id
     };
+
+    // If exclusive placement assigned, clear previous article holding this spot
+    if (['top_story', 'editors_pick', 'business', 'sport'].includes(articleDraft.homepagePlacement)) {
+        (db.articles || []).forEach(a => {
+            if (a.homepagePlacement === articleDraft.homepagePlacement && a.slug !== finalSlug) {
+                a.homepagePlacement = 'standard';
+            }
+        });
+    }
 
     const qualityGate = runQualityGate(articleDraft, db.articles, isNew);
 
@@ -690,6 +889,7 @@ function handlePublishArticle(params = {}) {
         title: articleDraft.title,
         slug: articleDraft.slug,
         status: actualStatus,
+        homepagePlacement: articleDraft.homepagePlacement,
         downgradedToDraft: Boolean(downgradeReason),
         downgradeReason,
         url: `https://clarified.co.za/articles/${articleDraft.slug}.html`,
@@ -715,6 +915,14 @@ function handleEditArticle(params = {}) {
 
     const current = db.articles[idx];
     const updatedArticle = { ...current, ...updates };
+
+    if (updates.homepagePlacement && ['top_story', 'editors_pick', 'business', 'sport'].includes(updates.homepagePlacement)) {
+        db.articles.forEach(a => {
+            if (a.id !== updatedArticle.id && a.homepagePlacement === updates.homepagePlacement) {
+                a.homepagePlacement = 'standard';
+            }
+        });
+    }
 
     let qualityGate = null;
     if (updatedArticle.status === 'published') {
@@ -807,6 +1015,159 @@ function handleDeleteArticle(params = {}) {
         success: true,
         deleted: removed.title,
         slug: removed.slug,
+        deployment: gitResult
+    };
+}
+
+function formatArticleSummary(a) {
+    if (!a) return null;
+    return {
+        id: a.id,
+        title: a.title,
+        slug: a.slug,
+        category: a.category,
+        author: a.author,
+        date: new Date(a.date || Date.now()).toLocaleDateString(),
+        homepagePlacement: a.homepagePlacement || 'standard',
+        url: `https://clarified.co.za/articles/${a.slug}.html`
+    };
+}
+
+function handleGetHomepageLayout() {
+    const db = getDB();
+    const published = (db.articles || [])
+        .filter(a => a.status === 'published')
+        .sort((a, b) => (b.date || 0) - (a.date || 0));
+
+    const slots = resolveHomepageSlots(published);
+
+    return {
+        topStory: formatArticleSummary(slots.topStory),
+        heroSide: slots.heroSide.map(formatArticleSummary),
+        latestArticles: slots.latest.map(formatArticleSummary),
+        mustRead: slots.mustRead.map(formatArticleSummary),
+        editorsPick: formatArticleSummary(slots.editorsPick),
+        businessSpotlight: formatArticleSummary(slots.business),
+        sportSpotlight: formatArticleSummary(slots.sport),
+        briefTicker: (slots.briefTicker || []).map(formatArticleSummary),
+        availablePublishedArticles: published.map(a => ({
+            id: a.id,
+            title: a.title,
+            slug: a.slug,
+            category: a.category,
+            currentPlacement: a.homepagePlacement || 'standard'
+        }))
+    };
+}
+
+function handleCurateHomepage(params = {}) {
+    const {
+        topStory,
+        heroSide,
+        editorsPick,
+        mustRead,
+        latest,
+        business,
+        sport,
+        resetOthers = false
+    } = params;
+
+    const db = getDB();
+    const articles = db.articles || [];
+
+    function findArticle(identifier) {
+        if (!identifier) return null;
+        return articles.find(a => String(a.id) === String(identifier) || a.slug === identifier);
+    }
+
+    if (resetOthers) {
+        articles.forEach(a => {
+            a.homepagePlacement = 'standard';
+        });
+    }
+
+    const applied = {};
+
+    if (topStory !== undefined) {
+        const art = findArticle(topStory);
+        if (art) {
+            articles.filter(a => a.homepagePlacement === 'top_story').forEach(a => a.homepagePlacement = 'standard');
+            art.homepagePlacement = 'top_story';
+            applied.topStory = art.title;
+        }
+    }
+
+    if (Array.isArray(heroSide)) {
+        articles.filter(a => a.homepagePlacement === 'hero_side').forEach(a => a.homepagePlacement = 'standard');
+        applied.heroSide = [];
+        heroSide.slice(0, 2).forEach(idOrSlug => {
+            const art = findArticle(idOrSlug);
+            if (art) {
+                art.homepagePlacement = 'hero_side';
+                applied.heroSide.push(art.title);
+            }
+        });
+    }
+
+    if (editorsPick !== undefined) {
+        const art = findArticle(editorsPick);
+        if (art) {
+            articles.filter(a => a.homepagePlacement === 'editors_pick').forEach(a => a.homepagePlacement = 'standard');
+            art.homepagePlacement = 'editors_pick';
+            applied.editorsPick = art.title;
+        }
+    }
+
+    if (Array.isArray(mustRead)) {
+        articles.filter(a => a.homepagePlacement === 'must_read').forEach(a => a.homepagePlacement = 'standard');
+        applied.mustRead = [];
+        mustRead.slice(0, 3).forEach(idOrSlug => {
+            const art = findArticle(idOrSlug);
+            if (art) {
+                art.homepagePlacement = 'must_read';
+                applied.mustRead.push(art.title);
+            }
+        });
+    }
+
+    if (Array.isArray(latest)) {
+        articles.filter(a => a.homepagePlacement === 'latest').forEach(a => a.homepagePlacement = 'standard');
+        applied.latest = [];
+        latest.slice(0, 4).forEach(idOrSlug => {
+            const art = findArticle(idOrSlug);
+            if (art) {
+                art.homepagePlacement = 'latest';
+                applied.latest.push(art.title);
+            }
+        });
+    }
+
+    if (business !== undefined) {
+        const art = findArticle(business);
+        if (art) {
+            articles.filter(a => a.homepagePlacement === 'business').forEach(a => a.homepagePlacement = 'standard');
+            art.homepagePlacement = 'business';
+            applied.business = art.title;
+        }
+    }
+
+    if (sport !== undefined) {
+        const art = findArticle(sport);
+        if (art) {
+            articles.filter(a => a.homepagePlacement === 'sport').forEach(a => a.homepagePlacement = 'standard');
+            art.homepagePlacement = 'sport';
+            applied.sport = art.title;
+        }
+    }
+
+    saveDB(db);
+    regenerateSite();
+    const gitResult = syncToGit(`[CMS] Curate homepage layout: ${Object.keys(applied).join(', ')}`);
+
+    return {
+        success: true,
+        applied,
+        newLayout: handleGetHomepageLayout(),
         deployment: gitResult
     };
 }
@@ -1042,6 +1403,12 @@ const TOOLS = [
                 featuredImage: { type: 'string' },
                 imgAlt: { type: 'string' },
                 status: { type: 'string', enum: ['draft', 'published'], default: 'draft', description: 'Save as draft (default) or publish live.' },
+                homepagePlacement: {
+                    type: 'string',
+                    enum: ['standard', 'top_story', 'editors_pick', 'must_read', 'hero_side', 'latest', 'business', 'sport'],
+                    default: 'standard',
+                    description: 'Where this article should be placed on the homepage: top_story (main hero), editors_pick (editorial banner), must_read (featured section), hero_side (side of hero), latest (latest news grid), business (business spotlight), sport (sport spotlight), or standard (feed & category only).'
+                },
                 seoTitle: { type: 'string', description: 'Under 60 chars' },
                 metaDesc: { type: 'string', description: 'Under 160 chars' },
                 focusKw: { type: 'string' },
@@ -1065,6 +1432,11 @@ const TOOLS = [
                 category: { type: 'string' },
                 tags: { type: 'string' },
                 status: { type: 'string', enum: ['draft', 'published'] },
+                homepagePlacement: {
+                    type: 'string',
+                    enum: ['standard', 'top_story', 'editors_pick', 'must_read', 'hero_side', 'latest', 'business', 'sport'],
+                    description: 'Update article placement on the homepage: top_story, editors_pick, must_read, hero_side, latest, business, sport, standard.'
+                },
                 featuredImage: { type: 'string' },
                 seoTitle: { type: 'string' },
                 metaDesc: { type: 'string' },
@@ -1106,6 +1478,31 @@ const TOOLS = [
                 confirm: { type: 'boolean', description: 'Must be explicitly set to true to execute deletion.' }
             },
             required: ['id', 'confirm']
+        }
+    },
+    {
+        name: 'get_homepage_layout',
+        description: 'Inspect the current article layout on the Clarified homepage. Shows which articles are currently placed in Top Story (Hero), Hero Side, Latest Articles, Must Read, Editor\'s Pick, Business Spotlight, and Sport Spotlight.',
+        inputSchema: {
+            type: 'object',
+            properties: {}
+        }
+    },
+    {
+        name: 'curate_homepage',
+        description: 'Directly control and curate where articles are placed across the Clarified homepage. Assign articles to Top Story, Editor\'s Pick, Must Read, Hero Side, Latest Articles, Business, or Sport. Automatically rebuilds the live homepage and syncs to Git/Vercel.',
+        inputSchema: {
+            type: 'object',
+            properties: {
+                topStory: { type: 'string', description: 'Article ID or slug to place as Top Story (main hero).' },
+                heroSide: { type: 'array', items: { type: 'string' }, description: 'Array of up to 2 article IDs or slugs for hero side stories.' },
+                editorsPick: { type: 'string', description: 'Article ID or slug for the Editor\'s Pick banner.' },
+                mustRead: { type: 'array', items: { type: 'string' }, description: 'Array of up to 3 article IDs or slugs for Must Read / Featured grid (1 large + 2 compact).' },
+                latest: { type: 'array', items: { type: 'string' }, description: 'Array of up to 4 article IDs or slugs for the Latest News grid.' },
+                business: { type: 'string', description: 'Article ID or slug for the Business spotlight.' },
+                sport: { type: 'string', description: 'Article ID or slug for the Sport spotlight.' },
+                resetOthers: { type: 'boolean', description: 'If true, clears homepage placements of articles not in this list to standard.' }
+            }
         }
     },
     {
@@ -1204,6 +1601,10 @@ async function executeTool(name, args = {}) {
             return handleGetArticle(args);
         case 'delete_article':
             return handleDeleteArticle(args);
+        case 'get_homepage_layout':
+            return handleGetHomepageLayout();
+        case 'curate_homepage':
+            return handleCurateHomepage(args);
         case 'get_search_analytics':
             return await handleGetSearchAnalytics(args);
         case 'get_content_opportunities':
@@ -1667,6 +2068,9 @@ module.exports = {
     handleListArticles,
     handleGetArticle,
     handleDeleteArticle,
+    handleGetHomepageLayout,
+    handleCurateHomepage,
+    resolveHomepageSlots,
     handleGetSearchAnalytics,
     handleGetContentOpportunities,
     getDB,

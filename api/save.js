@@ -91,6 +91,7 @@ export default async function handler(req, res) {
                 tags:          data.tags     || '',
                 slug:          slug,
                 status:        data.status   || 'draft',
+                homepagePlacement: data.homepagePlacement || article.homepagePlacement || 'standard',
                 seoTitle:      data.seoTitle || '',
                 metaDesc:      data.metaDesc || '',
                 focusKw:       data.focusKw  || '',
@@ -104,6 +105,14 @@ export default async function handler(req, res) {
                 date:          article.date || Date.now(),
                 updatedAt:     Date.now()
             });
+
+            if (['top_story', 'editors_pick', 'business', 'sport'].includes(article.homepagePlacement)) {
+                db.articles.forEach(a => {
+                    if (String(a.id) !== String(article.id) && a.homepagePlacement === article.homepagePlacement) {
+                        a.homepagePlacement = 'standard';
+                    }
+                });
+            }
         } else {
             article = {
                 id:            Date.now().toString(),
@@ -115,6 +124,7 @@ export default async function handler(req, res) {
                 tags:          data.tags     || '',
                 slug:          slug,
                 status:        data.status   || 'draft',
+                homepagePlacement: data.homepagePlacement || 'standard',
                 seoTitle:      data.seoTitle || '',
                 metaDesc:      data.metaDesc || '',
                 focusKw:       data.focusKw  || '',
@@ -128,6 +138,15 @@ export default async function handler(req, res) {
                 date:          Date.now(),
                 updatedAt:     Date.now()
             };
+
+            if (['top_story', 'editors_pick', 'business', 'sport'].includes(article.homepagePlacement)) {
+                db.articles.forEach(a => {
+                    if (a.homepagePlacement === article.homepagePlacement) {
+                        a.homepagePlacement = 'standard';
+                    }
+                });
+            }
+
             db.articles.push(article);
         }
 
@@ -287,9 +306,16 @@ ${absoluteImg ? `<meta name="twitter:image" content="${absoluteImg}">` : ''}
             const spans = published.slice(0, 8).map(a => `<span><a href="${articleUrl(a)}" style="color:inherit;text-decoration:none;">${a.title}</a></span>`).join('');
             idx = idx.replace(/<div class="brief-track"[^>]*>[\s\S]*?<\/div>/, `<div class="brief-track" id="brief-track">\n${spans}${spans}\n</div>`);
 
-            const hero = published[0];
+            // Top story
+            let hero = published.find(a => a.homepagePlacement === 'top_story') || published[0];
             shown.add(hero.id);
-            let sideArticles = published.filter(a => !shown.has(a.id) && a.category && a.category.split(',').some(c => c.trim().toLowerCase().replace(/[^a-z0-9]+/g, '-') === 'homepage-space')).slice(0, 2);
+
+            // Hero side
+            let sideArticles = published.filter(a => !shown.has(a.id) && a.homepagePlacement === 'hero_side').slice(0, 2);
+            if (sideArticles.length < 2) {
+                const spaceCategory = published.filter(a => !shown.has(a.id) && !sideArticles.some(s => s.id === a.id) && a.category && a.category.split(',').some(c => c.trim().toLowerCase().replace(/[^a-z0-9]+/g, '-') === 'homepage-space')).slice(0, 2 - sideArticles.length);
+                sideArticles = sideArticles.concat(spaceCategory);
+            }
             if (sideArticles.length < 2) {
                 const extra = published.filter(a => !shown.has(a.id) && !sideArticles.some(s => s.id === a.id)).slice(0, 2 - sideArticles.length);
                 sideArticles = sideArticles.concat(extra);
@@ -317,9 +343,89 @@ ${absoluteImg ? `<meta name="twitter:image" content="${absoluteImg}">` : ''}
             <aside class="hero-side" id="hero-side">\n${heroSideHtml}\n</aside>`;
             idx = idx.replace(/<section class="container hero-grid"[^>]*>[\s\S]*?<\/section>/, `<section class="container hero-grid" id="hero-section">\n${heroHtml}\n</section>`);
 
-            const latest = published.filter(a => !shown.has(a.id)).slice(0, 4);
+            // Latest articles
+            let latest = published.filter(a => !shown.has(a.id) && a.homepagePlacement === 'latest').slice(0, 4);
+            if (latest.length < 4) {
+                const fillLatest = published.filter(a => !shown.has(a.id) && !latest.some(l => l.id === a.id)).slice(0, 4 - latest.length);
+                latest = latest.concat(fillLatest);
+            }
             latest.forEach(a => shown.add(a.id));
             idx = idx.replace(/<div class="news-grid" id="latest-grid">[\s\S]*?<\/div>/, `<div class="news-grid" id="latest-grid">\n${latest.map(cardHTML).join('\n')}\n</div>`);
+
+            // Must Read / Featured (3 articles)
+            let featuredPosts = published.filter(a => !shown.has(a.id) && a.homepagePlacement === 'must_read').slice(0, 3);
+            if (featuredPosts.length < 3) {
+                const fill = published.filter(a => !shown.has(a.id) && !featuredPosts.some(f => f.id === a.id) && a.category && a.category.split(',').some(c => {
+                    const s = c.trim().toLowerCase().replace(/[^a-z0-9]+/g, '-');
+                    return s === 'lifestyle' || s === 'entertainment' || s === 'education' || s === 'genz-youth';
+                })).slice(0, 3 - featuredPosts.length);
+                featuredPosts = featuredPosts.concat(fill);
+            }
+            if (featuredPosts.length < 3) {
+                const extra = published.filter(a => !shown.has(a.id) && !featuredPosts.some(f => f.id === a.id)).slice(0, 3 - featuredPosts.length);
+                featuredPosts = featuredPosts.concat(extra);
+            }
+            if (featuredPosts.length) {
+                const large = featuredPosts[0];
+                const compact = featuredPosts.slice(1);
+                shown.add(large.id);
+                compact.forEach(a => shown.add(a.id));
+                const largeHtml = `<article class="large-story" id="featured">
+                  <img src="${resolveImgUrl(large.featuredImage)}" alt="${large.title}">
+                  <div class="story-overlay">
+                    <div class="meta">${(large.category || '').split(',')[0].trim()} · ${readingTime(large.content)} min read</div>
+                    <h3><a href="${articleUrl(large)}">${large.title}</a></h3>
+                    <p>${(large.excerpt || '').substring(0, 130)}…</p>
+                    <a class="read-link" href="${articleUrl(large)}">Read story <span class="ui-arrow">→</span></a>
+                  </div>
+                </article>`;
+                const compactHtml = compact.map(a => `<article class="compact-story">
+                  <a href="${articleUrl(a)}"><img src="${resolveImgUrl(a.featuredImage)}" alt="${a.imgAlt || a.title}" style="height:145px;border-radius:9px;object-fit:cover;width:100%;"></a>
+                  <div>
+                    <div class="eyebrow">${(a.category || '').split(',')[0].trim()}</div>
+                    <h3><a href="${articleUrl(a)}">${a.title}</a></h3>
+                    <a class="read-meta" href="${articleUrl(a)}">Read story →</a>
+                  </div>
+                </article>`).join('');
+                idx = idx.replace(/<div class="featured-grid" id="featured-grid">[\s\S]*?<\/div>/, `<div class="featured-grid" id="featured-grid">\n${largeHtml}\n<div class="two-stories" id="compact">\n${compactHtml}\n</div>\n</div>`);
+            }
+
+            // Editor's Pick
+            let ep = published.find(a => !shown.has(a.id) && a.homepagePlacement === 'editors_pick');
+            if (!ep) ep = published.find(a => !shown.has(a.id) && a.category && (a.category.split(',').some(c => c.trim().toLowerCase().replace(/[^a-z0-9]+/g, '-') === 'editors-pick') || (a.tags && a.tags.includes("Editor's Pick"))));
+            if (!ep) ep = published.find(a => !shown.has(a.id));
+            if (ep) {
+                shown.add(ep.id);
+                const epHtml = `<section class="container section" id="editors-pick-section">
+                  <div class="section-head"><div><span class="eyebrow">EDITORIAL</span><h2>Editor's Pick</h2></div><a href="/category-south-africa.html">View all <span class="ui-arrow">→</span></a></div>
+                  <article class="editor-pick" id="editors-pick">
+                    <img id="ep-img" src="${resolveImgUrl(ep.featuredImage)}" alt="${ep.title}">
+                    <div class="editor-content">
+                      <div class="meta" id="ep-meta">${(ep.category || '').split(',')[0].trim()} · ${readingTime(ep.content)} min read</div>
+                      <h3><a id="ep-link" href="${articleUrl(ep)}">${ep.title}</a></h3>
+                      <p id="ep-excerpt">${(ep.excerpt || '').substring(0, 150)}</p>
+                      <a class="read-link" id="ep-read" href="${articleUrl(ep)}">Read story <span class="ui-arrow">→</span></a>
+                    </div>
+                  </article>
+                </section>`;
+                idx = idx.replace(/<section class="container section" id="editors-pick-section"[^>]*>[\s\S]*?<\/section>/, epHtml);
+            }
+
+            // Business & Sport
+            let business = published.find(a => !shown.has(a.id) && (a.homepagePlacement === 'business' || (a.category && a.category.split(',').some(c => c.trim().toLowerCase().replace(/[^a-z0-9]+/g, '-') === 'business'))));
+            if (!business) business = published.find(a => a.category && a.category.split(',').some(c => c.trim().toLowerCase().replace(/[^a-z0-9]+/g, '-') === 'business'));
+
+            let sport = published.find(a => !shown.has(a.id) && (a.homepagePlacement === 'sport' || (a.category && a.category.split(',').some(c => c.trim().toLowerCase().replace(/[^a-z0-9]+/g, '-') === 'sport'))));
+            if (!sport) sport = published.find(a => a.category && a.category.split(',').some(c => c.trim().toLowerCase().replace(/[^a-z0-9]+/g, '-') === 'sport'));
+
+            if (business) {
+                shown.add(business.id);
+                idx = idx.replace(/<div class="small-grid" id="business-grid">[\s\S]*?<\/div>/, `<div class="small-grid" id="business-grid">\n${cardHTML(business)}\n</div>`);
+            }
+            if (sport) {
+                shown.add(sport.id);
+                idx = idx.replace(/<div class="small-grid" id="sport-grid">[\s\S]*?<\/div>/, `<div class="small-grid" id="sport-grid">\n${cardHTML(sport)}\n</div>`);
+            }
 
             filesToCommit.push({
                 path: 'index.html',

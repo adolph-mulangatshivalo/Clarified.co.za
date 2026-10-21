@@ -573,8 +573,9 @@
                 <!-- Left: Tool Selector & Arguments -->
                 <div>
                     <label style="font-size:13px;font-weight:700;display:block;margin-bottom:6px;">Select MCP Tool</label>
-                    <select id="tool-select" onchange="onToolChange()" style="width:100%;padding:10px 14px;border:1px solid var(--line);border-radius:8px;font-size:14px;background:var(--white);font-family:inherit;margin-bottom:14px;">
                         <option value="list_articles">list_articles — Filter and retrieve Clarified articles</option>
+                        <option value="get_homepage_layout">get_homepage_layout — Inspect current homepage slots &amp; placements</option>
+                        <option value="curate_homepage">curate_homepage — Assign articles to Hero, Editor's Pick, Must Read &amp; spots</option>
                         <option value="validate_article_quality">validate_article_quality — Pre-flight Quality Gate audit</option>
                         <option value="detect_duplicates">detect_duplicates — Scan for cannibalization and collisions</option>
                         <option value="suggest_internal_links">suggest_internal_links — Verified anchor link suggestions</option>
@@ -856,6 +857,14 @@ const TOOL_EXAMPLES = {
         limit: 5,
         category: ""
     },
+    get_homepage_layout: {},
+    curate_homepage: {
+        topStory: "degrees-highest-employment-rate-south-africa",
+        editorsPick: "how-to-apply-for-bursaries-south-africa",
+        mustRead: ["why-petrol-prices-increase-south-africa", "tech-skills-south-africa-2026", "how-to-pass-matric-maths"],
+        business: "10-bakkie-side-hustles-in-south-africa",
+        sport: "springboks-vs-all-blacks-the-big-game"
+    },
     validate_article_quality: {
         title: "Top Emerging Engineering Fields Shaping South Africa in 2026",
         content: "<h2>Introduction to Engineering Growth</h2><p>South Africa is experiencing substantial expansion in renewable energy, mechatronics, and infrastructure development. With over six hundred engineering firms scaling operations across Gauteng and the Western Cape, skilled graduates are in high demand.</p><h2>Key Specializations</h2><p>Solar photovoltaic design, grid storage, and automated robotics represent the fastest-growing hiring categories.</p>",
@@ -884,6 +893,7 @@ const TOOL_EXAMPLES = {
         excerpt: "A live demonstration article created through the Clarified MCP Editorial AI protocol.",
         category: "Technology",
         status: "draft",
+        homepagePlacement: "top_story",
         seoTitle: "Clarified MCP Test Draft Article",
         metaDesc: "Live test demonstration article processed by Clarified Model Context Protocol editorial engine.",
         focusKw: "clarified mcp",
@@ -891,6 +901,7 @@ const TOOL_EXAMPLES = {
     },
     edit_article: {
         slug: "highest-paying-engineering-jobs-in-south-africa",
+        homepagePlacement: "editors_pick",
         excerpt: "Updated summary dek focusing on high-demand 2026 engineering salaries across South Africa."
     },
     delete_article: {
@@ -911,6 +922,8 @@ const TOOL_EXAMPLES = {
 
 const TOOL_DESCRIPTIONS = {
     list_articles: "Filter and inspect existing articles from the database.",
+    get_homepage_layout: "Inspect current homepage article placements across all hero, editor's pick, and featured slots.",
+    curate_homepage: "Curates homepage slots (Hero, Editor's Pick, Must Read, etc.), regenerates index.html, and syncs live.",
     validate_article_quality: "Runs the complete Pre-Flight Quality Gate (headings, word count, SEO limits).",
     detect_duplicates: "Checks title, focus keyword, and slug against existing articles.",
     suggest_internal_links: "Scans content and finds verified anchor links to published articles.",

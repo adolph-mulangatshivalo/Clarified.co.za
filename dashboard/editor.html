@@ -308,6 +308,21 @@
                         </button>
                         <button id="btn-draft" class="btn btn-outline" onclick="save('draft')" style="width:100%;justify-content:center;background:#fff;">Save Draft</button>
                         <button id="btn-delete" class="btn" onclick="deleteArticle()" style="width:100%;justify-content:center;display:none;color:var(--danger);border:1px solid var(--danger);background:transparent;">Delete Article</button>
+                        
+                        <div style="margin-top: 8px; padding-top: 12px; border-top: 1px solid var(--line);">
+                            <label style="display:block;margin-bottom:6px;color:#5f696c;font-weight:600;font-size:14px;">Homepage Placement</label>
+                            <select id="f-placement" style="width:100%;padding:10px 14px;border:1px solid var(--line);border-radius:7px;outline:none;font-size:14px;box-sizing:border-box;background:#fff;">
+                                <option value="standard">Standard (Category &amp; Feed)</option>
+                                <option value="top_story">Top Story (Main Hero)</option>
+                                <option value="editors_pick">Editor's Pick (Featured Banner)</option>
+                                <option value="must_read">Must Read (Featured Grid)</option>
+                                <option value="hero_side">Hero Side Story</option>
+                                <option value="latest">Latest News Grid</option>
+                                <option value="business">Business Spotlight</option>
+                                <option value="sport">Sport Spotlight</option>
+                            </select>
+                            <span style="font-size:11px;color:var(--muted);display:block;margin-top:4px;">Controls where this article appears on the homepage. Curated by AI or editor.</span>
+                        </div>
                     </div>
                 </div>
 
@@ -403,6 +418,9 @@ let featuredImageUrl = '';
         document.getElementById('f-followlinks').value     = article.followLinks || 'follow';
         document.getElementById('f-articletype').value     = article.articleType || 'NewsArticle';
         document.getElementById('f-tags').value            = article.tags        || '';
+        if (document.getElementById('f-placement')) {
+            document.getElementById('f-placement').value   = article.homepagePlacement || 'standard';
+        }
         document.getElementById('editor-body').innerHTML   = (article.content     || '').replace(/src="images\//g, 'src="../images/');
         document.getElementById('btn-delete').style.display = 'block';
 
@@ -686,6 +704,7 @@ async function save(status) {
         followLinks: document.getElementById('f-followlinks').value,
         articleType: document.getElementById('f-articletype').value,
         canonical: document.getElementById('f-canonical').value.trim(),
+        homepagePlacement: document.getElementById('f-placement') ? document.getElementById('f-placement').value : 'standard',
         featuredImage: featuredImageUrl,
         status:    status
     };
