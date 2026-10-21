@@ -189,6 +189,19 @@ export default async function handler(req, res) {
             return Math.max(1, Math.round(words / 200));
         }
 
+        function formatExcerpt(text, maxLength = 120) {
+            if (!text) return '';
+            const clean = String(text).replace(/<[^>]+>/g, '').replace(/\s+/g, ' ').trim();
+            if (clean.length <= maxLength) return clean;
+            let trimmed = clean.substring(0, maxLength);
+            const lastSpace = trimmed.lastIndexOf(' ');
+            if (lastSpace > maxLength * 0.6) {
+                trimmed = trimmed.substring(0, lastSpace);
+            }
+            trimmed = trimmed.replace(/[,;:\-\.\s]+$/, '');
+            return trimmed + '...';
+        }
+
         function cardHTML(a) {
             const url = articleUrl(a);
             const imgSrc = resolveImgUrl(a.featuredImage);
@@ -199,7 +212,7 @@ export default async function handler(req, res) {
                 ${img}
                 <div class="eyebrow" style="margin-top:10px;">${(a.category || '').split(',')[0].trim()}</div>
                 <h3><a href="${url}">${a.title}</a></h3>
-                <p>${(a.excerpt || '').substring(0, 100)}${(a.excerpt || '').length > 100 ? '…' : ''}</p>
+                <p>${formatExcerpt(a.excerpt, 100)}</p>
                 <a class="read-meta" href="${url}">Read story →</a>
             </article>`;
         }
@@ -240,8 +253,8 @@ export default async function handler(req, res) {
       <p class="article-dek" style="margin: 0 auto; max-width: 800px;">${article.excerpt || ''}</p>
     </header>
     ${article.featuredImage ? `
-    <div class="clarified-single-header" style="margin: 30px 0;">
-      <img src="${resolveImgUrl(article.featuredImage)}" style="width: 100%; max-width: 600px; height: auto; border-radius: 8px; margin: 0 auto; display: block;" alt="${article.imgAlt || article.title}">
+    <div class="clarified-single-header">
+      <img src="${resolveImgUrl(article.featuredImage)}" class="article-hero-image" alt="${article.imgAlt || article.title}">
     </div>` : ''}
     <div class="article-body">${tocHtml}
       ${contentHtml}
@@ -483,7 +496,7 @@ ${JSON.stringify(jsonLd, null, 2)}
               <div>
                 <div class="eyebrow">${(a.category || '').split(',')[0].trim()}</div>
                 <h3><a href="${articleUrl(a)}">${a.title}</a></h3>
-                <p>${(a.excerpt || '').substring(0, 80)}…</p>
+                <p>${formatExcerpt(a.excerpt, 80)}</p>
               </div>
             </div>`).join('');
 
@@ -492,7 +505,7 @@ ${JSON.stringify(jsonLd, null, 2)}
               <div class="hero-content">
                 <div class="meta" id="hero-meta"><span class="tag">TOP STORY</span> ${(hero.category || '').split(',')[0].trim()} &middot; ${readingTime(hero.content)} min read</div>
                 <h2><a id="hero-link" href="${articleUrl(hero)}">${hero.title}</a></h2>
-                <p id="hero-excerpt">${(hero.excerpt || '').substring(0, 160)}</p>
+                <p id="hero-excerpt">${formatExcerpt(hero.excerpt, 160)}</p>
                 <a class="read-link" id="hero-read" href="${articleUrl(hero)}">Read the story <span class="ui-arrow">→</span></a>
               </div>
             </article>
@@ -511,7 +524,7 @@ ${JSON.stringify(jsonLd, null, 2)}
                   <div class="story-overlay">
                     <div class="meta">${(large.category || '').split(',')[0].trim()} · ${readingTime(large.content)} min read</div>
                     <h3><a href="${articleUrl(large)}">${large.title}</a></h3>
-                    <p>${(large.excerpt || '').substring(0, 130)}…</p>
+                    <p>${formatExcerpt(large.excerpt, 130)}</p>
                     <a class="read-link" href="${articleUrl(large)}">Read story <span class="ui-arrow">→</span></a>
                   </div>
                 </article>`;
@@ -536,7 +549,7 @@ ${JSON.stringify(jsonLd, null, 2)}
                     <div class="editor-content">
                       <div class="meta" id="ep-meta">${(ep.category || '').split(',')[0].trim()} · ${readingTime(ep.content)} min read</div>
                       <h3><a id="ep-link" href="${articleUrl(ep)}">${ep.title}</a></h3>
-                      <p id="ep-excerpt">${(ep.excerpt || '').substring(0, 150)}</p>
+                      <p id="ep-excerpt">${formatExcerpt(ep.excerpt, 150)}</p>
                       <a class="read-link" id="ep-read" href="${articleUrl(ep)}">Read story <span class="ui-arrow">→</span></a>
                     </div>
                   </article>

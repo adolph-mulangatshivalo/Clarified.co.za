@@ -123,6 +123,17 @@
 </footer>
 
 <script>
+        function formatExcerpt(text, maxLength = 100) {
+          if (!text) return '';
+          const clean = String(text).replace(/<[^>]+>/g, '').replace(/\s+/g, ' ').trim();
+          if (clean.length <= maxLength) return clean;
+          let trimmed = clean.substring(0, maxLength);
+          const lastSpace = trimmed.lastIndexOf(' ');
+          if (lastSpace > maxLength * 0.6) trimmed = trimmed.substring(0, lastSpace);
+          trimmed = trimmed.replace(/[,;:\-\.\s]+$/, '');
+          return trimmed + '...';
+        }
+
 document.getElementById('year').textContent = new Date().getFullYear();
 document.querySelector('.menu').addEventListener('click', function() {
   this.classList.toggle('is-open');
@@ -181,7 +192,7 @@ async function performSearch(e) {
         </a>
         <div class="eyebrow" style="margin-top:10px;">${a.category || ''}</div>
         <h3><a href="${articleUrl(a)}">${a.title}</a></h3>
-        <p>${(a.excerpt || '').substring(0, 100)}${(a.excerpt || '').length > 100 ? '…' : ''}</p>
+        <p>${formatExcerpt(a.excerpt, 100)}</p>
         <a class="read-meta" href="${articleUrl(a)}">Read story →</a>
       </article>
     `).join('');

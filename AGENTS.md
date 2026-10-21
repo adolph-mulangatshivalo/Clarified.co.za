@@ -17,9 +17,11 @@ Welcome to the **Clarified.co.za** codebase and publishing platform. Clarified i
 
 ## 2. Formatting & Visual Scannability
 * Divide articles with question-driven, actionable `<h2>` and `<h3>` subheadings.
-* Include bullet points (`<ul>`), numbered step-by-step guides (`<ol>`), and summary comparison tables (`<table>`).
+* **Mandatory Comparison Tables:** Anything that requires comparing salaries, degrees, bursary requirements, vehicle specs, or step-by-step processes MUST include a proper HTML table wrapped in `<div class="table-responsive"><table class="clarified-table">...</table></div>` for seamless mobile readability.
+* Include bullet points (`<ul>`), numbered step-by-step guides (`<ol>`), and summary comparison tables.
 * Highlight critical advice with callout boxes (`<div class="callout-box">`).
 * Ensure `<h2>` elements remain intact so the automatic Table of Contents (`what-to-expect-box`) renders anchor links for Google sitelinks.
+* **Clean Excerpts:** Excerpts must be punchy (100–140 characters), truncate cleanly at word boundaries, and append `...` if truncated—never cutting words in half or hanging abruptly.
 
 ---
 
@@ -31,7 +33,8 @@ Welcome to the **Clarified.co.za** codebase and publishing platform. Clarified i
 
 ---
 
-## 4. Realistic Editorial Imagery
+## 4. Realistic Editorial Imagery & Consistent Dimensions
+* **Consistent 16:9 Dimensions:** All article images are standardized at 16:9 aspect ratio (`max-width: 800px`, `height: 420px`, `object-fit: cover`) via `.article-hero-image` to ensure visual consistency across all articles and devices. Images must never blow up or distort.
 * Images must look authentic and realistic, featuring real South African contexts (diverse students on university campuses, genuine modern workplaces, city skylines, real vehicles, practical tools).
 * Strictly avoid cartoonish, distorted, or bizarre AI art.
 * Provide descriptive, keyword-rich `imgAlt` text for Google Image search indexing.

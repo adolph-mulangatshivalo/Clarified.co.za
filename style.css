@@ -204,7 +204,9 @@ button, input { font: inherit; }
 .hero-story > img {
   position: absolute;
   inset: 0;
+  width: 100%;
   height: 100%;
+  object-fit: cover;
 }
 
 .hero-story::after,
@@ -1811,3 +1813,127 @@ input[type="search"]::-webkit-search-cancel-button:hover {
 .socials a[aria-label="LinkedIn"]:hover { background: #0A66C2; color: #fff; border-color: #0A66C2; }
 .socials a[aria-label="Instagram"]:hover { background: #E4405F; color: #fff; border-color: #E4405F; }
 .socials a[aria-label="TikTok"]:hover { background: #000000; color: #fff; border-color: #000000; }
+
+/* ── Consistent Article Header Images & Body Images ───────────────────────── */
+.clarified-single-header {
+  margin: 28px auto 36px;
+  max-width: 800px;
+  text-align: center;
+  width: 100%;
+}
+
+.clarified-single-header img,
+.article-page img.article-hero-image,
+.article-page .article-image {
+  width: 100% !important;
+  max-width: 800px !important;
+  height: 420px !important;
+  aspect-ratio: 16 / 9;
+  object-fit: cover !important;
+  object-position: center !important;
+  border-radius: 10px !important;
+  margin: 0 auto !important;
+  display: block !important;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.06);
+}
+
+/* Any images inside article body must never exceed standard editorial size */
+.article-body img {
+  max-width: 100% !important;
+  max-height: 420px !important;
+  width: auto !important;
+  height: auto !important;
+  object-fit: cover !important;
+  object-position: center !important;
+  border-radius: 8px !important;
+  margin: 28px auto !important;
+  display: block !important;
+  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.05);
+}
+
+@media (max-width: 768px) {
+  .clarified-single-header img,
+  .article-page img.article-hero-image,
+  .article-page .article-image {
+    height: 240px !important;
+    aspect-ratio: 16 / 9;
+    border-radius: 7px !important;
+  }
+  .article-body img {
+    max-height: 260px !important;
+  }
+}
+
+/* ── Modern Editorial Table System ───────────────────────────────────────── */
+.article-body table,
+.table-responsive table,
+table.clarified-table {
+  width: 100% !important;
+  border-collapse: collapse !important;
+  margin: 28px 0 !important;
+  font-size: 15px !important;
+  line-height: 1.6 !important;
+  text-align: left !important;
+  border-radius: 8px !important;
+  overflow: hidden !important;
+  border: 1px solid var(--line, #e2e8f0) !important;
+  background: #ffffff !important;
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.04) !important;
+}
+
+.article-body thead,
+.table-responsive thead,
+table.clarified-table thead {
+  background: #0e1516 !important;
+  color: #ffffff !important;
+}
+
+.article-body th,
+.table-responsive th,
+table.clarified-table th {
+  padding: 14px 18px !important;
+  font-weight: 700 !important;
+  font-family: "Space Grotesk", sans-serif !important;
+  letter-spacing: -0.2px !important;
+  font-size: 13.5px !important;
+  text-transform: uppercase !important;
+  color: #ffffff !important;
+  border-bottom: 2px solid var(--cyan-dark, #008080) !important;
+  white-space: nowrap;
+}
+
+.article-body td,
+.table-responsive td,
+table.clarified-table td {
+  padding: 13px 18px !important;
+  border-bottom: 1px solid #edf2f7 !important;
+  color: #2d3748 !important;
+  vertical-align: middle !important;
+  font-size: 14.5px !important;
+}
+
+.article-body tbody tr:nth-child(even),
+.table-responsive tbody tr:nth-child(even),
+table.clarified-table tbody tr:nth-child(even) {
+  background: #f8fafc !important;
+}
+
+.article-body tbody tr:hover,
+.table-responsive tbody tr:hover,
+table.clarified-table tbody tr:hover {
+  background: #f1f5f9 !important;
+}
+
+/* Responsive Table Wrapper for Mobile Scrolling */
+.table-responsive {
+  width: 100% !important;
+  overflow-x: auto !important;
+  -webkit-overflow-scrolling: touch !important;
+  margin: 28px 0 !important;
+  border-radius: 8px !important;
+}
+
+.table-responsive table {
+  margin: 0 !important;
+  min-width: 520px !important;
+}

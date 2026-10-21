@@ -88,6 +88,17 @@
             <a class="read-meta" href="/articles/why-petrol-prices-increase-south-africa.html">Read story →</a>
         </article>
       <script>
+        function formatExcerpt(text, maxLength = 100) {
+          if (!text) return '';
+          const clean = String(text).replace(/<[^>]+>/g, '').replace(/\s+/g, ' ').trim();
+          if (clean.length <= maxLength) return clean;
+          let trimmed = clean.substring(0, maxLength);
+          const lastSpace = trimmed.lastIndexOf(' ');
+          if (lastSpace > maxLength * 0.6) trimmed = trimmed.substring(0, lastSpace);
+          trimmed = trimmed.replace(/[,;:\-\.\s]+$/, '');
+          return trimmed + '...';
+        }
+
         document.addEventListener('DOMContentLoaded', async () => {
           try {
             let articles = [];
@@ -123,7 +134,7 @@
                 <a href="${url}"><img src="${img}" alt="${a.title}" style="height:190px;border-radius:9px;object-fit:cover;width:100%;"></a>
                 <div class="eyebrow" style="margin-top:10px;">${(a.category || '').split(',')[0].trim()}</div>
                 <h3><a href="${url}">${a.title}</a></h3>
-                <p>${(a.excerpt || '').substring(0, 100)}${(a.excerpt || '').length > 100 ? '…' : ''}</p>
+                <p>${formatExcerpt(a.excerpt, 100)}</p>
                 <a class="read-meta" href="${url}">Read story →</a>
               </article>`;
             }).join('');

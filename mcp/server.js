@@ -268,6 +268,19 @@ function articleUrl(a) {
     return `/articles/${slug}.html`;
 }
 
+function formatExcerpt(text, maxLength = 120) {
+    if (!text) return '';
+    const clean = String(text).replace(/<[^>]+>/g, '').replace(/\s+/g, ' ').trim();
+    if (clean.length <= maxLength) return clean;
+    let trimmed = clean.substring(0, maxLength);
+    const lastSpace = trimmed.lastIndexOf(' ');
+    if (lastSpace > maxLength * 0.6) {
+        trimmed = trimmed.substring(0, lastSpace);
+    }
+    trimmed = trimmed.replace(/[,;:\-\.\s]+$/, '');
+    return trimmed + '...';
+}
+
 function cardHTML(a) {
     const slug = a.slug || generateSlug(a.title);
     const url = `/articles/${slug}.html`;
@@ -279,7 +292,7 @@ function cardHTML(a) {
         ${img}
         <div class="eyebrow" style="margin-top:10px;">${(a.category || '').split(',')[0].trim()}</div>
         <h3><a href="${url}">${a.title}</a></h3>
-        <p>${(a.excerpt || '').substring(0, 100)}${(a.excerpt || '').length > 100 ? '…' : ''}</p>
+        <p>${formatExcerpt(a.excerpt, 100)}</p>
         <a class="read-meta" href="${url}">Read story →</a>
     </article>`;
 }
@@ -483,8 +496,8 @@ function regenerateSite() {
       <p class="article-dek" style="margin: 0 auto; max-width: 800px;">${a.excerpt || ''}</p>
     </header>
     ${a.featuredImage ? `
-    <div class="clarified-single-header" style="margin: 30px 0;">
-      <img src="${resolveImgUrl(a.featuredImage)}" style="width: 100%; max-width: 600px; height: auto; border-radius: 8px; margin: 0 auto; display: block;" alt="${a.imgAlt || a.title}">
+    <div class="clarified-single-header">
+      <img src="${resolveImgUrl(a.featuredImage)}" class="article-hero-image" alt="${a.imgAlt || a.title}">
     </div>` : ''}
     <div class="article-body">${tocHtml}
       ${contentHtml}
@@ -588,7 +601,7 @@ ${JSON.stringify(jsonLd, null, 2)}
               <div>
                 <div class="eyebrow">${(a.category || '').split(',')[0].trim()}</div>
                 <h3><a href="${articleUrl(a)}">${a.title}</a></h3>
-                <p>${(a.excerpt || '').substring(0, 80)}…</p>
+                <p>${formatExcerpt(a.excerpt, 80)}</p>
               </div>
             </div>`).join('');
 
@@ -597,7 +610,7 @@ ${JSON.stringify(jsonLd, null, 2)}
               <div class="hero-content">
                 <div class="meta" id="hero-meta"><span class="tag">TOP STORY</span> ${(hero.category || '').split(',')[0].trim()} &middot; ${readingTime(hero.content)} min read</div>
                 <h2><a id="hero-link" href="${articleUrl(hero)}">${hero.title}</a></h2>
-                <p id="hero-excerpt">${(hero.excerpt || '').substring(0, 160)}</p>
+                <p id="hero-excerpt">${formatExcerpt(hero.excerpt, 160)}</p>
                 <a class="read-link" id="hero-read" href="${articleUrl(hero)}">Read the story <span class="ui-arrow">→</span></a>
               </div>
             </article>
@@ -617,7 +630,7 @@ ${JSON.stringify(jsonLd, null, 2)}
                   <div class="story-overlay">
                     <div class="meta">${(large.category || '').split(',')[0].trim()} · ${readingTime(large.content)} min read</div>
                     <h3><a href="${articleUrl(large)}">${large.title}</a></h3>
-                    <p>${(large.excerpt || '').substring(0, 130)}…</p>
+                    <p>${formatExcerpt(large.excerpt, 130)}</p>
                     <a class="read-link" href="${articleUrl(large)}">Read story <span class="ui-arrow">→</span></a>
                   </div>
                 </article>`;
@@ -642,7 +655,7 @@ ${JSON.stringify(jsonLd, null, 2)}
                     <div class="editor-content">
                       <div class="meta" id="ep-meta">${(ep.category || '').split(',')[0].trim()} · ${readingTime(ep.content)} min read</div>
                       <h3><a id="ep-link" href="${articleUrl(ep)}">${ep.title}</a></h3>
-                      <p id="ep-excerpt">${(ep.excerpt || '').substring(0, 150)}</p>
+                      <p id="ep-excerpt">${formatExcerpt(ep.excerpt, 150)}</p>
                       <a class="read-link" id="ep-read" href="${articleUrl(ep)}">Read story <span class="ui-arrow">→</span></a>
                     </div>
                   </article>
@@ -822,6 +835,15 @@ function runQualityGate(article, existingArticles = [], isNew = false) {
     // 8. Insecure links check
     if (/href=["']http:\/\//i.test(content)) {
         warnings.push('Found insecure "http://" links. Use secure "https://" destinations whenever possible.');
+    }
+
+    // 9. Excerpt & table suggestions
+    if (article.excerpt && article.excerpt.length > 160) {
+        warnings.push(`Excerpt is ${article.excerpt.length} characters (recommended 100-140 characters). It will be formatted cleanly on cards.`);
+    }
+    const comparativeKeywords = /salary|degrees|bursar|tuition|specs|requirements|fees/i;
+    if (comparativeKeywords.test(title + ' ' + (article.focusKw || '')) && !/<table/i.test(content)) {
+        warnings.push('This article discusses comparative data or requirements. Including a structured comparison table (<div class="table-responsive"><table class="clarified-table">) is recommended for clarity and SEO.');
     }
 
     const passed = criticalErrors.length === 0;

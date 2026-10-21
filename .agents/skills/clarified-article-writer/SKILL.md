@@ -57,8 +57,28 @@ Every article must look inviting, structured, and easy to skim. Readers must be 
    * Clarified automatically parses `<h2>` elements into a `<div class="what-to-expect-box">` with anchor links. This provides instant on-page navigation and generates Google Search sitelinks in search results.
 3. **Bullet Points and Numbered Steps:**
    * Break down lists of requirements, benefits, or actionable steps into clean bullet points (`<ul>`) or numbered steps (`<ol>`).
-4. **Summary & Comparison Tables:**
-   * When comparing degrees, salaries, institutions, or vehicle specs, include a clean HTML table (`<table>`) for instant clarity.
+4. **Mandatory Summary & Comparison Tables:**
+   * When comparing degrees, salaries, bursaries, institutions, vehicle specs, or step-by-step processes, a clean, responsive HTML table is mandatory. Always wrap tables in a responsive container:
+     ```html
+     <div class="table-responsive">
+       <table class="clarified-table">
+         <thead>
+           <tr>
+             <th>Category</th>
+             <th>Key Requirement</th>
+             <th>Details / Value</th>
+           </tr>
+         </thead>
+         <tbody>
+           <tr>
+             <td><strong>Example Item</strong></td>
+             <td>Specification details</td>
+             <td>R25,000 / month</td>
+           </tr>
+         </tbody>
+       </table>
+     </div>
+     ```
 5. **Key Takeaway / Callout Blocks:**
    * Use highlighted callouts for critical warnings, deadlines, or pro tips:
      ```html
@@ -66,6 +86,8 @@ Every article must look inviting, structured, and easy to skim. Readers must be 
        <strong>Pro Tip:</strong> Apply before the August cut-off date to avoid late registration penalties.
      </div>
      ```
+6. **Clean Scannable Excerpts:**
+   * Excerpts must be punchy (100–140 characters), capture the central value proposition, truncate cleanly at word boundaries, and append `...` if truncated. Never cut words in half or hang abruptly without terminal punctuation.
 
 ---
 
@@ -162,10 +184,10 @@ Before publishing any article live to Clarified.co.za, run this checklist:
 
 1. [ ] **Factual Accuracy:** Verified dates, numbers, and sources via `search_web`.
 2. [ ] **Reading Level:** Written in clear, plain everyday English accessible to all ages.
-3. [ ] **Formatting:** Short 2–3 sentence paragraphs; bullet lists; summary table or callout box included.
+3. [ ] **Formatting:** Short 2–3 sentence paragraphs; bullet lists; mandatory responsive comparison table (`<div class="table-responsive"><table class="clarified-table">`); callout box.
 4. [ ] **Headings:** Single H1, engaging descriptive H2s and H3s; Table of Contents generated.
 5. [ ] **Outbound Links:** 2–4 verified links to official primary sources with descriptive anchor text.
-6. [ ] **Internal Links:** 3–5 verified links to existing Clarified articles.
+6. [ ] **Internal Links:** Strictly at most 2 subtle, natural internal links woven seamlessly into sentences (never formulaic promotional spam).
 7. [ ] **Duplicates Check:** Checked with `detect_duplicates` (no keyword cannibalization or slug collisions).
 8. [ ] **SEO Meta:** Title under 60 chars, meta description under 155 chars, keyword present in first 100 words.
 9. [ ] **Image & Alt Text:** Realistic editorial photo with descriptive `imgAlt`.
