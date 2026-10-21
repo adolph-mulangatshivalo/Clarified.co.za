@@ -2,115 +2,102 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   <url>
     <loc>https://clarified.co.za/</loc>
+    <changefreq>daily</changefreq>
   </url>
   <url>
-    <loc>https://clarified.co.za/category-south-africa.html</loc>
+    <loc>https://clarified.co.za/about.html</loc>
+    <changefreq>daily</changefreq>
   </url>
   <url>
-    <loc>https://clarified.co.za/category-world.html</loc>
+    <loc>https://clarified.co.za/contact.html</loc>
+    <changefreq>daily</changefreq>
   </url>
   <url>
-    <loc>https://clarified.co.za/category-technology.html</loc>
+    <loc>https://clarified.co.za/privacy.html</loc>
+    <changefreq>daily</changefreq>
   </url>
   <url>
-    <loc>https://clarified.co.za/category-business.html</loc>
-  </url>
-  <url>
-    <loc>https://clarified.co.za/category-sport.html</loc>
-  </url>
-  <url>
-    <loc>https://clarified.co.za/category-education.html</loc>
-  </url>
-  <url>
-    <loc>https://clarified.co.za/category-genz-youth.html</loc>
-  </url>
-  <url>
-    <loc>https://clarified.co.za/category-africa-news.html</loc>
-  </url>
-  <url>
-    <loc>https://clarified.co.za/category-lifestyle.html</loc>
-  </url>
-  <url>
-    <loc>https://clarified.co.za/category-automotive.html</loc>
+    <loc>https://clarified.co.za/articles/degrees-highest-employment-rate-south-africa.html</loc>
+    <changefreq>daily</changefreq>
   </url>
   <url>
     <loc>https://clarified.co.za/articles/how-to-apply-for-bursaries-south-africa.html</loc>
-    <lastmod>2026-09-17</lastmod>
+    <changefreq>daily</changefreq>
   </url>
   <url>
     <loc>https://clarified.co.za/articles/how-to-pass-your-driving-test-in-south-africa.html</loc>
-    <lastmod>2026-09-14</lastmod>
+    <changefreq>daily</changefreq>
   </url>
   <url>
     <loc>https://clarified.co.za/articles/highest-paying-jobs-by-degree-south-africa.html</loc>
-    <lastmod>2026-09-07</lastmod>
+    <changefreq>daily</changefreq>
   </url>
   <url>
     <loc>https://clarified.co.za/articles/bakkie-side-hustles-south-africa.html</loc>
-    <lastmod>2026-09-05</lastmod>
+    <changefreq>daily</changefreq>
   </url>
   <url>
     <loc>https://clarified.co.za/articles/how-your-phone-tracks-you.html</loc>
-    <lastmod>2026-09-02</lastmod>
+    <changefreq>daily</changefreq>
   </url>
   <url>
     <loc>https://clarified.co.za/articles/tech-skills-south-africa-2026.html</loc>
-    <lastmod>2026-09-01</lastmod>
+    <changefreq>daily</changefreq>
   </url>
   <url>
     <loc>https://clarified.co.za/articles/highest-paying-engineering-jobs-south-africa.html</loc>
-    <lastmod>2026-08-27</lastmod>
+    <changefreq>daily</changefreq>
   </url>
   <url>
     <loc>https://clarified.co.za/articles/how-to-pass-matric-maths.html</loc>
-    <lastmod>2026-08-26</lastmod>
+    <changefreq>daily</changefreq>
   </url>
   <url>
     <loc>https://clarified.co.za/articles/why-chinese-cars-are-popular-in-south-africa.html</loc>
-    <lastmod>2026-08-22</lastmod>
+    <changefreq>daily</changefreq>
   </url>
   <url>
     <loc>https://clarified.co.za/articles/master-ai-in-south-africa.html</loc>
-    <lastmod>2026-08-21</lastmod>
+    <changefreq>daily</changefreq>
   </url>
   <url>
     <loc>https://clarified.co.za/articles/why-petrol-prices-increase-south-africa.html</loc>
-    <lastmod>2026-08-20</lastmod>
+    <changefreq>daily</changefreq>
   </url>
   <url>
     <loc>https://clarified.co.za/articles/bursaries-for-matriculants-2026.html</loc>
-    <lastmod>2026-08-19</lastmod>
+    <changefreq>daily</changefreq>
   </url>
   <url>
     <loc>https://clarified.co.za/articles/eskom-data-centres-surplus-power.html</loc>
-    <lastmod>2026-08-18</lastmod>
+    <changefreq>daily</changefreq>
   </url>
   <url>
     <loc>https://clarified.co.za/articles/springboks-vs-all-blacks-22-august-2026.html</loc>
-    <lastmod>2026-08-18</lastmod>
+    <changefreq>daily</changefreq>
   </url>
   <url>
     <loc>https://clarified.co.za/articles/mamelodi-sundowns-vs-marumo-gallants-19-august-2026.html</loc>
-    <lastmod>2026-08-18</lastmod>
+    <changefreq>daily</changefreq>
   </url>
   <url>
     <loc>https://clarified.co.za/articles/mtn-ai-job-board-africa-youth-2026.html</loc>
-    <lastmod>2026-08-17</lastmod>
+    <changefreq>daily</changefreq>
   </url>
   <url>
     <loc>https://clarified.co.za/articles/sadc-summit-durban-2026.html</loc>
-    <lastmod>2026-08-17</lastmod>
+    <changefreq>daily</changefreq>
   </url>
   <url>
     <loc>https://clarified.co.za/articles/dstv-premium-channel-cuts-september-2026.html</loc>
-    <lastmod>2026-08-16</lastmod>
+    <changefreq>daily</changefreq>
   </url>
   <url>
     <loc>https://clarified.co.za/articles/colombia-earthquake-2026-update.html</loc>
-    <lastmod>2026-08-12</lastmod>
+    <changefreq>daily</changefreq>
   </url>
   <url>
     <loc>https://clarified.co.za/articles/ts-galaxy-2-3-mamelodi-sundowns-mkhulise-late-brace-ends-mbombela-hoodoo.html</loc>
-    <lastmod>2026-08-12</lastmod>
+    <changefreq>daily</changefreq>
   </url>
 </urlset>
