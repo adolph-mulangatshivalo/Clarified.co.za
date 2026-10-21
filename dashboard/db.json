@@ -41,7 +41,8 @@
       "imgAlt": "how to pass your driving test in South Africa",
       "indexing": "index",
       "followLinks": "follow",
-      "articleType": "NewsArticle"
+      "articleType": "NewsArticle",
+      "homepagePlacement": "top_story"
     },
     {
       "id": "403",
