@@ -189,7 +189,7 @@ async function loadArticles() {
             const json = await res.json();
             data = Array.isArray(json) ? json : (json.articles || []);
         }
-        allArticles = data;
+        allArticles = Array.isArray(data) ? data : (data && data.articles ? data.articles : []);
 
         // Apply URL param filters on load
         const params = new URLSearchParams(window.location.search);
@@ -208,12 +208,13 @@ async function loadArticles() {
 
 function renderTable(articles) {
     const tbody = document.getElementById('articles-tbody');
-    if (articles.length === 0) {
+    if (!articles || articles.length === 0) {
         tbody.innerHTML = '<tr><td colspan="6" class="empty-state">No articles found. <a href="editor.html">Write your first one →</a></td></tr>';
         return;
     }
     tbody.innerHTML = articles.map(a => {
-        const date = new Date(a.date).toLocaleDateString('en-ZA');
+        const slug = a.slug || (a.title || '').toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, '');
+        const date = new Date(a.date || Date.now()).toLocaleDateString('en-ZA');
         const statusStyle = a.status === 'published'
             ? 'color:#10B981;background:rgba(16,185,129,0.1);'
             : 'color:#F59E0B;background:rgba(245,158,11,0.1);';

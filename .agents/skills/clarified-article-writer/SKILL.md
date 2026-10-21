@@ -100,11 +100,14 @@ Search engines reward articles that provide genuine source citations and clean t
   * **Good:** `You can submit your application directly on the <a href="https://www.nsfas.org.za" target="_blank" rel="noopener noreferrer">official NSFAS portal</a>.`
   * **Bad:** `<a href="https://www.nsfas.org.za">Click here</a>.`
 
-### Contextual Internal Links (3–5 Per Article)
-* Link to related published articles on Clarified.co.za to circulate visitors, lower bounce rates, and boost search engine crawl depth.
-* Run the MCP tool `suggest_internal_links` or check `list_articles` to find exact slugs.
-* Use anchor text that describes the destination article naturally:
-  * **Example:** `If you are planning your tertiary studies, also see our guide on <a href="/articles/highest-paying-jobs-by-degree-south-africa.html">which degrees lead to the highest-paying jobs in South Africa</a>.`
+### Subtle Contextual Internal Links (Strictly Maximum 2 Per Article)
+* **Maximum 2 Links:** Never clutter articles with links. Include at most two internal links in the entire article (e.g. one in the middle and one near the conclusion or intro).
+* **Must Be Subtle and Natural:** Never write jarring, formulaic promotional sentences like *"Check out our guide on [X] for tips"* or *"Read more about [X] here"*.
+* **Seamless In-Sentence Anchor Text:**
+  * **Strictly Banned:** `Check out our guide on <a href="...">how to pass matric maths easily</a> for practical exam techniques.`
+  * **Correct & Subtle:** `When preparing for final exams, students who practice proven <a href="/articles/how-to-pass-matric-maths.html">matric maths exam techniques</a> consistently score higher.`
+* **Clean URLs Only:** Always link to `/articles/[slug].html` (or `https://clarified.co.za/articles/[slug].html`). Never use temporary preview URLs (like `clarified-co-za.vercel.app`).
+* **Fast & Token-Efficient:** Keep drafts concise, focused, and high-value without repetitive filler words.
 
 ---
 

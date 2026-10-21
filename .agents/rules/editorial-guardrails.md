@@ -18,9 +18,12 @@ Whenever researching, drafting, editing, or publishing content for Clarified.co.
 * Prioritize official, primary South African sources (`gov.za`, `statssa.gov.za`, university faculty portals, verified industry bodies).
 * Never invent numbers, salary estimates, or application cutoff dates.
 
-## 4. Authentic External Links & Verified Internal Links
-* **Outbound links to actual sources**: Include 2 to 4 verified external links to the primary official portals (e.g. `https://www.nsfas.org.za`, SARS eFiling, university admissions) with clear descriptive anchor text.
-* **Contextual internal links**: Include 3 to 5 verified internal links to related Clarified stories (`/articles/[slug].html`). Use `suggest_internal_links` or check `list_articles` to verify URLs exist.
+## 4. Authentic External Links & Subtle Internal Links (Max 2)
+* **Outbound links to actual sources**: Include 1 to 2 verified external links to the primary official portals (e.g. `https://www.nsfas.org.za`, SARS eFiling, university admissions) with clear descriptive anchor text.
+* **Subtle internal links (Strictly Maximum 2)**: Include at most **2** internal links per article (`/articles/[slug].html`).
+* **Natural in-sentence anchor text only**: Weave links seamlessly into normal sentences (e.g. "...when practicing <a href=\"/articles/how-to-pass-matric-maths.html\">matric maths exam techniques</a>...").
+* **Strictly banned phrasing**: NEVER write repetitive formulaic callouts like *"Check out our guide on [XYZ] for tips"* or *"Read more about [XYZ] here"*.
+* **Never use preview domains**: Always link via `/articles/[slug].html` (or `https://clarified.co.za/articles/[slug].html`), never `clarified-co-za.vercel.app`.
 
 ## 5. Realistic Editorial Imagery
 * Images must look authentic and realistic, featuring real South African contexts (diverse students on university campuses, genuine modern workplaces, city skylines, real vehicles, practical tools).

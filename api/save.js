@@ -79,12 +79,16 @@ export default async function handler(req, res) {
             }
         }
 
-        // 3. Update or create article record
+        // 3. Update or create article record (Sanitize preview URLs to clean relative paths)
+        const sanitizedContent = (data.content || '')
+            .replace(/https?:\/\/clarified-co-za\.vercel\.app\/articles\//g, '/articles/')
+            .replace(/https?:\/\/clarified\.co\.za\/articles\//g, '/articles/');
+
         let article = data.id ? db.articles.find(a => String(a.id) === String(data.id)) : null;
         if (article) {
             Object.assign(article, {
                 title:         data.title,
-                content:       data.content  || '',
+                content:       sanitizedContent,
                 excerpt:       data.excerpt  || '',
                 category:      data.category || '',
                 author:        data.author   || 'The Clarified Editorial Team',
@@ -117,7 +121,7 @@ export default async function handler(req, res) {
             article = {
                 id:            Date.now().toString(),
                 title:         data.title,
-                content:       data.content  || '',
+                content:       sanitizedContent,
                 excerpt:       data.excerpt  || '',
                 category:      data.category || '',
                 author:        data.author   || 'The Clarified Editorial Team',

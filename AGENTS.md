@@ -26,8 +26,8 @@ Welcome to the **Clarified.co.za** codebase and publishing platform. Clarified i
 ## 3. Deep Factual Research & Source Citations
 * **Mandatory Fact-Checking:** Before drafting, use `search_web` to verify numbers, dates, admission requirements, legal thresholds, and facts.
 * **Official Sources:** Cite verified South African primary sources (`gov.za`, `statssa.gov.za`, university faculty portals, verified industry bodies).
-* **Outbound Links:** Include 2 to 4 verified external links to the primary official portals (e.g. official NSFAS application portal, SARS eFiling, university admissions) with clear descriptive anchor text.
-* **Contextual Internal Links:** Include 3 to 5 verified internal links to related Clarified stories (`/articles/[slug].html`). Use `suggest_internal_links` or check `list_articles` to verify URLs exist.
+* **Outbound Links:** Include 1 to 2 verified external links to the primary official portals (e.g. official NSFAS application portal, SARS eFiling, university admissions) with clear descriptive anchor text.
+* **Subtle Internal Links (Max 2):** Include at most **2** internal links per article (`/articles/[slug].html`). Weave them subtly and naturally into the sentence flow (e.g. "...when practicing <a href=\"/articles/how-to-pass-matric-maths.html\">matric maths exam techniques</a>..."). NEVER use formulaic spam like "Check out our guide on [X]...". Never use preview domains like `clarified-co-za.vercel.app`.
 
 ---
 

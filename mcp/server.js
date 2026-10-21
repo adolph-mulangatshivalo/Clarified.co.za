@@ -794,7 +794,14 @@ function runQualityGate(article, existingArticles = [], isNew = false) {
         warnings.push('Featured image is set but missing descriptive "imgAlt" text. Alt text is essential for Google Image search and accessibility.');
     }
 
-    // 7. Internal Link Integrity
+    // 7. Internal Link Integrity & Spam Prevention
+    if (/clarified-co-za\.vercel\.app/i.test(content)) {
+        criticalErrors.push('Found preview link to "clarified-co-za.vercel.app". Always use clean links like "/articles/[slug].html" or "https://clarified.co.za/articles/[slug].html".');
+    }
+    if (/check out our guide/i.test(content)) {
+        warnings.push('Found formulaic phrase "Check out our guide". Editorial rule mandates subtle, natural in-sentence anchor text.');
+    }
+
     const internalLinkRegex = /href=["'](?:\/articles\/|https?:\/\/clarified\.co\.za\/articles\/)([a-zA-Z0-9_-]+)\.html["']/gi;
     let match;
     const checkedSlugs = new Set();
@@ -807,6 +814,9 @@ function runQualityGate(article, existingArticles = [], isNew = false) {
                 criticalErrors.push(`Broken internal link: Found link to "/articles/${targetSlug}.html", but no article with that slug exists.`);
             }
         }
+    }
+    if (checkedSlugs.size > 2) {
+        warnings.push(`Found ${checkedSlugs.size} internal links. Editorial rule strictly limits articles to maximum 2 subtle internal links.`);
     }
 
     // 8. Insecure links check
@@ -909,7 +919,7 @@ function suggestInternalLinks(content, currentSlug = '') {
                         destinationTitle: a.title,
                         destinationSlug: a.slug,
                         destinationUrl: `/articles/${a.slug}.html`,
-                        absoluteUrl: `https://clarified.co.za/articles/${a.slug}.html`
+                        exampleUsage: `...such as <a href="/articles/${a.slug}.html">${candidate}</a> when preparing...`
                     });
                     break;
                 }
@@ -917,9 +927,12 @@ function suggestInternalLinks(content, currentSlug = '') {
         }
     });
 
+    const topSuggestions = suggestions.slice(0, 2);
+
     return {
-        totalSuggestions: suggestions.length,
-        suggestions
+        totalSuggestions: topSuggestions.length,
+        suggestions: topSuggestions,
+        guideline: 'Maximum 2 internal links per article. Weave anchor text naturally into normal sentences. NEVER use formulaic phrases like "Check out our guide on...".'
     };
 }
 
@@ -952,14 +965,18 @@ function handlePublishArticle(params = {}) {
     const isNew = !db.articles.some(a => a.slug === finalSlug);
     const id = Date.now();
 
-    const cleanExcerpt = excerpt || content.replace(/<[^>]+>/g, '').substring(0, 150).trim() + '…';
+    const cleanContent = (content || '')
+        .replace(/https?:\/\/clarified-co-za\.vercel\.app\/articles\//g, '/articles/')
+        .replace(/https?:\/\/clarified\.co\.za\/articles\//g, '/articles/');
+
+    const cleanExcerpt = excerpt || cleanContent.replace(/<[^>]+>/g, '').substring(0, 150).trim() + '…';
     const finalSeoTitle = seoTitle || (title.length > 60 ? title.substring(0, 57) + '…' : title);
     const finalMetaDesc = metaDesc || (cleanExcerpt.length > 160 ? cleanExcerpt.substring(0, 157) + '…' : cleanExcerpt);
 
     const articleDraft = {
         id,
         title,
-        content,
+        content: cleanContent,
         excerpt: cleanExcerpt,
         author,
         category,
@@ -1039,6 +1056,12 @@ function handleEditArticle(params = {}) {
 
     if (idx === -1) {
         throw new Error(`Article not found with ${id ? `id ${id}` : `slug "${slug}"`}.`);
+    }
+
+    if (updates.content) {
+        updates.content = updates.content
+            .replace(/https?:\/\/clarified-co-za\.vercel\.app\/articles\//g, '/articles/')
+            .replace(/https?:\/\/clarified\.co\.za\/articles\//g, '/articles/');
     }
 
     const current = db.articles[idx];
@@ -1902,15 +1925,17 @@ async function executeRpc(req, transportContext = {}) {
                             role: 'user',
                             content: {
                                 type: 'text',
-                                text: `Please write a comprehensive, publishing-ready article for Clarified.co.za on: "${promptArgs.topic}".
+                                text: `Write a clear, high-value, publishing-ready article for Clarified.co.za on: "${promptArgs.topic}".
 Focus Keyword: "${promptArgs.focusKeyword}".
 Category: "${promptArgs.category || 'South Africa'}".
 
-Requirements:
-1. Minimum 600 words with informative <h2> subheadings.
-2. Include an engagingdek excerpt (100-150 characters).
-3. Optimized SEO Title (max 60 chars) and Meta Description (120-160 chars).
-4. Run validate_article_quality and detect_duplicates before saving.`
+Guidelines:
+1. Tone: Simple, everyday English accessible to all ages. Clear and detailed, not big confusing words.
+2. Structure: Short bite-sized paragraphs (2-3 sentences max). Use <h2> and <h3> subheadings, bullet points, or summary tables.
+3. Internal Links: Maximum 2 internal links. Weave them subtly into the sentence flow (e.g. "...when practicing <a href="/articles/slug.html">exam techniques</a>..."). NEVER use formulaic phrases like "Check out our guide on...".
+4. Outbound Links: 1-2 verified primary source links (gov.za, official portals).
+5. Fast & Token-Efficient: Deliver complete, high-quality content without repetitive filler or preamble.
+6. Run validate_article_quality and detect_duplicates before saving.`
                             }
                         }
                     ]
