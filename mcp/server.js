@@ -531,10 +531,10 @@ function regenerateSite() {
 
         const mainBlock = `<main>
   <article class="container article-page" id="article-view">
-    <header class="article-header-text" style="text-align: center; margin-bottom: 20px;">
+    <header class="article-header-text" style="text-align: center; margin-bottom: 24px;">
       <div class="article-kicker">${(a.category || 'Article').split(',')[0].trim()} &middot; ${dateStr} &middot; ${readTime} min read</div>
-      <h1 style="margin: 10px 0;">${a.title}</h1>
-      <p class="article-dek" style="margin: 0 auto; max-width: 800px;">${a.excerpt || ''}</p>
+      <h1 style="margin: 10px auto; text-align: center; max-width: 860px;">${a.title}</h1>
+      <p class="article-dek" style="margin: 18px auto 25px; max-width: 800px; text-align: center;">${a.excerpt || ''}</p>
     </header>
     ${a.featuredImage ? `
     <div class="clarified-single-header">
@@ -565,8 +565,9 @@ function regenerateSite() {
           <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor" style="width:16px;height:16px;max-width:16px;max-height:16px;display:inline-block;vertical-align:middle;flex-shrink:0;"><path d="M13.5 21v-7.5h2.5l.5-3h-3V8.5c0-.9.3-1.5 1.6-1.5H16.5V4.3c-.3 0-1.3-.1-2.4-.1-2.4 0-4.1 1.5-4.1 4.2V10.5H7.5v3H10V21h3.5z"/></svg>
           <span>Facebook</span>
         </a>
-        <a class="share-btn share-x" href="https://twitter.com/intent/tweet?url=${encodeURIComponent('https://clarified.co.za/articles/' + slug + '.html')}&text=${encodeURIComponent(a.title)}" target="_blank" rel="noopener noreferrer" aria-label="Share on X">
+        <a class="share-btn share-twitter" href="https://twitter.com/intent/tweet?url=${encodeURIComponent('https://clarified.co.za/articles/' + slug + '.html')}&text=${encodeURIComponent(a.title)}" target="_blank" rel="noopener noreferrer" aria-label="Share on Twitter">
           <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor" style="width:16px;height:16px;max-width:16px;max-height:16px;display:inline-block;vertical-align:middle;flex-shrink:0;"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></svg>
+          <span>Twitter</span>
         </a>
         <button type="button" class="share-btn share-instagram" aria-label="Share on Instagram">
           <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" style="width:16px;height:16px;max-width:16px;max-height:16px;display:inline-block;vertical-align:middle;flex-shrink:0;"><rect x="3.5" y="3.5" width="17" height="17" rx="5"/><circle cx="12" cy="12" r="4.2"/><circle cx="17.2" cy="6.8" r="1"/></svg>
@@ -592,8 +593,8 @@ function regenerateSite() {
 
         let out = template.replace(/<main>[\s\S]*?<\/main>/, mainBlock);
         out = out.replace(/<title>.*?<\/title>/, `<title>${seoTitle} &mdash; Clarified</title>`);
-        out = out.replace(/href="style\.css"/g, 'href="/style.css?v=2.2"');
-        out = out.replace(/href="\/style\.css(?:\?v=[^"]*)?"/g, 'href="/style.css?v=2.2"');
+        out = out.replace(/href="style\.css"/g, 'href="/style.css?v=2.3"');
+        out = out.replace(/href="\/style\.css(?:\?v=[^"]*)?"/g, 'href="/style.css?v=2.3"');
 
         const absoluteUrl = `https://clarified.co.za/articles/${slug}.html`;
         const absoluteImg = resolveAbsoluteImgUrl(a.featuredImage);

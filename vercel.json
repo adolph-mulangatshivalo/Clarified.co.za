@@ -8,7 +8,100 @@
     { "source": "/dashboard", "destination": "/dashboard/index.html" },
     { "source": "/dashboard/", "destination": "/dashboard/index.html" },
     { "source": "/Clarified%20Dashboard/:path*", "destination": "/dashboard/:path*" },
-    { "source": "/Clarified Dashboard/:path*", "destination": "/dashboard/:path*" }
+    { "source": "/Clarified Dashboard/:path*", "destination": "/dashboard/:path*" },
+
+    { "source": "/category/south-africa", "destination": "/category-south-africa.html" },
+    { "source": "/category/south-africa/", "destination": "/category-south-africa.html" },
+    { "source": "/south-africa", "destination": "/category-south-africa.html" },
+    { "source": "/south-africa/", "destination": "/category-south-africa.html" },
+
+    { "source": "/category/world", "destination": "/category-world.html" },
+    { "source": "/category/world/", "destination": "/category-world.html" },
+    { "source": "/world", "destination": "/category-world.html" },
+    { "source": "/world/", "destination": "/category-world.html" },
+
+    { "source": "/category/technology", "destination": "/category-technology.html" },
+    { "source": "/category/technology/", "destination": "/category-technology.html" },
+    { "source": "/technology", "destination": "/category-technology.html" },
+    { "source": "/technology/", "destination": "/category-technology.html" },
+    { "source": "/category/tech", "destination": "/category-technology.html" },
+    { "source": "/category/tech/", "destination": "/category-technology.html" },
+    { "source": "/tech", "destination": "/category-technology.html" },
+    { "source": "/tech/", "destination": "/category-technology.html" },
+
+    { "source": "/category/business", "destination": "/category-business.html" },
+    { "source": "/category/business/", "destination": "/category-business.html" },
+    { "source": "/business", "destination": "/category-business.html" },
+    { "source": "/business/", "destination": "/category-business.html" },
+
+    { "source": "/category/sport", "destination": "/category-sport.html" },
+    { "source": "/category/sport/", "destination": "/category-sport.html" },
+    { "source": "/sport", "destination": "/category-sport.html" },
+    { "source": "/sport/", "destination": "/category-sport.html" },
+    { "source": "/category/sports", "destination": "/category-sport.html" },
+    { "source": "/category/sports/", "destination": "/category-sport.html" },
+    { "source": "/sports", "destination": "/category-sport.html" },
+    { "source": "/sports/", "destination": "/category-sport.html" },
+
+    { "source": "/category/education", "destination": "/category-education.html" },
+    { "source": "/category/education/", "destination": "/category-education.html" },
+    { "source": "/education", "destination": "/category-education.html" },
+    { "source": "/education/", "destination": "/category-education.html" },
+
+    { "source": "/category/genz-youth", "destination": "/category-genz-youth.html" },
+    { "source": "/category/genz-youth/", "destination": "/category-genz-youth.html" },
+    { "source": "/genz-youth", "destination": "/category-genz-youth.html" },
+    { "source": "/genz-youth/", "destination": "/category-genz-youth.html" },
+    { "source": "/category/genz", "destination": "/category-genz-youth.html" },
+    { "source": "/category/genz/", "destination": "/category-genz-youth.html" },
+    { "source": "/genz", "destination": "/category-genz-youth.html" },
+    { "source": "/genz/", "destination": "/category-genz-youth.html" },
+
+    { "source": "/category/lifestyle", "destination": "/category-lifestyle.html" },
+    { "source": "/category/lifestyle/", "destination": "/category-lifestyle.html" },
+    { "source": "/lifestyle", "destination": "/category-lifestyle.html" },
+    { "source": "/lifestyle/", "destination": "/category-lifestyle.html" },
+
+    { "source": "/category/automotive", "destination": "/category-automotive.html" },
+    { "source": "/category/automotive/", "destination": "/category-automotive.html" },
+    { "source": "/automotive", "destination": "/category-automotive.html" },
+    { "source": "/automotive/", "destination": "/category-automotive.html" },
+    { "source": "/cars", "destination": "/category-automotive.html" },
+    { "source": "/cars/", "destination": "/category-automotive.html" },
+
+    { "source": "/category/africa-news", "destination": "/category-africa-news.html" },
+    { "source": "/category/africa-news/", "destination": "/category-africa-news.html" },
+    { "source": "/africa-news", "destination": "/category-africa-news.html" },
+    { "source": "/africa-news/", "destination": "/category-africa-news.html" },
+    { "source": "/africa", "destination": "/category-africa-news.html" },
+    { "source": "/africa/", "destination": "/category-africa-news.html" },
+
+    { "source": "/category/contact", "destination": "/contact.html" },
+    { "source": "/category/contact/", "destination": "/contact.html" },
+    { "source": "/contact", "destination": "/contact.html" },
+    { "source": "/contact/", "destination": "/contact.html" },
+    { "source": "/contact-us", "destination": "/contact.html" },
+    { "source": "/contact-us/", "destination": "/contact.html" },
+
+    { "source": "/category/about", "destination": "/about.html" },
+    { "source": "/category/about/", "destination": "/about.html" },
+    { "source": "/about", "destination": "/about.html" },
+    { "source": "/about/", "destination": "/about.html" },
+    { "source": "/about-us", "destination": "/about.html" },
+    { "source": "/about-us/", "destination": "/about.html" },
+
+    { "source": "/category/privacy", "destination": "/privacy.html" },
+    { "source": "/category/privacy/", "destination": "/privacy.html" },
+    { "source": "/privacy", "destination": "/privacy.html" },
+    { "source": "/privacy/", "destination": "/privacy.html" },
+    { "source": "/privacy-policy", "destination": "/privacy.html" },
+    { "source": "/privacy-policy/", "destination": "/privacy.html" },
+
+    { "source": "/article/:slug", "destination": "/articles/:slug.html" },
+    { "source": "/article/:slug/", "destination": "/articles/:slug.html" },
+
+    { "source": "/category/:slug", "destination": "/category-:slug.html" },
+    { "source": "/category/:slug/", "destination": "/category-:slug.html" }
   ],
   "headers": [
     {

@@ -984,9 +984,19 @@ button, input { font: inherit; }
   margin-bottom: 10px;
 }
 
+.article-header-text {
+  text-align: center;
+  margin-bottom: 24px;
+}
+
+.article-kicker {
+  text-align: center;
+}
+
 .article-page h1 {
   max-width: 900px;
-  margin: 0;
+  margin: 10px auto !important;
+  text-align: center !important;
   font-family: "Space Grotesk", sans-serif;
   font-size: clamp(38px, 6vw, 68px);
   line-height: .98;
@@ -994,8 +1004,9 @@ button, input { font: inherit; }
 }
 
 .article-dek {
-  max-width: 1050px;
-  margin: 18px 0 25px;
+  max-width: 800px;
+  margin: 18px auto 25px !important;
+  text-align: center !important;
   color: var(--muted);
   font-size: 18px;
   line-height: 1.6;
@@ -1626,14 +1637,16 @@ a:hover .ui-arrow {
   font-size: clamp(40px, 6vw, 72px);
   line-height: 1.02;
   letter-spacing: -0.045em;
-  margin: 0;
+  margin: 10px auto !important;
+  text-align: center !important;
 }
 .article-dek {
-  max-width: 1050px;
+  max-width: 800px;
   font-size: 20px;
   line-height: 1.55;
   color: #5d676a;
-  margin: 22px 0 32px;
+  margin: 18px auto 30px !important;
+  text-align: center !important;
 }
 .article-figure { margin: 0 0 34px; }
 .article-figure figcaption {
@@ -1779,13 +1792,12 @@ a:hover .ui-arrow {
   color: #ffffff;
 }
 
-.article-share .share-btn.share-x {
+.article-share .share-btn.share-x,
+.article-share .share-btn.share-twitter {
   color: #0f1419;
-  padding: 8px 10px !important;
-  min-width: 36px;
-  justify-content: center;
 }
-.article-share .share-btn.share-x:hover {
+.article-share .share-btn.share-x:hover,
+.article-share .share-btn.share-twitter:hover {
   background: #000000;
   border-color: #000000;
   color: #ffffff;
