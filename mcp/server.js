@@ -245,14 +245,22 @@ function readingTime(content) {
 
 function resolveImgUrl(p) {
     if (!p) return '';
-    if (p.startsWith('http://') || p.startsWith('https://')) return p;
-    return '/' + p.replace(/^\//, '');
+    let clean = p.startsWith('http://') || p.startsWith('https://') ? p : '/' + p.replace(/^\//, '');
+    if (clean.endsWith('.png')) {
+        const jpgCandidate = clean.replace(/\.png$/, '.jpg');
+        const localJpg = path.join(PROJECT_ROOT, jpgCandidate.replace(/^\//, ''));
+        if (fs.existsSync(localJpg)) {
+            return jpgCandidate;
+        }
+    }
+    return clean;
 }
 
 function resolveAbsoluteImgUrl(p) {
     if (!p) return '';
-    if (p.startsWith('http://') || p.startsWith('https://')) return p;
-    return 'https://clarified.co.za/' + p.replace(/^\//, '');
+    const rel = resolveImgUrl(p);
+    if (rel.startsWith('http://') || rel.startsWith('https://')) return rel;
+    return 'https://clarified.co.za/' + rel.replace(/^\//, '');
 }
 
 function generateSlug(text) {
@@ -497,7 +505,7 @@ function regenerateSite() {
     </header>
     ${a.featuredImage ? `
     <div class="clarified-single-header">
-      <img src="${resolveImgUrl(a.featuredImage)}" class="article-hero-image" alt="${a.imgAlt || a.title}">
+      <img src="${resolveImgUrl(a.featuredImage)}" class="article-hero-image" alt="${a.imgAlt || a.title}" loading="eager" fetchpriority="high" decoding="async">
     </div>` : ''}
     <div class="article-body">${tocHtml}
       ${contentHtml}

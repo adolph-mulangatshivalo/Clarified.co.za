@@ -1150,7 +1150,7 @@ button, input { font: inherit; }
     display: grid;
     grid-template-columns: 124px minmax(0, 1fr);
     column-gap: 14px;
-    align-items: flex-start;
+    align-items: center;
     padding: 0 0 16px;
   }
 
@@ -1164,7 +1164,8 @@ button, input { font: inherit; }
     display: block !important;
     background: #eef4f5;
     flex-shrink: 0 !important;
-    align-self: flex-start;
+    align-self: center !important;
+    margin-top: 5px !important;
   }
 
   .category-grid .card img {
@@ -1181,15 +1182,21 @@ button, input { font: inherit; }
 
   .category-grid .card .eyebrow {
     margin-top: 0;
+    margin-bottom: 3px;
   }
 
   .category-grid .card h3 {
     font-size: 17px;
-    line-height: 1.17;
+    line-height: 1.2;
+    margin: 0 0 5px;
   }
 
   .category-grid .card p {
     display: none;
+  }
+
+  .category-grid .card .read-meta {
+    margin-top: 2px;
   }
 }
 
