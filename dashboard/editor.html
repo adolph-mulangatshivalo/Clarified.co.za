@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -13,872 +14,1090 @@
             color: #aaa;
             pointer-events: none;
         }
-        .toolbar-btn.active { background: var(--cyan-soft); color: var(--cyan-dark); }
-        .seo-check-item { display:flex; align-items:center; gap:8px; font-size:14px; color:#5f696c; }
-        .seo-check-item.pass svg { stroke: #10B981; }
-        .seo-check-item.fail svg { stroke: var(--danger,#e53e3e); }
-        #preview-title { color:#1a0dab; font-size:19px; line-height:1.3; margin-bottom:4px; }
-        #preview-url   { color:#006621; font-size:14px; margin-bottom:6px; }
-        #preview-desc  { color:#4d5156; font-size:14px; line-height:1.58; }
-        .notice { padding:12px 16px; border-radius:7px; font-size:14px; font-weight:600; display:none; }
-        .notice.success { background:rgba(16,185,129,0.12); color:#059669; }
-        .notice.error   { background:rgba(229,62,62,0.10);  color:#c53030; }
+
+        .toolbar-btn.active {
+            background: var(--cyan-soft);
+            color: var(--cyan-dark);
+        }
+
+        .seo-check-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 14px;
+            color: #5f696c;
+        }
+
+        .seo-check-item.pass svg {
+            stroke: #10B981;
+        }
+
+        .seo-check-item.fail svg {
+            stroke: var(--danger, #e53e3e);
+        }
+
+        #preview-title {
+            color: #1a0dab;
+            font-size: 19px;
+            line-height: 1.3;
+            margin-bottom: 4px;
+        }
+
+        #preview-url {
+            color: #006621;
+            font-size: 14px;
+            margin-bottom: 6px;
+        }
+
+        #preview-desc {
+            color: #4d5156;
+            font-size: 14px;
+            line-height: 1.58;
+        }
+
+        .notice {
+            padding: 12px 16px;
+            border-radius: 7px;
+            font-size: 14px;
+            font-weight: 600;
+            display: none;
+        }
+
+        .notice.success {
+            background: rgba(16, 185, 129, 0.12);
+            color: #059669;
+        }
+
+        .notice.error {
+            background: rgba(229, 62, 62, 0.10);
+            color: #c53030;
+        }
     </style>
 </head>
+
 <body>
 
-<aside class="sidebar" id="dashboard-sidebar">
-    <div class="brand-bar">
-        <a href="/dashboard/index.html" class="brand">
-            <img src="/images/cropped-WhatsApp-Image-2026-08-17-at-12.53.05-32x32.jpeg" alt="Logo" style="width:32px;height:32px;border-radius:6px;border:1px solid var(--line);">
-            <div><span>Clarified </span><b>South Africa</b></div>
-        </a>
-        <button type="button" class="mobile-nav-toggle" id="mobile-nav-toggle" aria-label="Toggle navigation menu" onclick="document.getElementById('dashboard-sidebar').classList.toggle('mobile-open')">
-            <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2">
-                <line x1="3" y1="12" x2="21" y2="12"></line>
-                <line x1="3" y1="6" x2="21" y2="6"></line>
-                <line x1="3" y1="18" x2="21" y2="18"></line>
-            </svg>
-        </button>
-    </div>
-
-    <!-- Mobile Quick-Nav Bar (1-Tap Direct Links on Mobile) -->
-    <div class="mobile-quick-nav">
-        <a href="index.html" class="mq-btn">
-            <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7"></rect><rect x="14" y="3" width="7" height="7"></rect><rect x="14" y="14" width="7" height="7"></rect><rect x="3" y="14" width="7" height="7"></rect></svg>
-            Dashboard
-        </a>
-        <a href="articles.html" class="mq-btn">
-            <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline></svg>
-            Articles
-        </a>
-        <a href="editor.html" class="mq-btn active">
-            <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
-            New Article
-        </a>
-        <a href="/dashboard/mcp.html" class="mq-btn">
-            <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"></circle><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path></svg>
-            AI & MCP
-        </a>
-        <button type="button" onclick="if(window.dashboardLogout){window.dashboardLogout();}else{window.location.href='/dashboard/login.html';}" class="mq-btn mq-btn-danger">
-            Sign out
-        </button>
-    </div>
-    <nav class="nav-menu">
-
-        <details class="nav-group">
-            <summary class="nav-item">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7"></rect><rect x="14" y="3" width="7" height="7"></rect><rect x="14" y="14" width="7" height="7"></rect><rect x="3" y="14" width="7" height="7"></rect></svg>
-                <span>Overview</span>
-                <svg class="chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"></polyline></svg>
-            </summary>
-            <div class="nav-sub">
-                <a href="index.html" class="nav-sub-item">Dashboard</a>
-            </div>
-        </details>
-
-        <details class="nav-group" open>
-            <summary class="nav-item active">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line><polyline points="10 9 9 9 8 9"></polyline></svg>
-                <span>Articles</span>
-                <svg class="chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"></polyline></svg>
-            </summary>
-            <div class="nav-sub">
-                <a href="articles.html" class="nav-sub-item">All Articles</a>
-                <a href="editor.html" class="nav-sub-item active">New Article</a>
-                <a href="articles.html?filter=draft" class="nav-sub-item">Drafts</a>
-                <a href="articles.html?filter=scheduled" class="nav-sub-item">Scheduled</a>
-            </div>
-        </details>
-
-        <details class="nav-group">
-            <summary class="nav-item">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"></circle><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path></svg>
-                <span>AI & MCP</span>
-                <span id="sidebar-mcp-badge" class="nav-badge disconnected">Offline</span>
-                <svg class="chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"></polyline></svg>
-            </summary>
-            <div class="nav-sub">
-                <a href="/dashboard/mcp.html" class="nav-sub-item">Command Center</a>
-                <a href="/dashboard/mcp.html#instructions" class="nav-sub-item">Connection Guide</a>
-                <a href="/dashboard/mcp.html#capabilities" class="nav-sub-item">Everything We Can Do</a>
-            </div>
-        </details>
-
-        <details class="nav-group">
-            <summary class="nav-item">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"></path></svg>
-                <span>Categories</span>
-                <svg class="chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"></polyline></svg>
-            </summary>
-            <div class="nav-sub">
-                <a href="articles.html?cat=South+Africa" class="nav-sub-item">SA</a>
-                <a href="articles.html?cat=World" class="nav-sub-item">World</a>
-                <a href="articles.html?cat=Technology" class="nav-sub-item">Tech</a>
-                <a href="articles.html?cat=Business" class="nav-sub-item">Business</a>
-                <a href="articles.html?cat=Sport" class="nav-sub-item">Sport</a>
-                <a href="articles.html?cat=Education" class="nav-sub-item">Education</a>
-                <a href="articles.html?cat=GenZ+%26+Youth" class="nav-sub-item">Youth</a>
-                <a href="articles.html?cat=Africa+News" class="nav-sub-item">Africa</a>
-                <a href="articles.html?cat=Lifestyle" class="nav-sub-item">Lifestyle</a>
-                <a href="articles.html?cat=Automotive" class="nav-sub-item">Auto</a>
-            </div>
-        </details>
-
-        <details class="nav-group">
-            <summary class="nav-item">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="20" x2="18" y2="10"></line><line x1="12" y1="20" x2="12" y2="4"></line><line x1="6" y1="20" x2="6" y2="14"></line></svg>
-                <span>Analytics</span>
-                <svg class="chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"></polyline></svg>
-            </summary>
-            <div class="nav-sub">
-                <a href="articles.html" class="nav-sub-item">Popular Articles</a>
-            </div>
-        </details>
-
-        <details class="nav-group">
-            <summary class="nav-item">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"></circle><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path></svg>
-                <span>Settings</span>
-                <svg class="chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"></polyline></svg>
-            </summary>
-            <div class="nav-sub">
-                <a href="#" class="nav-sub-item">Site Information</a>
-                <a href="#" class="nav-sub-item">Social Links</a>
-            </div>
-        </details>
-
-    </nav>
-    <div class="sidebar-footer" style="padding:16px;border-top:1px solid var(--line);margin-top:auto;">
-        <a href="/" target="_blank" class="nav-sub-item" style="display:flex;align-items:center;gap:8px;color:var(--muted);">
-            <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"></path><polyline points="15 3 21 3 21 9"></polyline><line x1="10" y1="14" x2="21" y2="3"></line></svg>
-            View live site
-        </a>
-    </div>
-</aside>
-
-<main class="main-wrapper">
-    <header class="topbar">
-        <div class="topbar-title" id="page-title">New Article</div>
-        <div class="user-profile">
-            <button id="btn-draft"   class="btn btn-outline"  onclick="save('draft')"     style="margin-right:8px;">Save Draft</button>
-            <button id="btn-publish" class="btn btn-primary"  onclick="save('published')" style="margin-right:8px;">Publish</button>
-            <div class="avatar">A</div>
+    <aside class="sidebar" id="dashboard-sidebar">
+        <div class="brand-bar">
+            <a href="/dashboard/index.html" class="brand">
+                <img src="/images/cropped-WhatsApp-Image-2026-08-17-at-12.53.05-32x32.jpeg" alt="Logo"
+                    style="width:32px;height:32px;border-radius:6px;border:1px solid var(--line);">
+                <div><span>Clarified </span><b>South Africa</b></div>
+            </a>
+            <button type="button" class="mobile-nav-toggle" id="mobile-nav-toggle" aria-label="Toggle navigation menu"
+                onclick="document.getElementById('dashboard-sidebar').classList.toggle('mobile-open')">
+                <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2">
+                    <line x1="3" y1="12" x2="21" y2="12"></line>
+                    <line x1="3" y1="6" x2="21" y2="6"></line>
+                    <line x1="3" y1="18" x2="21" y2="18"></line>
+                </svg>
+            </button>
         </div>
-    </header>
 
-    <div class="content" style="max-width:1200px;">
+        <!-- Mobile Quick-Nav Bar (1-Tap Direct Links on Mobile) -->
+        <div class="mobile-quick-nav">
+            <a href="index.html" class="mq-btn">
+                <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2">
+                    <rect x="3" y="3" width="7" height="7"></rect>
+                    <rect x="14" y="3" width="7" height="7"></rect>
+                    <rect x="14" y="14" width="7" height="7"></rect>
+                    <rect x="3" y="14" width="7" height="7"></rect>
+                </svg>
+                Dashboard
+            </a>
+            <a href="articles.html" class="mq-btn">
+                <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+                    <polyline points="14 2 14 8 20 8"></polyline>
+                </svg>
+                Articles
+            </a>
+            <a href="editor.html" class="mq-btn active">
+                <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2">
+                    <line x1="12" y1="5" x2="12" y2="19"></line>
+                    <line x1="5" y1="12" x2="19" y2="12"></line>
+                </svg>
+                New Article
+            </a>
+            <a href="/dashboard/mcp.html" class="mq-btn">
+                <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2">
+                    <circle cx="12" cy="12" r="3"></circle>
+                    <path
+                        d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z">
+                    </path>
+                </svg>
+                AI & MCP
+            </a>
+            <button type="button"
+                onclick="if(window.dashboardLogout){window.dashboardLogout();}else{window.location.href='/dashboard/login.html';}"
+                class="mq-btn mq-btn-danger">
+                Sign out
+            </button>
+        </div>
+        <nav class="nav-menu">
 
-        <div id="notice" class="notice"></div>
-
-        <div class="editor-layout">
-
-            <!-- ── LEFT COLUMN ── -->
-            <div>
-
-                <!-- Article Panel -->
-                <div class="panel" style="padding:0;overflow:hidden;margin-bottom:2rem;">
-                    <div style="padding:20px 24px;border-bottom:1px solid var(--line);background:var(--soft);">
-                        <h3 style="margin:0;font-size:18px;">Article</h3>
-                    </div>
-                    <div style="padding:24px;">
-                        <input id="f-title" type="text" placeholder="Article title…"
-                            style="width:100%;padding:14px 16px;font-size:22px;font-weight:700;font-family:'Space Grotesk',sans-serif;border:1px solid var(--line);border-radius:7px;margin-bottom:1.25rem;outline:none;box-sizing:border-box;"
-                            oninput="onTitleChange(this.value)">
-
-                        <!-- Rich text toolbar -->
-                        <div style="border:1px solid var(--line);border-radius:7px;overflow:hidden;margin-bottom:1.25rem;">
-                            <div class="editor-toolbar" style="padding:8px 12px;border-bottom:1px solid var(--line);display:flex;flex-wrap:wrap;gap:4px;">
-                                <button type="button" class="toolbar-btn" title="Bold" onmousedown="event.preventDefault()" onclick="fmt('bold')"><b>B</b></button>
-                                <button type="button" class="toolbar-btn" title="Italic" onmousedown="event.preventDefault()" onclick="fmt('italic')"><i>I</i></button>
-                                <button type="button" class="toolbar-btn" title="Underline" onmousedown="event.preventDefault()" onclick="fmt('underline')"><u>U</u></button>
-                                <div style="width:1px;background:var(--line);margin:0 4px;"></div>
-                                <button type="button" class="toolbar-btn" title="Heading 2" onmousedown="event.preventDefault()" onclick="fmt('formatBlock','h2')">H2</button>
-                                <button type="button" class="toolbar-btn" title="Heading 3" onmousedown="event.preventDefault()" onclick="fmt('formatBlock','h3')">H3</button>
-                                <button type="button" class="toolbar-btn" title="Paragraph" onmousedown="event.preventDefault()" onclick="fmt('formatBlock','p')">¶</button>
-                                <div style="width:1px;background:var(--line);margin:0 4px;"></div>
-                                <button type="button" class="toolbar-btn" title="Bullet list" onmousedown="event.preventDefault()" onclick="fmt('insertUnorderedList')">&#8226; List</button>
-                                <button type="button" class="toolbar-btn" title="Ordered list" onmousedown="event.preventDefault()" onclick="fmt('insertOrderedList')">1. List</button>
-                                <div style="width:1px;background:var(--line);margin:0 4px;"></div>
-                                <button type="button" class="toolbar-btn" title="Insert link" onmousedown="event.preventDefault()" onclick="insertLink()">
-                                    <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg>
-                                </button>
-                                <button type="button" class="toolbar-btn" title="Insert image" onmousedown="event.preventDefault()" onclick="document.getElementById('inline-img-file').click()">
-                                    <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect><circle cx="8.5" cy="8.5" r="1.5"></circle><polyline points="21 15 16 10 5 21"></polyline></svg>
-                                </button>
-                                <button type="button" class="toolbar-btn" title="Remove formatting" onmousedown="event.preventDefault()" onclick="fmt('removeFormat')" style="font-size:11px;">Clear</button>
-                                <input type="file" id="inline-img-file" accept="image/*" style="display:none;" onchange="insertInlineImage(this)">
-                            </div>
-                            <div id="editor-body" class="editor-content" contenteditable="true"
-                                placeholder="Start writing your article here…"
-                                style="padding:20px;min-height:380px;outline:none;line-height:1.8;font-size:16px;"
-                                oninput="runSeoChecks()"></div>
-                        </div>
-
-                        <div style="margin-bottom:1.25rem;">
-                            <label style="display:block;margin-bottom:6px;color:#5f696c;font-weight:600;font-size:14px;">Excerpt</label>
-                            <textarea id="f-excerpt" placeholder="A brief summary that appears on the homepage and in search results…"
-                                style="width:100%;padding:12px 14px;border:1px solid var(--line);border-radius:7px;min-height:90px;outline:none;font-family:inherit;font-size:14px;resize:vertical;box-sizing:border-box;"
-                                oninput="updateMetaDescFromExcerpt();runSeoChecks()"></textarea>
-                        </div>
-
-                        <div>
-                            <label style="display:block;margin-bottom:6px;color:#5f696c;font-weight:600;font-size:14px;">Author</label>
-                            <input id="f-author" type="text" value="Admin"
-                                style="width:100%;padding:10px 14px;border:1px solid var(--line);border-radius:7px;outline:none;font-size:14px;box-sizing:border-box;">
-                        </div>
-                    </div>
+            <details class="nav-group">
+                <summary class="nav-item">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <rect x="3" y="3" width="7" height="7"></rect>
+                        <rect x="14" y="3" width="7" height="7"></rect>
+                        <rect x="14" y="14" width="7" height="7"></rect>
+                        <rect x="3" y="14" width="7" height="7"></rect>
+                    </svg>
+                    <span>Overview</span>
+                    <svg class="chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <polyline points="6 9 12 15 18 9"></polyline>
+                    </svg>
+                </summary>
+                <div class="nav-sub">
+                    <a href="index.html" class="nav-sub-item">Dashboard</a>
                 </div>
+            </details>
 
-                <!-- SEO Panel -->
-                <div class="panel" style="padding:0;overflow:hidden;">
-                    <div style="padding:20px 24px;border-bottom:1px solid var(--line);background:var(--soft);">
-                        <h3 style="margin:0;font-size:18px;">SEO</h3>
-                    </div>
-                    <div style="padding:24px;display:grid;gap:1.25rem;">
+            <details class="nav-group" open>
+                <summary class="nav-item active">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+                        <polyline points="14 2 14 8 20 8"></polyline>
+                        <line x1="16" y1="13" x2="8" y2="13"></line>
+                        <line x1="16" y1="17" x2="8" y2="17"></line>
+                        <polyline points="10 9 9 9 8 9"></polyline>
+                    </svg>
+                    <span>Articles</span>
+                    <svg class="chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <polyline points="6 9 12 15 18 9"></polyline>
+                    </svg>
+                </summary>
+                <div class="nav-sub">
+                    <a href="articles.html" class="nav-sub-item">All Articles</a>
+                    <a href="editor.html" class="nav-sub-item active">New Article</a>
+                    <a href="articles.html?filter=draft" class="nav-sub-item">Drafts</a>
+                    <a href="articles.html?filter=scheduled" class="nav-sub-item">Scheduled</a>
+                </div>
+            </details>
 
-                        <div>
-                            <label style="display:block;margin-bottom:6px;color:#5f696c;font-weight:600;font-size:14px;">Focus Keyword</label>
-                            <input id="f-focuskw" type="text" placeholder="e.g. South Africa economy"
-                                style="width:100%;padding:10px 14px;border:1px solid var(--line);border-radius:7px;outline:none;font-size:14px;box-sizing:border-box;"
-                                oninput="runSeoChecks()">
+            <details class="nav-group">
+                <summary class="nav-item">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <circle cx="12" cy="12" r="3"></circle>
+                        <path
+                            d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z">
+                        </path>
+                    </svg>
+                    <span>AI & MCP</span>
+                    <span id="sidebar-mcp-badge" class="nav-badge disconnected">Offline</span>
+                    <svg class="chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <polyline points="6 9 12 15 18 9"></polyline>
+                    </svg>
+                </summary>
+                <div class="nav-sub">
+                    <a href="/dashboard/mcp.html" class="nav-sub-item">Command Center</a>
+                    <a href="/dashboard/mcp.html#instructions" class="nav-sub-item">Connection Guide</a>
+                    <a href="/dashboard/mcp.html#capabilities" class="nav-sub-item">Everything We Can Do</a>
+                </div>
+            </details>
+
+            <details class="nav-group">
+                <summary class="nav-item">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"></path>
+                    </svg>
+                    <span>Categories</span>
+                    <svg class="chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <polyline points="6 9 12 15 18 9"></polyline>
+                    </svg>
+                </summary>
+                <div class="nav-sub">
+                    <a href="articles.html?cat=South+Africa" class="nav-sub-item">SA</a>
+                    <a href="articles.html?cat=World" class="nav-sub-item">World</a>
+                    <a href="articles.html?cat=Technology" class="nav-sub-item">Tech</a>
+                    <a href="articles.html?cat=Business" class="nav-sub-item">Business</a>
+                    <a href="articles.html?cat=Sport" class="nav-sub-item">Sport</a>
+                    <a href="articles.html?cat=Education" class="nav-sub-item">Education</a>
+                    <a href="articles.html?cat=GenZ+%26+Youth" class="nav-sub-item">Youth</a>
+                    <a href="articles.html?cat=Africa+News" class="nav-sub-item">Africa</a>
+                    <a href="articles.html?cat=Lifestyle" class="nav-sub-item">Lifestyle</a>
+                    <a href="articles.html?cat=Automotive" class="nav-sub-item">Auto</a>
+                </div>
+            </details>
+
+            <details class="nav-group">
+                <summary class="nav-item">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <line x1="18" y1="20" x2="18" y2="10"></line>
+                        <line x1="12" y1="20" x2="12" y2="4"></line>
+                        <line x1="6" y1="20" x2="6" y2="14"></line>
+                    </svg>
+                    <span>Analytics</span>
+                    <svg class="chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <polyline points="6 9 12 15 18 9"></polyline>
+                    </svg>
+                </summary>
+                <div class="nav-sub">
+                    <a href="articles.html" class="nav-sub-item">Popular Articles</a>
+                </div>
+            </details>
+
+            <details class="nav-group">
+                <summary class="nav-item">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <circle cx="12" cy="12" r="3"></circle>
+                        <path
+                            d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z">
+                        </path>
+                    </svg>
+                    <span>Settings</span>
+                    <svg class="chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <polyline points="6 9 12 15 18 9"></polyline>
+                    </svg>
+                </summary>
+                <div class="nav-sub">
+                    <a href="#" class="nav-sub-item">Site Information</a>
+                    <a href="#" class="nav-sub-item">Social Links</a>
+                </div>
+            </details>
+
+        </nav>
+        <div class="sidebar-footer" style="padding:16px;border-top:1px solid var(--line);margin-top:auto;">
+            <a href="/" target="_blank" class="nav-sub-item"
+                style="display:flex;align-items:center;gap:8px;color:var(--muted);">
+                <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"></path>
+                    <polyline points="15 3 21 3 21 9"></polyline>
+                    <line x1="10" y1="14" x2="21" y2="3"></line>
+                </svg>
+                View live site
+            </a>
+        </div>
+    </aside>
+
+    <main class="main-wrapper">
+        <header class="topbar">
+            <div class="topbar-title" id="page-title">New Article</div>
+            <div class="user-profile">
+                <button id="btn-draft" class="btn btn-outline" onclick="save('draft')" style="margin-right:8px;">Save
+                    Draft</button>
+                <button id="btn-publish" class="btn btn-primary" onclick="save('published')"
+                    style="margin-right:8px;">Publish</button>
+                <div class="avatar">A</div>
+            </div>
+        </header>
+
+        <div class="content" style="max-width:1200px;">
+
+            <div id="notice" class="notice"></div>
+
+            <div class="editor-layout">
+
+                <!-- ── LEFT COLUMN ── -->
+                <div>
+
+                    <!-- Article Panel -->
+                    <div class="panel" style="padding:0;overflow:hidden;margin-bottom:2rem;">
+                        <div style="padding:20px 24px;border-bottom:1px solid var(--line);background:var(--soft);">
+                            <h3 style="margin:0;font-size:18px;">Article</h3>
                         </div>
+                        <div style="padding:24px;">
+                            <input id="f-title" type="text" placeholder="Article title…"
+                                style="width:100%;padding:14px 16px;font-size:22px;font-weight:700;font-family:'Space Grotesk',sans-serif;border:1px solid var(--line);border-radius:7px;margin-bottom:1.25rem;outline:none;box-sizing:border-box;"
+                                oninput="onTitleChange(this.value)">
 
-                        <div>
-                            <label style="display:block;margin-bottom:6px;color:#5f696c;font-weight:600;font-size:14px;">Secondary Keywords</label>
-                            <input id="f-secondarykw" type="text" placeholder="e.g. AI jobs, MTN careers"
-                                style="width:100%;padding:10px 14px;border:1px solid var(--line);border-radius:7px;outline:none;font-size:14px;box-sizing:border-box;">
-                        </div>
-
-                        <div>
-                            <label style="display:block;margin-bottom:6px;color:#5f696c;font-weight:600;font-size:14px;">SEO Title</label>
-                            <input id="f-seotitle" type="text" placeholder="Auto-filled from article title"
-                                style="width:100%;padding:10px 14px;border:1px solid var(--line);border-radius:7px;outline:none;font-size:14px;box-sizing:border-box;"
-                                oninput="updatePreview();runSeoChecks()">
-                            <div id="seotitle-len" style="font-size:11px;color:var(--muted);margin-top:4px;text-align:right;">0 / 60</div>
-                        </div>
-
-                        <div>
-                            <label style="display:block;margin-bottom:6px;color:#5f696c;font-weight:600;font-size:14px;">Meta Description</label>
-                            <textarea id="f-metadesc" placeholder="Auto-filled from excerpt"
-                                style="width:100%;padding:10px 14px;border:1px solid var(--line);border-radius:7px;min-height:80px;outline:none;font-family:inherit;font-size:14px;resize:vertical;box-sizing:border-box;"
-                                oninput="updatePreview();runSeoChecks()"></textarea>
-                            <div id="metadesc-len" style="font-size:11px;color:var(--muted);margin-top:4px;text-align:right;">0 / 160</div>
-                        </div>
-
-                        <div style="display:grid;grid-template-columns:1fr 1fr;gap:1rem;">
-                            <div>
-                                <label style="display:block;margin-bottom:6px;color:#5f696c;font-weight:600;font-size:14px;">URL Slug</label>
-                                <input id="f-slug" type="text" placeholder="auto-generated-from-title"
-                                    style="width:100%;padding:10px 14px;border:1px solid var(--line);border-radius:7px;outline:none;font-size:14px;box-sizing:border-box;font-family:monospace;"
-                                    oninput="updatePreview()">
+                            <!-- Rich text toolbar -->
+                            <div
+                                style="border:1px solid var(--line);border-radius:7px;overflow:hidden;margin-bottom:1.25rem;">
+                                <div class="editor-toolbar"
+                                    style="padding:8px 12px;border-bottom:1px solid var(--line);display:flex;flex-wrap:wrap;gap:4px;">
+                                    <button type="button" class="toolbar-btn" title="Bold"
+                                        onmousedown="event.preventDefault()" onclick="fmt('bold')"><b>B</b></button>
+                                    <button type="button" class="toolbar-btn" title="Italic"
+                                        onmousedown="event.preventDefault()" onclick="fmt('italic')"><i>I</i></button>
+                                    <button type="button" class="toolbar-btn" title="Underline"
+                                        onmousedown="event.preventDefault()"
+                                        onclick="fmt('underline')"><u>U</u></button>
+                                    <div style="width:1px;background:var(--line);margin:0 4px;"></div>
+                                    <button type="button" class="toolbar-btn" title="Heading 2"
+                                        onmousedown="event.preventDefault()"
+                                        onclick="fmt('formatBlock','h2')">H2</button>
+                                    <button type="button" class="toolbar-btn" title="Heading 3"
+                                        onmousedown="event.preventDefault()"
+                                        onclick="fmt('formatBlock','h3')">H3</button>
+                                    <button type="button" class="toolbar-btn" title="Paragraph"
+                                        onmousedown="event.preventDefault()" onclick="fmt('formatBlock','p')">¶</button>
+                                    <div style="width:1px;background:var(--line);margin:0 4px;"></div>
+                                    <button type="button" class="toolbar-btn" title="Bullet list"
+                                        onmousedown="event.preventDefault()"
+                                        onclick="fmt('insertUnorderedList')">&#8226; List</button>
+                                    <button type="button" class="toolbar-btn" title="Ordered list"
+                                        onmousedown="event.preventDefault()" onclick="fmt('insertOrderedList')">1.
+                                        List</button>
+                                    <div style="width:1px;background:var(--line);margin:0 4px;"></div>
+                                    <button type="button" class="toolbar-btn" title="Insert link"
+                                        onmousedown="event.preventDefault()" onclick="insertLink()">
+                                        <svg viewBox="0 0 24 24" width="14" height="14" fill="none"
+                                            stroke="currentColor" stroke-width="2">
+                                            <path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71">
+                                            </path>
+                                            <path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71">
+                                            </path>
+                                        </svg>
+                                    </button>
+                                    <button type="button" class="toolbar-btn" title="Insert image"
+                                        onmousedown="event.preventDefault()"
+                                        onclick="document.getElementById('inline-img-file').click()">
+                                        <svg viewBox="0 0 24 24" width="14" height="14" fill="none"
+                                            stroke="currentColor" stroke-width="2">
+                                            <rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect>
+                                            <circle cx="8.5" cy="8.5" r="1.5"></circle>
+                                            <polyline points="21 15 16 10 5 21"></polyline>
+                                        </svg>
+                                    </button>
+                                    <button type="button" class="toolbar-btn" title="Remove formatting"
+                                        onmousedown="event.preventDefault()" onclick="fmt('removeFormat')"
+                                        style="font-size:11px;">Clear</button>
+                                    <input type="file" id="inline-img-file" accept="image/*" style="display:none;"
+                                        onchange="insertInlineImage(this)">
+                                </div>
+                                <div id="editor-body" class="editor-content" contenteditable="true"
+                                    placeholder="Start writing your article here…"
+                                    style="padding:20px;min-height:380px;outline:none;line-height:1.8;font-size:16px;"
+                                    oninput="runSeoChecks()"></div>
                             </div>
+
+                            <div style="margin-bottom:1.25rem;">
+                                <label
+                                    style="display:block;margin-bottom:6px;color:#5f696c;font-weight:600;font-size:14px;">Excerpt</label>
+                                <textarea id="f-excerpt"
+                                    placeholder="A brief summary that appears on the homepage and in search results…"
+                                    style="width:100%;padding:12px 14px;border:1px solid var(--line);border-radius:7px;min-height:90px;outline:none;font-family:inherit;font-size:14px;resize:vertical;box-sizing:border-box;"
+                                    oninput="updateMetaDescFromExcerpt();runSeoChecks()"></textarea>
+                            </div>
+
                             <div>
-                                <label style="display:block;margin-bottom:6px;color:#5f696c;font-weight:600;font-size:14px;">Canonical URL</label>
-                                <input id="f-canonical" type="text" placeholder="https://clarified.co.za/…"
+                                <label
+                                    style="display:block;margin-bottom:6px;color:#5f696c;font-weight:600;font-size:14px;">Author</label>
+                                <input id="f-author" type="text" value="Admin"
                                     style="width:100%;padding:10px 14px;border:1px solid var(--line);border-radius:7px;outline:none;font-size:14px;box-sizing:border-box;">
                             </div>
                         </div>
+                    </div>
 
-                        <div style="display:grid;grid-template-columns:1fr 1fr;gap:1rem;">
+                    <!-- SEO Panel -->
+                    <div class="panel" style="padding:0;overflow:hidden;">
+                        <div style="padding:20px 24px;border-bottom:1px solid var(--line);background:var(--soft);">
+                            <h3 style="margin:0;font-size:18px;">SEO</h3>
+                        </div>
+                        <div style="padding:24px;display:grid;gap:1.25rem;">
+
                             <div>
-                                <label style="display:block;margin-bottom:6px;color:#5f696c;font-weight:600;font-size:14px;">Indexing</label>
-                                <select id="f-indexing" style="width:100%;padding:10px 14px;border:1px solid var(--line);border-radius:7px;outline:none;font-size:14px;box-sizing:border-box;">
-                                    <option value="index">Index</option>
-                                    <option value="noindex">Noindex</option>
+                                <label
+                                    style="display:block;margin-bottom:6px;color:#5f696c;font-weight:600;font-size:14px;">Focus
+                                    Keyword</label>
+                                <input id="f-focuskw" type="text" placeholder="e.g. South Africa economy"
+                                    style="width:100%;padding:10px 14px;border:1px solid var(--line);border-radius:7px;outline:none;font-size:14px;box-sizing:border-box;"
+                                    oninput="runSeoChecks()">
+                            </div>
+
+                            <div>
+                                <label
+                                    style="display:block;margin-bottom:6px;color:#5f696c;font-weight:600;font-size:14px;">Secondary
+                                    Keywords</label>
+                                <input id="f-secondarykw" type="text" placeholder="e.g. AI jobs, MTN careers"
+                                    style="width:100%;padding:10px 14px;border:1px solid var(--line);border-radius:7px;outline:none;font-size:14px;box-sizing:border-box;">
+                            </div>
+
+                            <div>
+                                <label
+                                    style="display:block;margin-bottom:6px;color:#5f696c;font-weight:600;font-size:14px;">SEO
+                                    Title</label>
+                                <input id="f-seotitle" type="text" placeholder="Auto-filled from article title"
+                                    style="width:100%;padding:10px 14px;border:1px solid var(--line);border-radius:7px;outline:none;font-size:14px;box-sizing:border-box;"
+                                    oninput="updatePreview();runSeoChecks()">
+                                <div id="seotitle-len"
+                                    style="font-size:11px;color:var(--muted);margin-top:4px;text-align:right;">0 / 60
+                                </div>
+                            </div>
+
+                            <div>
+                                <label
+                                    style="display:block;margin-bottom:6px;color:#5f696c;font-weight:600;font-size:14px;">Meta
+                                    Description</label>
+                                <textarea id="f-metadesc" placeholder="Auto-filled from excerpt"
+                                    style="width:100%;padding:10px 14px;border:1px solid var(--line);border-radius:7px;min-height:80px;outline:none;font-family:inherit;font-size:14px;resize:vertical;box-sizing:border-box;"
+                                    oninput="updatePreview();runSeoChecks()"></textarea>
+                                <div id="metadesc-len"
+                                    style="font-size:11px;color:var(--muted);margin-top:4px;text-align:right;">0 / 160
+                                </div>
+                            </div>
+
+                            <div style="display:grid;grid-template-columns:1fr 1fr;gap:1rem;">
+                                <div>
+                                    <label
+                                        style="display:block;margin-bottom:6px;color:#5f696c;font-weight:600;font-size:14px;">URL
+                                        Slug</label>
+                                    <input id="f-slug" type="text" placeholder="auto-generated-from-title"
+                                        style="width:100%;padding:10px 14px;border:1px solid var(--line);border-radius:7px;outline:none;font-size:14px;box-sizing:border-box;font-family:monospace;"
+                                        oninput="updatePreview()">
+                                </div>
+                                <div>
+                                    <label
+                                        style="display:block;margin-bottom:6px;color:#5f696c;font-weight:600;font-size:14px;">Canonical
+                                        URL</label>
+                                    <input id="f-canonical" type="text" placeholder="https://clarified.co.za/…"
+                                        style="width:100%;padding:10px 14px;border:1px solid var(--line);border-radius:7px;outline:none;font-size:14px;box-sizing:border-box;">
+                                </div>
+                            </div>
+
+                            <div style="display:grid;grid-template-columns:1fr 1fr;gap:1rem;">
+                                <div>
+                                    <label
+                                        style="display:block;margin-bottom:6px;color:#5f696c;font-weight:600;font-size:14px;">Indexing</label>
+                                    <select id="f-indexing"
+                                        style="width:100%;padding:10px 14px;border:1px solid var(--line);border-radius:7px;outline:none;font-size:14px;box-sizing:border-box;">
+                                        <option value="index">Index</option>
+                                        <option value="noindex">Noindex</option>
+                                    </select>
+                                </div>
+                                <div>
+                                    <label
+                                        style="display:block;margin-bottom:6px;color:#5f696c;font-weight:600;font-size:14px;">Follow
+                                        Links</label>
+                                    <select id="f-followlinks"
+                                        style="width:100%;padding:10px 14px;border:1px solid var(--line);border-radius:7px;outline:none;font-size:14px;box-sizing:border-box;">
+                                        <option value="follow">Follow</option>
+                                        <option value="nofollow">Nofollow</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <div>
+                                <label
+                                    style="display:block;margin-bottom:6px;color:#5f696c;font-weight:600;font-size:14px;">Article
+                                    Type</label>
+                                <select id="f-articletype"
+                                    style="width:100%;padding:10px 14px;border:1px solid var(--line);border-radius:7px;outline:none;font-size:14px;box-sizing:border-box;">
+                                    <option value="NewsArticle">NewsArticle</option>
+                                    <option value="Article">Article</option>
                                 </select>
                             </div>
+
+                            <!-- Search Preview -->
                             <div>
-                                <label style="display:block;margin-bottom:6px;color:#5f696c;font-weight:600;font-size:14px;">Follow Links</label>
-                                <select id="f-followlinks" style="width:100%;padding:10px 14px;border:1px solid var(--line);border-radius:7px;outline:none;font-size:14px;box-sizing:border-box;">
-                                    <option value="follow">Follow</option>
-                                    <option value="nofollow">Nofollow</option>
+                                <label
+                                    style="display:block;margin-bottom:8px;color:#5f696c;font-weight:600;font-size:14px;">Search
+                                    Preview</label>
+                                <div
+                                    style="padding:16px 20px;background:#fff;border:1px solid var(--line);border-radius:7px;">
+                                    <div id="preview-title">Your SEO Title Here</div>
+                                    <div id="preview-url">clarified.co.za › <span id="preview-slug">your-slug</span>
+                                    </div>
+                                    <div id="preview-desc">Your meta description will appear here…</div>
+                                </div>
+                            </div>
+
+                            <!-- SEO Checks -->
+                            <div>
+                                <label
+                                    style="display:block;margin-bottom:10px;color:#5f696c;font-weight:600;font-size:14px;">SEO
+                                    Checks</label>
+                                <ul id="seo-checks" style="list-style:none;padding:0;margin:0;display:grid;gap:8px;">
+                                </ul>
+                            </div>
+
+                        </div>
+                    </div>
+
+                </div>
+
+                <!-- ── RIGHT COLUMN ── -->
+                <div style="position:sticky;top:80px;">
+
+                    <!-- Publishing -->
+                    <div class="panel" style="padding:0;overflow:hidden;margin-bottom:1.5rem;">
+                        <div style="padding:16px 20px;border-bottom:1px solid var(--line);background:var(--soft);">
+                            <h3 style="margin:0;font-size:16px;">Publishing</h3>
+                        </div>
+                        <div style="padding:16px;display:grid;gap:8px;">
+                            <button id="sidebar-btn-publish" class="btn btn-primary" onclick="save('published')"
+                                style="width:100%;justify-content:center;">
+                                <svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor"
+                                    stroke-width="2" style="margin-right:6px;">
+                                    <polyline points="20 6 9 17 4 12"></polyline>
+                                </svg>
+                                Publish
+                            </button>
+                            <button id="sidebar-btn-draft" class="btn btn-outline" onclick="save('draft')"
+                                style="width:100%;justify-content:center;background:#fff;">Save Draft</button>
+                            <button id="btn-delete" class="btn" onclick="deleteArticle()"
+                                style="width:100%;justify-content:center;display:none;color:var(--danger);border:1px solid var(--danger);background:transparent;">Delete
+                                Article</button>
+
+                            <div style="margin-top: 8px; padding-top: 12px; border-top: 1px solid var(--line);">
+                                <label
+                                    style="display:block;margin-bottom:6px;color:#5f696c;font-weight:600;font-size:14px;">Homepage
+                                    Placement</label>
+                                <select id="f-placement"
+                                    style="width:100%;padding:10px 14px;border:1px solid var(--line);border-radius:7px;outline:none;font-size:14px;box-sizing:border-box;background:#fff;">
+                                    <option value="standard">Standard (Category &amp; Feed)</option>
+                                    <option value="top_story">Top Story (Main Hero)</option>
+                                    <option value="editors_pick">Editor's Pick (Featured Banner)</option>
+                                    <option value="must_read">Must Read (Featured Grid)</option>
+                                    <option value="hero_side">Hero Side Story</option>
+                                    <option value="latest">Latest News Grid</option>
+                                    <option value="business">Business Spotlight</option>
+                                    <option value="sport">Sport Spotlight</option>
                                 </select>
+                                <span style="font-size:11px;color:var(--muted);display:block;margin-top:4px;">Controls
+                                    where this article appears on the homepage. Curated by AI or editor.</span>
                             </div>
                         </div>
-                        <div>
-                            <label style="display:block;margin-bottom:6px;color:#5f696c;font-weight:600;font-size:14px;">Article Type</label>
-                            <select id="f-articletype" style="width:100%;padding:10px 14px;border:1px solid var(--line);border-radius:7px;outline:none;font-size:14px;box-sizing:border-box;">
-                                <option value="NewsArticle">NewsArticle</option>
-                                <option value="Article">Article</option>
-                            </select>
-                        </div>
+                    </div>
 
-                        <!-- Search Preview -->
-                        <div>
-                            <label style="display:block;margin-bottom:8px;color:#5f696c;font-weight:600;font-size:14px;">Search Preview</label>
-                            <div style="padding:16px 20px;background:#fff;border:1px solid var(--line);border-radius:7px;">
-                                <div id="preview-title">Your SEO Title Here</div>
-                                <div id="preview-url">clarified.co.za › <span id="preview-slug">your-slug</span></div>
-                                <div id="preview-desc">Your meta description will appear here…</div>
+                    <!-- Article Details -->
+                    <div class="panel" style="padding:0;overflow:hidden;">
+                        <div style="padding:16px 20px;border-bottom:1px solid var(--line);background:var(--soft);">
+                            <h3 style="margin:0;font-size:16px;">Article Details</h3>
+                        </div>
+                        <div style="padding:16px;display:grid;gap:16px;">
+
+                            <div>
+                                <label
+                                    style="display:block;margin-bottom:8px;color:#5f696c;font-weight:600;font-size:14px;">Categories</label>
+                                <div id="category-checkboxes"
+                                    style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:12px;font-size:14px;color:var(--ink);">
+                                    <label style="display:flex;align-items:center;gap:6px;cursor:pointer;"><input
+                                            type="checkbox" value="South Africa" class="cat-cb"> South Africa</label>
+                                    <label style="display:flex;align-items:center;gap:6px;cursor:pointer;"><input
+                                            type="checkbox" value="World" class="cat-cb"> World</label>
+                                    <label style="display:flex;align-items:center;gap:6px;cursor:pointer;"><input
+                                            type="checkbox" value="Technology" class="cat-cb"> Technology</label>
+                                    <label style="display:flex;align-items:center;gap:6px;cursor:pointer;"><input
+                                            type="checkbox" value="Business" class="cat-cb"> Business</label>
+                                    <label style="display:flex;align-items:center;gap:6px;cursor:pointer;"><input
+                                            type="checkbox" value="Sport" class="cat-cb"> Sport</label>
+                                    <label style="display:flex;align-items:center;gap:6px;cursor:pointer;"><input
+                                            type="checkbox" value="Education" class="cat-cb"> Education</label>
+                                    <label style="display:flex;align-items:center;gap:6px;cursor:pointer;"><input
+                                            type="checkbox" value="GenZ & Youth" class="cat-cb"> GenZ & Youth</label>
+                                    <label style="display:flex;align-items:center;gap:6px;cursor:pointer;"><input
+                                            type="checkbox" value="Africa News" class="cat-cb"> Africa News</label>
+                                    <label style="display:flex;align-items:center;gap:6px;cursor:pointer;"><input
+                                            type="checkbox" value="Lifestyle" class="cat-cb"> Lifestyle</label>
+                                    <label style="display:flex;align-items:center;gap:6px;cursor:pointer;"><input
+                                            type="checkbox" value="Automotive" class="cat-cb"> Automotive</label>
+                                </div>
+                                <input id="f-category-custom" type="text"
+                                    placeholder="Custom categories (comma separated)…"
+                                    style="width:100%;padding:10px 14px;border:1px solid var(--line);border-radius:7px;outline:none;font-size:14px;box-sizing:border-box;">
                             </div>
-                        </div>
 
-                        <!-- SEO Checks -->
-                        <div>
-                            <label style="display:block;margin-bottom:10px;color:#5f696c;font-weight:600;font-size:14px;">SEO Checks</label>
-                            <ul id="seo-checks" style="list-style:none;padding:0;margin:0;display:grid;gap:8px;"></ul>
-                        </div>
-
-                    </div>
-                </div>
-
-            </div>
-
-            <!-- ── RIGHT COLUMN ── -->
-            <div style="position:sticky;top:80px;">
-
-                <!-- Publishing -->
-                <div class="panel" style="padding:0;overflow:hidden;margin-bottom:1.5rem;">
-                    <div style="padding:16px 20px;border-bottom:1px solid var(--line);background:var(--soft);">
-                        <h3 style="margin:0;font-size:16px;">Publishing</h3>
-                    </div>
-                    <div style="padding:16px;display:grid;gap:8px;">
-                        <button id="sidebar-btn-publish" class="btn btn-primary" onclick="save('published')" style="width:100%;justify-content:center;">
-                            <svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" style="margin-right:6px;"><polyline points="20 6 9 17 4 12"></polyline></svg>
-                            Publish
-                        </button>
-                        <button id="sidebar-btn-draft" class="btn btn-outline" onclick="save('draft')" style="width:100%;justify-content:center;background:#fff;">Save Draft</button>
-                        <button id="btn-delete" class="btn" onclick="deleteArticle()" style="width:100%;justify-content:center;display:none;color:var(--danger);border:1px solid var(--danger);background:transparent;">Delete Article</button>
-                        
-                        <div style="margin-top: 8px; padding-top: 12px; border-top: 1px solid var(--line);">
-                            <label style="display:block;margin-bottom:6px;color:#5f696c;font-weight:600;font-size:14px;">Homepage Placement</label>
-                            <select id="f-placement" style="width:100%;padding:10px 14px;border:1px solid var(--line);border-radius:7px;outline:none;font-size:14px;box-sizing:border-box;background:#fff;">
-                                <option value="standard">Standard (Category &amp; Feed)</option>
-                                <option value="top_story">Top Story (Main Hero)</option>
-                                <option value="editors_pick">Editor's Pick (Featured Banner)</option>
-                                <option value="must_read">Must Read (Featured Grid)</option>
-                                <option value="hero_side">Hero Side Story</option>
-                                <option value="latest">Latest News Grid</option>
-                                <option value="business">Business Spotlight</option>
-                                <option value="sport">Sport Spotlight</option>
-                            </select>
-                            <span style="font-size:11px;color:var(--muted);display:block;margin-top:4px;">Controls where this article appears on the homepage. Curated by AI or editor.</span>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Article Details -->
-                <div class="panel" style="padding:0;overflow:hidden;">
-                    <div style="padding:16px 20px;border-bottom:1px solid var(--line);background:var(--soft);">
-                        <h3 style="margin:0;font-size:16px;">Article Details</h3>
-                    </div>
-                    <div style="padding:16px;display:grid;gap:16px;">
-
-                        <div>
-                            <label style="display:block;margin-bottom:8px;color:#5f696c;font-weight:600;font-size:14px;">Categories</label>
-                            <div id="category-checkboxes" style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:12px;font-size:14px;color:var(--ink);">
-                                <label style="display:flex;align-items:center;gap:6px;cursor:pointer;"><input type="checkbox" value="South Africa" class="cat-cb"> South Africa</label>
-                                <label style="display:flex;align-items:center;gap:6px;cursor:pointer;"><input type="checkbox" value="World" class="cat-cb"> World</label>
-                                <label style="display:flex;align-items:center;gap:6px;cursor:pointer;"><input type="checkbox" value="Technology" class="cat-cb"> Technology</label>
-                                <label style="display:flex;align-items:center;gap:6px;cursor:pointer;"><input type="checkbox" value="Business" class="cat-cb"> Business</label>
-                                <label style="display:flex;align-items:center;gap:6px;cursor:pointer;"><input type="checkbox" value="Sport" class="cat-cb"> Sport</label>
-                                <label style="display:flex;align-items:center;gap:6px;cursor:pointer;"><input type="checkbox" value="Education" class="cat-cb"> Education</label>
-                                <label style="display:flex;align-items:center;gap:6px;cursor:pointer;"><input type="checkbox" value="GenZ & Youth" class="cat-cb"> GenZ & Youth</label>
-                                <label style="display:flex;align-items:center;gap:6px;cursor:pointer;"><input type="checkbox" value="Africa News" class="cat-cb"> Africa News</label>
-                                <label style="display:flex;align-items:center;gap:6px;cursor:pointer;"><input type="checkbox" value="Lifestyle" class="cat-cb"> Lifestyle</label>
-                                <label style="display:flex;align-items:center;gap:6px;cursor:pointer;"><input type="checkbox" value="Automotive" class="cat-cb"> Automotive</label>
+                            <div>
+                                <label
+                                    style="display:block;margin-bottom:6px;color:#5f696c;font-weight:600;font-size:14px;">Tags</label>
+                                <input id="f-tags" type="text" placeholder="tag1, tag2, tag3"
+                                    style="width:100%;padding:10px 14px;border:1px solid var(--line);border-radius:7px;outline:none;font-size:14px;box-sizing:border-box;">
                             </div>
-                            <input id="f-category-custom" type="text" placeholder="Custom categories (comma separated)…"
-                                style="width:100%;padding:10px 14px;border:1px solid var(--line);border-radius:7px;outline:none;font-size:14px;box-sizing:border-box;">
-                        </div>
 
-                        <div>
-                            <label style="display:block;margin-bottom:6px;color:#5f696c;font-weight:600;font-size:14px;">Tags</label>
-                            <input id="f-tags" type="text" placeholder="tag1, tag2, tag3"
-                                style="width:100%;padding:10px 14px;border:1px solid var(--line);border-radius:7px;outline:none;font-size:14px;box-sizing:border-box;">
-                        </div>
-
-                        <div>
-                            <label style="display:block;margin-bottom:6px;color:#5f696c;font-weight:600;font-size:14px;">Featured Image</label>
-                            <div id="img-drop" onclick="document.getElementById('img-file').click()"
-                                style="border:2px dashed var(--line);border-radius:7px;height:140px;display:flex;align-items:center;justify-content:center;flex-direction:column;gap:8px;cursor:pointer;color:#5f696c;transition:border-color 0.15s,background 0.15s;"
-                                onmouseover="this.style.borderColor='var(--cyan-dark)'" onmouseout="this.style.borderColor='var(--line)'">
-                                <svg viewBox="0 0 24 24" width="28" height="28" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="3" y="3" width="18" height="18" rx="2"></rect><circle cx="8.5" cy="8.5" r="1.5"></circle><polyline points="21 15 16 10 5 21"></polyline></svg>
-                                <span id="img-label" style="font-size:13px;font-weight:500;">Click to upload image</span>
+                            <div>
+                                <label
+                                    style="display:block;margin-bottom:6px;color:#5f696c;font-weight:600;font-size:14px;">Featured
+                                    Image</label>
+                                <div id="img-drop" onclick="document.getElementById('img-file').click()"
+                                    style="border:2px dashed var(--line);border-radius:7px;height:140px;display:flex;align-items:center;justify-content:center;flex-direction:column;gap:8px;cursor:pointer;color:#5f696c;transition:border-color 0.15s,background 0.15s;"
+                                    onmouseover="this.style.borderColor='var(--cyan-dark)'"
+                                    onmouseout="this.style.borderColor='var(--line)'">
+                                    <svg viewBox="0 0 24 24" width="28" height="28" fill="none" stroke="currentColor"
+                                        stroke-width="1.5">
+                                        <rect x="3" y="3" width="18" height="18" rx="2"></rect>
+                                        <circle cx="8.5" cy="8.5" r="1.5"></circle>
+                                        <polyline points="21 15 16 10 5 21"></polyline>
+                                    </svg>
+                                    <span id="img-label" style="font-size:13px;font-weight:500;">Click to upload
+                                        image</span>
+                                </div>
+                                <input id="img-file" type="file" accept="image/*" style="display:none;"
+                                    onchange="previewImage(this)">
+                                <input id="f-imgalt" type="text" placeholder="Image alt text..."
+                                    style="width:100%;padding:10px 14px;border:1px solid var(--line);border-radius:7px;outline:none;font-size:14px;box-sizing:border-box;margin-top:8px;">
                             </div>
-                            <input id="img-file" type="file" accept="image/*" style="display:none;" onchange="previewImage(this)">
-<input id="f-imgalt" type="text" placeholder="Image alt text..." style="width:100%;padding:10px 14px;border:1px solid var(--line);border-radius:7px;outline:none;font-size:14px;box-sizing:border-box;margin-top:8px;">
-                        </div>
 
+                        </div>
                     </div>
                 </div>
             </div>
         </div>
-    </div>
-</main>
+    </main>
 
-<script>
-// ── State ──────────────────────────────────────────────────────────────────────
-let articleId   = null;
-let slugManual  = false;
-let featuredImageUrl = '';
+    <script>
+        // ── State ──────────────────────────────────────────────────────────────────────
+        let articleId = null;
+        let slugManual = false;
+        let featuredImageUrl = '';
 
-// ── On load: check for ?id=xxx to enter edit mode ─────────────────────────────
-(async function init() {
-    const params = new URLSearchParams(window.location.search);
-    const id     = params.get('id');
-    if (!id) { runSeoChecks(); return; }
+        // ── On load: check for ?id=xxx to enter edit mode ─────────────────────────────
+        (async function init() {
+            const params = new URLSearchParams(window.location.search);
+            const id = params.get('id');
+            if (!id) { runSeoChecks(); return; }
 
-    try {
-        let article;
-        try {
-            const res = await fetch('/api/articles/' + id);
-            if (!res.ok) throw new Error('API not available');
-            article = await res.json();
-        } catch(apiErr) {
-            const res = await fetch('db.json');
-            const db = await res.json();
-            const list = Array.isArray(db) ? db : (db.articles || []);
-            article = list.find(a => String(a.id) === String(id));
-            if (!article) throw new Error('Article not found');
-        }
-        articleId = article.id;
+            try {
+                let article;
+                try {
+                    const res = await fetch('/api/articles/' + id);
+                    if (!res.ok) throw new Error('API not available');
+                    article = await res.json();
+                } catch (apiErr) {
+                    const res = await fetch('db.json');
+                    const db = await res.json();
+                    const list = Array.isArray(db) ? db : (db.articles || []);
+                    article = list.find(a => String(a.id) === String(id));
+                    if (!article) throw new Error('Article not found');
+                }
+                articleId = article.id;
 
-        document.getElementById('page-title').textContent  = 'Edit Article';
-        document.getElementById('f-title').value           = article.title       || '';
-        document.getElementById('f-excerpt').value         = article.excerpt     || '';
-        document.getElementById('f-author').value          = article.author      || 'Admin';
-        document.getElementById('f-focuskw').value         = article.focusKw     || '';
-        document.getElementById('f-secondarykw').value     = article.secondaryKw || '';
-        document.getElementById('f-seotitle').value        = article.seoTitle    || '';
-        document.getElementById('f-metadesc').value        = article.metaDesc    || '';
-        document.getElementById('f-slug').value            = article.slug        || '';
-        document.getElementById('f-canonical').value       = article.canonical   || '';
-        document.getElementById('f-imgalt').value          = article.imgAlt      || '';
-        document.getElementById('f-indexing').value        = article.indexing    || 'index';
-        document.getElementById('f-followlinks').value     = article.followLinks || 'follow';
-        document.getElementById('f-articletype').value     = article.articleType || 'NewsArticle';
-        document.getElementById('f-tags').value            = article.tags        || '';
-        if (document.getElementById('f-placement')) {
-            document.getElementById('f-placement').value   = article.homepagePlacement || 'standard';
-        }
-        document.getElementById('editor-body').innerHTML   = (article.content     || '').replace(/src="images\//g, 'src="../images/');
-        document.getElementById('btn-delete').style.display = 'block';
+                document.getElementById('page-title').textContent = 'Edit Article';
+                document.getElementById('f-title').value = article.title || '';
+                document.getElementById('f-excerpt').value = article.excerpt || '';
+                document.getElementById('f-author').value = article.author || 'Admin';
+                document.getElementById('f-focuskw').value = article.focusKw || '';
+                document.getElementById('f-secondarykw').value = article.secondaryKw || '';
+                document.getElementById('f-seotitle').value = article.seoTitle || '';
+                document.getElementById('f-metadesc').value = article.metaDesc || '';
+                document.getElementById('f-slug').value = article.slug || '';
+                document.getElementById('f-canonical').value = article.canonical || '';
+                document.getElementById('f-imgalt').value = article.imgAlt || '';
+                document.getElementById('f-indexing').value = article.indexing || 'index';
+                document.getElementById('f-followlinks').value = article.followLinks || 'follow';
+                document.getElementById('f-articletype').value = article.articleType || 'NewsArticle';
+                document.getElementById('f-tags').value = article.tags || '';
+                if (document.getElementById('f-placement')) {
+                    document.getElementById('f-placement').value = article.homepagePlacement || 'standard';
+                }
+                document.getElementById('editor-body').innerHTML = (article.content || '').replace(/src="images\//g, 'src="../images/');
+                document.getElementById('btn-delete').style.display = 'block';
 
-        featuredImageUrl = article.featuredImage || '';
-        if (featuredImageUrl) {
-            const drop = document.getElementById('img-drop');
-            const cleanImg = (featuredImageUrl.startsWith('http://') || featuredImageUrl.startsWith('https://'))
-                ? featuredImageUrl
-                : '/' + featuredImageUrl.replace(/^\//, '');
-            drop.style.backgroundImage = `url(${cleanImg})`;
-            drop.style.backgroundSize  = 'cover';
-            drop.style.backgroundPosition = 'center';
-            document.getElementById('img-label').textContent = '';
-        }
+                featuredImageUrl = article.featuredImage || '';
+                if (featuredImageUrl) {
+                    const drop = document.getElementById('img-drop');
+                    const cleanImg = (featuredImageUrl.startsWith('http://') || featuredImageUrl.startsWith('https://'))
+                        ? featuredImageUrl
+                        : '/' + featuredImageUrl.replace(/^\//, '');
+                    drop.style.backgroundImage = `url(${cleanImg})`;
+                    drop.style.backgroundSize = 'cover';
+                    drop.style.backgroundPosition = 'center';
+                    document.getElementById('img-label').textContent = '';
+                }
 
-        // Set category checkboxes and custom field
-        const existingCats = (article.category || '').split(',').map(c => c.trim()).filter(Boolean);
-        const checkboxes = Array.from(document.querySelectorAll('.cat-cb'));
-        const customCats = [];
-        existingCats.forEach(cat => {
-            const cb = checkboxes.find(c => c.value.toLowerCase() === cat.toLowerCase());
-            if (cb) cb.checked = true;
-            else customCats.push(cat);
+                // Set category checkboxes and custom field
+                const existingCats = (article.category || '').split(',').map(c => c.trim()).filter(Boolean);
+                const checkboxes = Array.from(document.querySelectorAll('.cat-cb'));
+                const customCats = [];
+                existingCats.forEach(cat => {
+                    const cb = checkboxes.find(c => c.value.toLowerCase() === cat.toLowerCase());
+                    if (cb) cb.checked = true;
+                    else customCats.push(cat);
+                });
+                document.getElementById('f-category-custom').value = customCats.join(', ');
+
+                slugManual = !!article.slug;
+                updatePreview();
+                runSeoChecks();
+            } catch (e) {
+                showNotice('Could not load article. ' + e.message, 'error');
+            }
+        })();
+
+        // ── Paste formatting cleanup ──────────────────────────────────────────────────
+        document.getElementById('editor-body').addEventListener('paste', function (e) {
+            e.preventDefault();
+            const clipboardData = e.clipboardData || window.clipboardData;
+            const htmlData = clipboardData.getData('text/html');
+            const textData = clipboardData.getData('text/plain');
+
+            if (htmlData) {
+                const temp = document.createElement('div');
+                temp.innerHTML = htmlData;
+
+                // Clean up elements
+                const elements = temp.querySelectorAll('*');
+                for (let el of elements) {
+                    // Strip styles and classes completely
+                    el.removeAttribute('style');
+                    el.removeAttribute('class');
+                    el.removeAttribute('id'); // Remove IDs to prevent duplicate IDs
+
+                    // Ensure we use semantic H2 for headings (some sources use H1, H3, H4)
+                    if (['H1', 'H3', 'H4', 'H5', 'H6'].includes(el.tagName)) {
+                        const h2 = document.createElement('h2');
+                        h2.innerHTML = el.innerHTML;
+                        el.replaceWith(h2);
+                    }
+
+                    // Remove empty headings that just wrap paragraphs due to bad pasting
+                    if (el.tagName === 'H2' && el.querySelector('p')) {
+                        // If it contains paragraphs, it's not a real heading. Unwrap it.
+                        const frag = document.createDocumentFragment();
+                        while (el.firstChild) { frag.appendChild(el.firstChild); }
+                        el.replaceWith(frag);
+                    }
+                }
+
+                // Remove any comments or scripts that might have sneaked in
+                const scripts = temp.querySelectorAll('script, style, meta, link');
+                scripts.forEach(s => s.remove());
+
+                document.execCommand('insertHTML', false, temp.innerHTML);
+            } else if (textData) {
+                document.execCommand('insertText', false, textData);
+            }
         });
-        document.getElementById('f-category-custom').value = customCats.join(', ');
 
-        slugManual = !!article.slug;
-        updatePreview();
-        runSeoChecks();
-    } catch(e) {
-        showNotice('Could not load article. ' + e.message, 'error');
-    }
-})();
-
-// ── Paste formatting cleanup ──────────────────────────────────────────────────
-document.getElementById('editor-body').addEventListener('paste', function(e) {
-    e.preventDefault();
-    const clipboardData = e.clipboardData || window.clipboardData;
-    const htmlData = clipboardData.getData('text/html');
-    const textData = clipboardData.getData('text/plain');
-
-    if (htmlData) {
-        const temp = document.createElement('div');
-        temp.innerHTML = htmlData;
-
-        // Clean up elements
-        const elements = temp.querySelectorAll('*');
-        for (let el of elements) {
-            // Strip styles and classes completely
-            el.removeAttribute('style');
-            el.removeAttribute('class');
-            el.removeAttribute('id'); // Remove IDs to prevent duplicate IDs
-
-            // Ensure we use semantic H2 for headings (some sources use H1, H3, H4)
-            if (['H1', 'H3', 'H4', 'H5', 'H6'].includes(el.tagName)) {
-                const h2 = document.createElement('h2');
-                h2.innerHTML = el.innerHTML;
-                el.replaceWith(h2);
-            }
-            
-            // Remove empty headings that just wrap paragraphs due to bad pasting
-            if (el.tagName === 'H2' && el.querySelector('p')) {
-                // If it contains paragraphs, it's not a real heading. Unwrap it.
-                const frag = document.createDocumentFragment();
-                while(el.firstChild) { frag.appendChild(el.firstChild); }
-                el.replaceWith(frag);
-            }
+        // ── Rich text formatting ───────────────────────────────────────────────────────
+        function fmt(cmd, val) {
+            document.getElementById('editor-body').focus();
+            document.execCommand(cmd, false, val || null);
         }
-        
-        // Remove any comments or scripts that might have sneaked in
-        const scripts = temp.querySelectorAll('script, style, meta, link');
-        scripts.forEach(s => s.remove());
 
-        document.execCommand('insertHTML', false, temp.innerHTML);
-    } else if (textData) {
-        document.execCommand('insertText', false, textData);
-    }
-});
+        function insertLink() {
+            const url = prompt('Enter URL:');
+            if (url) { document.getElementById('editor-body').focus(); document.execCommand('createLink', false, url); }
+        }
 
-// ── Rich text formatting ───────────────────────────────────────────────────────
-function fmt(cmd, val) {
-    document.getElementById('editor-body').focus();
-    document.execCommand(cmd, false, val || null);
-}
+        // ── Title → slug auto-generation ──────────────────────────────────────────────
+        function onTitleChange(val) {
+            if (!slugManual) {
+                const slug = val.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, '');
+                document.getElementById('f-slug').value = slug;
+            }
+            if (!document.getElementById('f-seotitle').value) {
+                document.getElementById('preview-title').textContent = val || 'Your SEO Title Here';
+            }
+            updatePreview();
+            runSeoChecks();
+        }
 
-function insertLink() {
-    const url = prompt('Enter URL:');
-    if (url) { document.getElementById('editor-body').focus(); document.execCommand('createLink', false, url); }
-}
+        document.getElementById('f-slug').addEventListener('input', () => { slugManual = true; updatePreview(); });
 
-// ── Title → slug auto-generation ──────────────────────────────────────────────
-function onTitleChange(val) {
-    if (!slugManual) {
-        const slug = val.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, '');
-        document.getElementById('f-slug').value = slug;
-    }
-    if (!document.getElementById('f-seotitle').value) {
-        document.getElementById('preview-title').textContent = val || 'Your SEO Title Here';
-    }
-    updatePreview();
-    runSeoChecks();
-}
+        // ── SEO preview updater ────────────────────────────────────────────────────────
+        function updatePreview() {
+            const title = document.getElementById('f-seotitle').value || document.getElementById('f-title').value || 'Your SEO Title Here';
+            const slug = document.getElementById('f-slug').value || 'your-slug';
+            const desc = document.getElementById('f-metadesc').value || 'Your meta description will appear here…';
 
-document.getElementById('f-slug').addEventListener('input', () => { slugManual = true; updatePreview(); });
+            document.getElementById('preview-title').textContent = title;
+            document.getElementById('preview-slug').textContent = slug;
+            document.getElementById('preview-desc').textContent = desc;
 
-// ── SEO preview updater ────────────────────────────────────────────────────────
-function updatePreview() {
-    const title    = document.getElementById('f-seotitle').value || document.getElementById('f-title').value || 'Your SEO Title Here';
-    const slug     = document.getElementById('f-slug').value     || 'your-slug';
-    const desc     = document.getElementById('f-metadesc').value || 'Your meta description will appear here…';
+            const tLen = document.getElementById('f-seotitle').value.length;
+            const dLen = document.getElementById('f-metadesc').value.length;
+            const tEl = document.getElementById('seotitle-len');
+            const dEl = document.getElementById('metadesc-len');
+            tEl.textContent = `${tLen} / 60`; tEl.style.color = tLen > 60 ? 'var(--danger)' : 'var(--muted)';
+            dEl.textContent = `${dLen} / 160`; dEl.style.color = dLen > 160 ? 'var(--danger)' : 'var(--muted)';
+        }
 
-    document.getElementById('preview-title').textContent = title;
-    document.getElementById('preview-slug').textContent  = slug;
-    document.getElementById('preview-desc').textContent  = desc;
+        function updateMetaDescFromExcerpt() {
+            const md = document.getElementById('f-metadesc');
+            if (!md.value) md.value = document.getElementById('f-excerpt').value;
+            updatePreview();
+        }
 
-    const tLen = document.getElementById('f-seotitle').value.length;
-    const dLen = document.getElementById('f-metadesc').value.length;
-    const tEl  = document.getElementById('seotitle-len');
-    const dEl  = document.getElementById('metadesc-len');
-    tEl.textContent = `${tLen} / 60`;  tEl.style.color = tLen > 60  ? 'var(--danger)' : 'var(--muted)';
-    dEl.textContent = `${dLen} / 160`; dEl.style.color = dLen > 160 ? 'var(--danger)' : 'var(--muted)';
-}
+        // ── SEO Checks ────────────────────────────────────────────────────────────────
+        function runSeoChecks() {
+            const title = document.getElementById('f-title').value;
+            const kw = document.getElementById('f-focuskw').value.trim().toLowerCase();
+            const metad = document.getElementById('f-metadesc').value.trim();
+            const seotitle = document.getElementById('f-seotitle').value.trim();
+            const content = document.getElementById('editor-body').innerText.trim();
+            const slug = document.getElementById('f-slug').value.trim();
 
-function updateMetaDescFromExcerpt() {
-    const md = document.getElementById('f-metadesc');
-    if (!md.value) md.value = document.getElementById('f-excerpt').value;
-    updatePreview();
-}
+            const checks = [
+                { label: 'Title is not empty', pass: title.trim().length > 0 },
+                { label: 'Focus keyword set', pass: kw.length > 0 },
+                { label: 'Keyword found in title', pass: kw && title.toLowerCase().includes(kw) },
+                { label: 'Keyword found in meta description', pass: kw && metad.toLowerCase().includes(kw) },
+                { label: 'Meta description is set', pass: metad.length > 0 },
+                { label: 'Meta description under 160 chars', pass: metad.length > 0 && metad.length <= 160 },
+                { label: 'SEO title under 60 chars', pass: seotitle.length === 0 || seotitle.length <= 60 },
+                { label: 'URL slug is set', pass: slug.length > 0 },
+                { label: 'Content is not empty', pass: content.length > 50 },
+            ];
 
-// ── SEO Checks ────────────────────────────────────────────────────────────────
-function runSeoChecks() {
-    const title   = document.getElementById('f-title').value;
-    const kw      = document.getElementById('f-focuskw').value.trim().toLowerCase();
-    const metad   = document.getElementById('f-metadesc').value.trim();
-    const seotitle= document.getElementById('f-seotitle').value.trim();
-    const content = document.getElementById('editor-body').innerText.trim();
-    const slug    = document.getElementById('f-slug').value.trim();
+            const icon = (pass) => pass
+                ? `<svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="#10B981" stroke-width="3"><polyline points="20 6 9 17 4 12"></polyline></svg>`
+                : `<svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="#e53e3e" stroke-width="3"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>`;
 
-    const checks = [
-        { label: 'Title is not empty',               pass: title.trim().length > 0 },
-        { label: 'Focus keyword set',                 pass: kw.length > 0 },
-        { label: 'Keyword found in title',            pass: kw && title.toLowerCase().includes(kw) },
-        { label: 'Keyword found in meta description', pass: kw && metad.toLowerCase().includes(kw) },
-        { label: 'Meta description is set',           pass: metad.length > 0 },
-        { label: 'Meta description under 160 chars',  pass: metad.length > 0 && metad.length <= 160 },
-        { label: 'SEO title under 60 chars',          pass: seotitle.length === 0 || seotitle.length <= 60 },
-        { label: 'URL slug is set',                   pass: slug.length > 0 },
-        { label: 'Content is not empty',              pass: content.length > 50 },
-    ];
+            document.getElementById('seo-checks').innerHTML = checks
+                .map(c => `<li class="seo-check-item ${c.pass ? 'pass' : 'fail'}">${icon(c.pass)} ${c.label}</li>`)
+                .join('');
+        }
 
-    const icon = (pass) => pass
-        ? `<svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="#10B981" stroke-width="3"><polyline points="20 6 9 17 4 12"></polyline></svg>`
-        : `<svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="#e53e3e" stroke-width="3"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>`;
+        // ── Image uploading (Cloudinary with Local Fallback) ───────────────────────────
+        async function uploadImage(file) {
+            try {
+                const { cloudinaryConfig, isCloudinaryConfigured } = await import('./cloudinary-config.js');
+                if (isCloudinaryConfigured()) {
+                    const formData = new FormData();
+                    formData.append('file', file);
+                    formData.append('upload_preset', cloudinaryConfig.uploadPreset);
+                    if (cloudinaryConfig.folder) {
+                        formData.append('folder', cloudinaryConfig.folder);
+                    }
 
-    document.getElementById('seo-checks').innerHTML = checks
-        .map(c => `<li class="seo-check-item ${c.pass ? 'pass' : 'fail'}">${icon(c.pass)} ${c.label}</li>`)
-        .join('');
-}
+                    const endpoint = `https://api.cloudinary.com/v1_1/${cloudinaryConfig.cloudName}/image/upload`;
+                    const res = await fetch(endpoint, {
+                        method: 'POST',
+                        body: formData
+                    });
+                    const data = await res.json();
+                    if (!res.ok || data.error) {
+                        throw new Error(data.error?.message || 'Cloudinary upload failed');
+                    }
 
-// ── Image uploading (Cloudinary with Local Fallback) ───────────────────────────
-async function uploadImage(file) {
-    try {
-        const { cloudinaryConfig, isCloudinaryConfigured } = await import('./cloudinary-config.js');
-        if (isCloudinaryConfigured()) {
-            const formData = new FormData();
-            formData.append('file', file);
-            formData.append('upload_preset', cloudinaryConfig.uploadPreset);
-            if (cloudinaryConfig.folder) {
-                formData.append('folder', cloudinaryConfig.folder);
+                    // Automatic next-gen optimization: inject f_auto,q_auto into the secure delivery URL
+                    let url = data.secure_url;
+                    if (url.includes('/image/upload/')) {
+                        url = url.replace('/image/upload/', '/image/upload/f_auto,q_auto/');
+                    }
+                    return url;
+                }
+            } catch (err) {
+                console.warn('[Clarified Media] Cloudinary check / upload error:', err);
+                if (err.message && err.message.toLowerCase().includes('cloudinary')) {
+                    throw err;
+                }
             }
 
-            const endpoint = `https://api.cloudinary.com/v1_1/${cloudinaryConfig.cloudName}/image/upload`;
-            const res = await fetch(endpoint, {
-                method: 'POST',
-                body: formData
+            // Fallback: Local / serverless base64 upload
+            return new Promise((resolve, reject) => {
+                const reader = new FileReader();
+                reader.onload = async (e) => {
+                    try {
+                        const token = window.getAuthToken ? await window.getAuthToken() : '';
+                        const headers = { 'Content-Type': 'application/json' };
+                        if (token) headers['Authorization'] = `Bearer ${token}`;
+
+                        const res = await fetch('/api/upload', {
+                            method: 'POST',
+                            headers,
+                            body: JSON.stringify({ image: e.target.result })
+                        });
+                        const data = await res.json();
+                        if (data.error) throw new Error(data.error);
+                        resolve(data.url);
+                    } catch (err) {
+                        reject(err);
+                    }
+                };
+                reader.readAsDataURL(file);
             });
-            const data = await res.json();
-            if (!res.ok || data.error) {
-                throw new Error(data.error?.message || 'Cloudinary upload failed');
-            }
-
-            // Automatic next-gen optimization: inject f_auto,q_auto into the secure delivery URL
-            let url = data.secure_url;
-            if (url.includes('/image/upload/')) {
-                url = url.replace('/image/upload/', '/image/upload/f_auto,q_auto/');
-            }
-            return url;
         }
-    } catch (err) {
-        console.warn('[Clarified Media] Cloudinary check / upload error:', err);
-        if (err.message && err.message.toLowerCase().includes('cloudinary')) {
-            throw err;
-        }
-    }
 
-    // Fallback: Local / serverless base64 upload
-    return new Promise((resolve, reject) => {
-        const reader = new FileReader();
-        reader.onload = async (e) => {
+        async function previewImage(input) {
+            if (!input.files || !input.files[0]) return;
+            const drop = document.getElementById('img-drop');
+            document.getElementById('img-label').textContent = 'Uploading to Cloudinary…';
+            try {
+                const url = await uploadImage(input.files[0]);
+                featuredImageUrl = url;
+                const displayUrl = (url.startsWith('http://') || url.startsWith('https://'))
+                    ? url
+                    : '/' + url.replace(/^\//, '');
+                drop.style.backgroundImage = `url(${displayUrl})`;
+                drop.style.backgroundSize = 'cover';
+                drop.style.backgroundPosition = 'center';
+                document.getElementById('img-label').textContent = '';
+                markDirty();
+            } catch (e) {
+                showNotice('Upload failed: ' + e.message, 'error');
+                document.getElementById('img-label').textContent = 'Click to upload image';
+            }
+        }
+
+        async function insertInlineImage(input) {
+            if (!input.files || !input.files[0]) return;
+            try {
+                const url = await uploadImage(input.files[0]);
+                const finalUrl = (url.startsWith('http://') || url.startsWith('https://'))
+                    ? url
+                    : '/' + url.replace(/^\//, '');
+                document.getElementById('editor-body').focus();
+                document.execCommand('insertImage', false, finalUrl);
+                markDirty();
+            } catch (e) {
+                showNotice('Failed to upload inline image: ' + e.message, 'error');
+            }
+        }
+
+        // ── Save / Publish ─────────────────────────────────────────────────────────────
+        async function save(status) {
+            const title = document.getElementById('f-title').value.trim();
+            if (!title) { showNotice('Please enter a title before saving.', 'error'); return; }
+
+            const cbs = Array.from(document.querySelectorAll('.cat-cb')).filter(c => c.checked).map(c => c.value);
+            const custom = document.getElementById('f-category-custom').value.split(',').map(c => c.trim()).filter(Boolean);
+            const finalCategories = Array.from(new Set([...cbs, ...custom])).join(', ');
+
+            const payload = {
+                id: articleId,
+                title: title,
+                content: document.getElementById('editor-body').innerHTML.replace(/src="\.\.\/images\//g, 'src="images/'),
+                excerpt: document.getElementById('f-excerpt').value.trim(),
+                author: document.getElementById('f-author').value.trim() || 'Admin',
+                category: finalCategories,
+                tags: document.getElementById('f-tags').value.trim(),
+                slug: document.getElementById('f-slug').value.trim(),
+                seoTitle: document.getElementById('f-seotitle').value.trim(),
+                metaDesc: document.getElementById('f-metadesc').value.trim(),
+                focusKw: document.getElementById('f-focuskw').value.trim(),
+                secondaryKw: document.getElementById('f-secondarykw').value.trim(),
+                imgAlt: document.getElementById('f-imgalt').value.trim(),
+                indexing: document.getElementById('f-indexing').value,
+                followLinks: document.getElementById('f-followlinks').value,
+                articleType: document.getElementById('f-articletype').value,
+                canonical: document.getElementById('f-canonical').value.trim(),
+                homepagePlacement: document.getElementById('f-placement') ? document.getElementById('f-placement').value : 'standard',
+                featuredImage: featuredImageUrl,
+                status: status
+            };
+
+            const draftBtns = document.querySelectorAll('#btn-draft, #sidebar-btn-draft');
+            const publishBtns = document.querySelectorAll('#btn-publish, #sidebar-btn-publish');
+            draftBtns.forEach(b => {
+                b.disabled = true;
+                b.textContent = status === 'draft' ? 'Saving…' : 'Save Draft';
+            });
+            publishBtns.forEach(b => {
+                b.disabled = true;
+                b.textContent = status === 'published' ? 'Publishing…' : 'Publish';
+            });
+
             try {
                 const token = window.getAuthToken ? await window.getAuthToken() : '';
                 const headers = { 'Content-Type': 'application/json' };
                 if (token) headers['Authorization'] = `Bearer ${token}`;
 
-                const res = await fetch('/api/upload', {
+                const res = await fetch('/api/save', {
                     method: 'POST',
                     headers,
-                    body: JSON.stringify({ image: e.target.result })
+                    body: JSON.stringify(payload)
                 });
                 const data = await res.json();
-                if (data.error) throw new Error(data.error);
-                resolve(data.url);
-            } catch (err) {
-                reject(err);
-            }
-        };
-        reader.readAsDataURL(file);
-    });
-}
 
-async function previewImage(input) {
-    if (!input.files || !input.files[0]) return;
-    const drop = document.getElementById('img-drop');
-    document.getElementById('img-label').textContent = 'Uploading to Cloudinary…';
-    try {
-        const url = await uploadImage(input.files[0]);
-        featuredImageUrl = url;
-        const displayUrl = (url.startsWith('http://') || url.startsWith('https://'))
-            ? url
-            : '/' + url.replace(/^\//, '');
-        drop.style.backgroundImage = `url(${displayUrl})`;
-        drop.style.backgroundSize  = 'cover';
-        drop.style.backgroundPosition = 'center';
-        document.getElementById('img-label').textContent = '';
-        markDirty();
-    } catch (e) {
-        showNotice('Upload failed: ' + e.message, 'error');
-        document.getElementById('img-label').textContent = 'Click to upload image';
-    }
-}
+                if (!res.ok || data.error) throw new Error(data.error || 'Unknown error');
 
-async function insertInlineImage(input) {
-    if (!input.files || !input.files[0]) return;
-    try {
-        const url = await uploadImage(input.files[0]);
-        const finalUrl = (url.startsWith('http://') || url.startsWith('https://'))
-            ? url
-            : '/' + url.replace(/^\//, '');
-        document.getElementById('editor-body').focus();
-        document.execCommand('insertImage', false, finalUrl);
-        markDirty();
-    } catch (e) {
-        showNotice('Failed to upload inline image: ' + e.message, 'error');
-    }
-}
+                articleId = data.id;
+                slugManual = true;
+                document.getElementById('f-slug').value = data.slug;
+                document.getElementById('btn-delete').style.display = 'block';
+                document.getElementById('page-title').textContent = 'Edit Article';
 
-// ── Save / Publish ─────────────────────────────────────────────────────────────
-async function save(status) {
-    const title = document.getElementById('f-title').value.trim();
-    if (!title) { showNotice('Please enter a title before saving.', 'error'); return; }
+                // Update URL without reload
+                window.history.replaceState({}, '', `/dashboard/editor.html?id=${data.id}`);
 
-    const cbs = Array.from(document.querySelectorAll('.cat-cb')).filter(c => c.checked).map(c => c.value);
-    const custom = document.getElementById('f-category-custom').value.split(',').map(c => c.trim()).filter(Boolean);
-    const finalCategories = Array.from(new Set([...cbs, ...custom])).join(', ');
+                const msg = status === 'published'
+                    ? `Published! <a href="/articles/${data.slug}.html" target="_blank" style="color:inherit;text-decoration:underline;">View live →</a>`
+                    : 'Draft saved.';
+                showNotice(msg, 'success');
 
-    const payload = {
-        id:        articleId,
-        title:     title,
-        content:   document.getElementById('editor-body').innerHTML.replace(/src="\.\.\/images\//g, 'src="images/'),
-        excerpt:   document.getElementById('f-excerpt').value.trim(),
-        author:    document.getElementById('f-author').value.trim() || 'Admin',
-        category:  finalCategories,
-        tags:      document.getElementById('f-tags').value.trim(),
-        slug:      document.getElementById('f-slug').value.trim(),
-        seoTitle:  document.getElementById('f-seotitle').value.trim(),
-        metaDesc:  document.getElementById('f-metadesc').value.trim(),
-        focusKw:   document.getElementById('f-focuskw').value.trim(),
-        secondaryKw: document.getElementById('f-secondarykw').value.trim(),
-        imgAlt:      document.getElementById('f-imgalt').value.trim(),
-        indexing:    document.getElementById('f-indexing').value,
-        followLinks: document.getElementById('f-followlinks').value,
-        articleType: document.getElementById('f-articletype').value,
-        canonical: document.getElementById('f-canonical').value.trim(),
-        homepagePlacement: document.getElementById('f-placement') ? document.getElementById('f-placement').value : 'standard',
-        featuredImage: featuredImageUrl,
-        status:    status
-    };
+                // Mark as published
+                if (status === 'published') {
+                    publishBtns.forEach(b => {
+                        b.innerHTML = `<svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" style="margin-right:6px;"><polyline points="20 6 9 17 4 12"></polyline></svg> Published`;
+                        b.style.backgroundColor = 'var(--success)';
+                        b.style.color = '#fff';
+                    });
+                }
 
-    const draftBtns   = document.querySelectorAll('#btn-draft, #sidebar-btn-draft');
-    const publishBtns = document.querySelectorAll('#btn-publish, #sidebar-btn-publish');
-    draftBtns.forEach(b => {
-        b.disabled = true;
-        b.textContent = status === 'draft' ? 'Saving…' : 'Save Draft';
-    });
-    publishBtns.forEach(b => {
-        b.disabled = true;
-        b.textContent = status === 'published' ? 'Publishing…' : 'Publish';
-    });
-
-    try {
-        const token = window.getAuthToken ? await window.getAuthToken() : '';
-        const headers = { 'Content-Type': 'application/json' };
-        if (token) headers['Authorization'] = `Bearer ${token}`;
-
-        const res  = await fetch('/api/save', {
-            method:  'POST',
-            headers,
-            body:    JSON.stringify(payload)
-        });
-        const data = await res.json();
-
-        if (!res.ok || data.error) throw new Error(data.error || 'Unknown error');
-
-        articleId = data.id;
-        slugManual = true;
-        document.getElementById('f-slug').value = data.slug;
-        document.getElementById('btn-delete').style.display = 'block';
-        document.getElementById('page-title').textContent = 'Edit Article';
-
-        // Update URL without reload
-        window.history.replaceState({}, '', `/dashboard/editor.html?id=${data.id}`);
-
-        const msg = status === 'published'
-            ? `Published! <a href="/articles/${data.slug}.html" target="_blank" style="color:inherit;text-decoration:underline;">View live →</a>`
-            : 'Draft saved.';
-        showNotice(msg, 'success');
-
-        // Mark as published
-        if (status === 'published') {
-            publishBtns.forEach(b => {
-                b.innerHTML = `<svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" style="margin-right:6px;"><polyline points="20 6 9 17 4 12"></polyline></svg> Published`;
-                b.style.backgroundColor = 'var(--success)';
-                b.style.color = '#fff';
-            });
-        }
-
-    } catch(e) {
-        showNotice('Error: ' + e.message + '. Make sure server.js is running.', 'error');
-    } finally {
-        draftBtns.forEach(b => {
-            b.disabled = false;
-            b.textContent = 'Save Draft';
-        });
-        publishBtns.forEach(b => {
-            b.disabled = false;
-        });
-    }
-}
-
-// ── Delete ─────────────────────────────────────────────────────────────────────
-async function deleteArticle() {
-    if (!articleId) return;
-    if (!confirm('Permanently delete this article? This cannot be undone.')) return;
-    try {
-        const token = window.getAuthToken ? await window.getAuthToken() : '';
-        const headers = { 'Content-Type': 'application/json' };
-        if (token) headers['Authorization'] = `Bearer ${token}`;
-
-        const res = await fetch('/api/delete', {
-            method:  'POST',
-            headers,
-            body:    JSON.stringify({ id: articleId })
-        });
-        if (!res.ok) {
-            const errData = await res.json().catch(() => ({}));
-            throw new Error(errData.error || 'Delete failed');
-        }
-        window.location.href = 'articles.html';
-    } catch(e) {
-        showNotice('Error deleting: ' + e.message, 'error');
-    }
-}
-
-// ── Notice ─────────────────────────────────────────────────────────────────────
-function showNotice(msg, type) {
-    const el = document.getElementById('notice');
-    el.innerHTML = msg;
-    el.className = `notice ${type}`;
-    el.style.display = 'block';
-    setTimeout(() => { el.style.display = 'none'; }, 5000);
-}
-
-// ── Dirty State Tracking ────────────────────────────────────────────────────────
-function markDirty() {
-    const publishBtn = document.getElementById('btn-publish');
-    if (publishBtn && publishBtn.style.backgroundColor === 'var(--success)') {
-        publishBtn.innerHTML = `<svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" style="margin-right:6px;"><polyline points="20 6 9 17 4 12"></polyline></svg> Publish`;
-        publishBtn.style.backgroundColor = '';
-        publishBtn.style.color = '';
-    }
-}
-document.addEventListener('input', markDirty);
-document.getElementById('editor-body').addEventListener('input', markDirty);
-document.getElementById('category-checkboxes').addEventListener('change', markDirty);
-
-// ── Sidebar MCP Badge ──────────────────────────────────────────────────────────
-async function updateSidebarMcpBadge() {
-    try {
-        const token = localStorage.getItem('clarified_mcp_auth') || '';
-        const headers = {};
-        if (token) {
-            headers['Authorization'] = 'Bearer ' + token;
-            headers['x-mcp-auth'] = token;
-        }
-        const res = await fetch('/api/mcp-status', { headers });
-        const data = await res.json();
-        const badgeEl = document.getElementById('sidebar-mcp-badge');
-        if (badgeEl) {
-            if (data && data.connected) {
-                badgeEl.textContent = (data.toolCount || 10) + ' Tools';
-                badgeEl.className = 'nav-badge connected';
-            } else if (data && data.configured) {
-                badgeEl.textContent = 'Standby';
-                badgeEl.className = 'nav-badge pending';
-            } else {
-                badgeEl.textContent = 'Offline';
-                badgeEl.className = 'nav-badge disconnected';
+            } catch (e) {
+                showNotice('Error: ' + e.message + '. Make sure server.js is running.', 'error');
+            } finally {
+                draftBtns.forEach(b => {
+                    b.disabled = false;
+                    b.textContent = 'Save Draft';
+                });
+                publishBtns.forEach(b => {
+                    b.disabled = false;
+                });
             }
         }
-    } catch(e) {}
-}
-updateSidebarMcpBadge();
 
-// ── Init checks ───────────────────────────────────────────────────────────────
-runSeoChecks();
-</script>
+        // ── Delete ─────────────────────────────────────────────────────────────────────
+        async function deleteArticle() {
+            if (!articleId) return;
+            if (!confirm('Permanently delete this article? This cannot be undone.')) return;
+            try {
+                const token = window.getAuthToken ? await window.getAuthToken() : '';
+                const headers = { 'Content-Type': 'application/json' };
+                if (token) headers['Authorization'] = `Bearer ${token}`;
+
+                const res = await fetch('/api/delete', {
+                    method: 'POST',
+                    headers,
+                    body: JSON.stringify({ id: articleId })
+                });
+                if (!res.ok) {
+                    const errData = await res.json().catch(() => ({}));
+                    throw new Error(errData.error || 'Delete failed');
+                }
+                window.location.href = 'articles.html';
+            } catch (e) {
+                showNotice('Error deleting: ' + e.message, 'error');
+            }
+        }
+
+        // ── Notice ─────────────────────────────────────────────────────────────────────
+        function showNotice(msg, type) {
+            const el = document.getElementById('notice');
+            el.innerHTML = msg;
+            el.className = `notice ${type}`;
+            el.style.display = 'block';
+            setTimeout(() => { el.style.display = 'none'; }, 5000);
+        }
+
+        // ── Dirty State Tracking ────────────────────────────────────────────────────────
+        function markDirty() {
+            const publishBtn = document.getElementById('btn-publish');
+            if (publishBtn && publishBtn.style.backgroundColor === 'var(--success)') {
+                publishBtn.innerHTML = `<svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" style="margin-right:6px;"><polyline points="20 6 9 17 4 12"></polyline></svg> Publish`;
+                publishBtn.style.backgroundColor = '';
+                publishBtn.style.color = '';
+            }
+        }
+        document.addEventListener('input', markDirty);
+        document.getElementById('editor-body').addEventListener('input', markDirty);
+        document.getElementById('category-checkboxes').addEventListener('change', markDirty);
+
+        // ── Sidebar MCP Badge ──────────────────────────────────────────────────────────
+        async function updateSidebarMcpBadge() {
+            try {
+                const token = localStorage.getItem('clarified_mcp_auth') || '';
+                const headers = {};
+                if (token) {
+                    headers['Authorization'] = 'Bearer ' + token;
+                    headers['x-mcp-auth'] = token;
+                }
+                const res = await fetch('/api/mcp-status', { headers });
+                const data = await res.json();
+                const badgeEl = document.getElementById('sidebar-mcp-badge');
+                if (badgeEl) {
+                    if (data && data.connected) {
+                        badgeEl.textContent = (data.toolCount || 10) + ' Tools';
+                        badgeEl.className = 'nav-badge connected';
+                    } else if (data && data.configured) {
+                        badgeEl.textContent = 'Standby';
+                        badgeEl.className = 'nav-badge pending';
+                    } else {
+                        badgeEl.textContent = 'Offline';
+                        badgeEl.className = 'nav-badge disconnected';
+                    }
+                }
+            } catch (e) { }
+        }
+        updateSidebarMcpBadge();
+
+        // ── Init checks ───────────────────────────────────────────────────────────────
+        runSeoChecks();
+    </script>
 
 </body>
+
 </html>

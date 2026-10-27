@@ -716,7 +716,7 @@ ${JSON.stringify(jsonLd, null, 2)}
             if (slots.editorsPick) {
                 const ep = slots.editorsPick;
                 const epHtml = `<section class="container section" id="editors-pick-section">
-                  <div class="section-head"><div><span class="eyebrow">EDITORIAL</span><h2>Editor's Pick</h2></div><a href="/category-south-africa.html">View all <span class="ui-arrow">→</span></a></div>
+                  <div class="section-head"><div><span class="eyebrow">EDITORIAL</span><h2>Editor's Pick</h2></div><a href="/category-editors-pick.html">View all <span class="ui-arrow">→</span></a></div>
                   <article class="editor-pick" id="editors-pick">
                     <img id="ep-img" src="${resolveImgUrl(ep.featuredImage)}" alt="${ep.title}">
                     <div class="editor-content">
