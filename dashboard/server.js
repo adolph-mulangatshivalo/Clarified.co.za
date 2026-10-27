@@ -65,6 +65,34 @@ function regenerateStaticSite() {
         return 'https://clarified.co.za/' + rel.replace(/^\//, '');
     }
 
+    function normalizeTables(html) {
+        if (!html || !html.includes('<table')) return html;
+        
+        let result = html
+            .replace(/<!--\s*\/?wp:[^\->]*-->/gi, '')
+            .replace(/<p>\s*<!--\s*\/?wp:[^\->]*-->\s*<\/p>/gi, '');
+
+        result = result
+            .replace(/<div\s+class=["'][^"']*table-container[^"']*["'][^>]*>/gi, '<div class="table-responsive">')
+            .replace(/<figure\s+class=["'][^"']*wp-block-table[^"']*["'][^>]*>/gi, '<div class="table-responsive">')
+            .replace(/<\/figure>/gi, '</div>');
+
+        result = result.replace(/(<div class="table-responsive"[^>]*>[\s\S]*?<\/div>)|(<table[\s\S]*?<\/table>)/gi, (m, wrapped, unwrapped) => {
+            if (wrapped) return wrapped;
+            return `<div class="table-responsive">${unwrapped}</div>`;
+        });
+
+        result = result.replace(/<table(?!\s+class=)([^>]*)>/gi, '<table class="clarified-table"$1>');
+        result = result.replace(/<table\s+class=["']([^"']*)["']([^>]*)>/gi, (m, cls, rest) => {
+            if (!cls.includes('clarified-table')) {
+                cls = (cls + ' clarified-table').trim();
+            }
+            return `<table class="${cls}"${rest}>`;
+        });
+
+        return result;
+    }
+
     function articleUrl(a) { 
         return '/articles/' + (a.slug || a.title.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, '')) + '.html'; 
     }
@@ -122,6 +150,7 @@ function regenerateStaticSite() {
         
         // Strip out inline styles that break the layout when pasting from other sites
         contentHtml = contentHtml.replace(/ style="[^"]*"/gi, '');
+        contentHtml = normalizeTables(contentHtml);
         
         const tocLinks = [];
         contentHtml = contentHtml.replace(/<h2[^>]*>([\s\S]*?)<\/h2>/gi, (match, text) => {
@@ -608,6 +637,7 @@ const server = http.createServer(async (req, res) => {
                 .toLowerCase()
                 .replace(/[^a-z0-9]+/g, '-')
                 .replace(/(^-|-$)/g, '');
+            const normalizedContent = normalizeTables(data.content || '');
 
             let article = data.id ? db.articles.find(a => String(a.id) === String(data.id)) : null;
 
@@ -621,7 +651,7 @@ const server = http.createServer(async (req, res) => {
                 // Update existing
                 Object.assign(article, {
                     title:    data.title,
-                    content:  data.content  || '',
+                    content:  normalizedContent,
                     excerpt:  data.excerpt  || '',
                     category: data.category || '',
                     author:   data.author   || 'Admin',
@@ -655,7 +685,7 @@ const server = http.createServer(async (req, res) => {
                 article = {
                     id:       Date.now().toString(),
                     title:    data.title,
-                    content:  data.content  || '',
+                    content:  normalizedContent,
                     excerpt:  data.excerpt  || '',
                     category: data.category || '',
                     author:   data.author   || 'Admin',

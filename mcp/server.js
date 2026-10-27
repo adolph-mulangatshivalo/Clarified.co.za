@@ -270,6 +270,38 @@ function generateSlug(text) {
         .replace(/(^-|-$)/g, '');
 }
 
+function normalizeTables(html) {
+    if (!html || !html.includes('<table')) return html;
+    
+    // 1. Remove WordPress comment wrappers around tables if present
+    let result = html
+        .replace(/<!--\s*\/?wp:[^\->]*-->/gi, '')
+        .replace(/<p>\s*<!--\s*\/?wp:[^\->]*-->\s*<\/p>/gi, '');
+
+    // 2. Convert <div class="table-container"> and <figure class="wp-block-table"> to standard <div class="table-responsive">
+    result = result
+        .replace(/<div\s+class=["'][^"']*table-container[^"']*["'][^>]*>/gi, '<div class="table-responsive">')
+        .replace(/<figure\s+class=["'][^"']*wp-block-table[^"']*["'][^>]*>/gi, '<div class="table-responsive">')
+        .replace(/<\/figure>/gi, '</div>');
+
+    // 3. Ensure any <table> not already inside <div class="table-responsive"> gets wrapped
+    result = result.replace(/(<div class="table-responsive"[^>]*>[\s\S]*?<\/div>)|(<table[\s\S]*?<\/table>)/gi, (m, wrapped, unwrapped) => {
+        if (wrapped) return wrapped;
+        return `<div class="table-responsive">${unwrapped}</div>`;
+    });
+
+    // 4. Ensure all tables have class="clarified-table"
+    result = result.replace(/<table(?!\s+class=)([^>]*)>/gi, '<table class="clarified-table"$1>');
+    result = result.replace(/<table\s+class=["']([^"']*)["']([^>]*)>/gi, (m, cls, rest) => {
+        if (!cls.includes('clarified-table')) {
+            cls = (cls + ' clarified-table').trim();
+        }
+        return `<table class="${cls}"${rest}>`;
+    });
+
+    return result;
+}
+
 // ── Static Site Regeneration ─────────────────────────────────────────────────
 function articleUrl(a) {
     const slug = a.slug || generateSlug(a.title);
@@ -479,6 +511,7 @@ function regenerateSite() {
         const author = a.author || 'The Clarified Editorial Team';
 
         let contentHtml = (a.content || '').replace(/ style="[^"]*"/gi, '');
+        contentHtml = normalizeTables(contentHtml);
 
         const tocLinks = [];
         contentHtml = contentHtml.replace(/<h2[^>]*>([\s\S]*?)<\/h2>/gi, (match, text) => {
@@ -1040,9 +1073,9 @@ function handlePublishArticle(params = {}) {
     const isNew = !db.articles.some(a => a.slug === finalSlug);
     const id = Date.now();
 
-    const cleanContent = (content || '')
+    const cleanContent = normalizeTables((content || '')
         .replace(/https?:\/\/clarified-co-za\.vercel\.app\/articles\//g, '/articles/')
-        .replace(/https?:\/\/clarified\.co\.za\/articles\//g, '/articles/');
+        .replace(/https?:\/\/clarified\.co\.za\/articles\//g, '/articles/'));
 
     const cleanExcerpt = excerpt || cleanContent.replace(/<[^>]+>/g, '').substring(0, 150).trim() + '…';
     const finalSeoTitle = seoTitle || (title.length > 60 ? title.substring(0, 57) + '…' : title);
@@ -1134,9 +1167,9 @@ function handleEditArticle(params = {}) {
     }
 
     if (updates.content) {
-        updates.content = updates.content
+        updates.content = normalizeTables(updates.content
             .replace(/https?:\/\/clarified-co-za\.vercel\.app\/articles\//g, '/articles/')
-            .replace(/https?:\/\/clarified\.co\.za\/articles\//g, '/articles/');
+            .replace(/https?:\/\/clarified\.co\.za\/articles\//g, '/articles/'));
     }
 
     const current = db.articles[idx];

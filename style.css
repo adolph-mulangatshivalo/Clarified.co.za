@@ -1738,9 +1738,9 @@ a:hover .ui-arrow {
     width: 100% !important;
     max-width: 100% !important;
     overflow-x: auto !important;
+    overflow-y: visible !important;
     -webkit-overflow-scrolling: touch !important;
-    touch-action: pan-x pan-y !important;
-    overscroll-behavior-x: contain !important;
+    touch-action: auto !important;
     margin-left: 0 !important;
     margin-right: 0 !important;
   }
@@ -1923,10 +1923,9 @@ figure.wp-block-table {
   width: 100% !important;
   max-width: 100% !important;
   overflow-x: auto !important;
-  overflow-y: hidden !important;
+  overflow-y: visible !important;
   -webkit-overflow-scrolling: touch !important;
-  touch-action: pan-x pan-y !important;
-  overscroll-behavior-x: contain !important;
+  touch-action: auto !important;
   margin: 28px 0 !important;
   border-radius: 8px !important;
   border: 1px solid var(--line, #e2e8f0) !important;
@@ -1937,40 +1936,19 @@ figure.wp-block-table {
   position: relative !important;
 }
 
-/* Scroll-shadow fade: right-edge gradient fade hints there's more content */
-@media (max-width: 767px) {
-  .table-responsive,
-  .table-container,
-  .wp-block-table,
-  figure.wp-block-table {
-    background:
-      /* right fade shadow */
-      linear-gradient(to left, rgba(255,255,255,0.95) 0%, transparent 60%) right center / 48px 100% no-repeat,
-      /* left fade shadow */
-      linear-gradient(to right, rgba(255,255,255,0.95) 0%, transparent 60%) left center / 48px 100% no-repeat,
-      /* scroll-linked right edge */
-      linear-gradient(to left, rgba(0,0,0,0.06) 0%, transparent 100%) right center / 48px 100% no-repeat local,
-      /* scroll-linked left edge */
-      linear-gradient(to right, rgba(0,0,0,0.06) 0%, transparent 100%) left center / 48px 100% no-repeat local,
-      #ffffff !important;
-    background-attachment: local, local, scroll, scroll !important;
-  }
-
-  /* "Swipe to see more" nudge label — only shown when table overflows */
-  .table-responsive::after,
-  .table-container::after,
-  .wp-block-table::after,
-  figure.wp-block-table::after {
-    content: "← swipe to see more →";
-    display: block;
-    text-align: center;
-    font-size: 11px;
-    color: #94a3b8;
-    padding: 6px 0 4px;
-    letter-spacing: 0.5px;
-    font-style: italic;
-    border-top: 1px solid #f1f5f9;
-  }
+/* Fallback for any standalone or unwrapped table inside .article-body */
+.article-body > table,
+.article-body > figure > table {
+  display: block !important;
+  width: 100% !important;
+  max-width: 100% !important;
+  overflow-x: auto !important;
+  overflow-y: visible !important;
+  -webkit-overflow-scrolling: touch !important;
+  touch-action: auto !important;
+  margin: 28px 0 !important;
+  border-radius: 8px !important;
+  border: 1px solid var(--line, #e2e8f0) !important;
 }
 
 /* Custom WebKit/Blink Scrollbars for Tables */
@@ -1979,7 +1957,7 @@ figure.wp-block-table {
 .wp-block-table::-webkit-scrollbar,
 figure.wp-block-table::-webkit-scrollbar,
 .article-body > table::-webkit-scrollbar {
-  height: 6px !important;
+  height: 7px !important;
 }
 
 .table-responsive::-webkit-scrollbar-track,
@@ -2006,8 +1984,9 @@ figure.wp-block-table::-webkit-scrollbar-thumb,
 figure.wp-block-table table,
 table.clarified-table,
 .article-body table {
+  display: table !important;
   width: 100% !important;
-  min-width: 580px !important;
+  min-width: 620px !important;
   border-collapse: collapse !important;
   margin: 0 !important;
   font-size: 15px !important;
@@ -2055,6 +2034,7 @@ table.clarified-table td {
   color: #2d3748 !important;
   vertical-align: middle !important;
   font-size: 14.5px !important;
+  min-width: 120px;
 }
 
 .article-body tbody tr:nth-child(even),
