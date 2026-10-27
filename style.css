@@ -1720,10 +1720,14 @@ a:hover .ui-arrow {
   .what-to-expect-box h3 { font-size: 12px; margin-bottom: 8px; }
   .what-to-expect-box ul li { font-size: 14.5px; margin-bottom: 6px; }
 
-  /* Mobile table scroll fix:
-     NEVER put overflow-x: hidden on html/body — it blocks child scroll containers.
-     Instead, clip overflow only at the article wrapper level. */
-  .article-page { overflow-x: clip; }
+  /* ─── Mobile table scroll — definitive fix ───────────────────────────────
+     Rule: NO ancestor of .table-responsive may have overflow set to anything
+     other than 'visible' or 'auto'. Even overflow-x:clip breaks iOS Safari.
+     We set max-width:100% on containers to prevent page-level bleed,
+     and let the table wrapper handle its own horizontal scroll. */
+  html { max-width: 100%; }
+  body { max-width: 100%; }
+  .article-page { max-width: 100%; }
   .article-body { max-width: 100%; }
   .table-responsive,
   .table-container,
@@ -1904,12 +1908,12 @@ input[type="search"]::-webkit-search-cancel-button:hover {
 
 /* ── Modern Editorial Table System (Mobile-First Touch Scrollable) ──────────── */
 /*
-  KEY RULES:
+  KEY RULES — READ BEFORE EDITING:
   1. The WRAPPER (.table-responsive) gets overflow-x: auto — this is the scroll container.
-  2. The TABLE inside gets min-width: 580px so it forces horizontal scroll when content is wide.
-  3. NEVER set overflow-x: hidden on html/body — it kills child scroll containers.
-  4. .article-page uses overflow-x: clip (not hidden) to prevent page-level bleed without
-     blocking descendant scroll contexts.
+  2. The TABLE inside gets min-width: 580px so it forces horizontal scroll when narrow.
+  3. NO ancestor (html, body, .article-page, .article-body) may have overflow set to
+     anything except 'visible'. Even overflow-x:clip breaks iOS Safari scroll inheritance.
+  4. To prevent page-level horizontal bleed, use max-width:100% on ancestors — NOT overflow.
 */
 .table-responsive,
 .table-container,
