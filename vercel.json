@@ -111,7 +111,7 @@
       ]
     },
     {
-      "source": "/(style\\.css|js/.*)",
+      "source": "/(style\\.css|js/.*|dashboard/css/.*)",
       "headers": [
         { "key": "Cache-Control", "value": "public, max-age=0, must-revalidate" }
       ]

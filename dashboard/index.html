@@ -5,16 +5,48 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Dashboard — Clarified</title>
     <base href="/dashboard/">
-    <link rel="stylesheet" href="/dashboard/css/dashboard.css">
+    <link rel="stylesheet" href="/dashboard/css/dashboard.css?v=2.0">
     <script type="module" src="/dashboard/auth-guard.js"></script>
 </head>
 <body>
 
-<aside class="sidebar">
-    <a href="/dashboard/index.html" class="brand">
-        <img src="/images/cropped-WhatsApp-Image-2026-08-17-at-12.53.05-32x32.jpeg" alt="Logo" style="width:32px;height:32px;border-radius:6px;border:1px solid var(--line);">
-        <div><span>Clarified </span><b>South Africa</b></div>
-    </a>
+<aside class="sidebar" id="dashboard-sidebar">
+    <div class="brand-bar">
+        <a href="/dashboard/index.html" class="brand">
+            <img src="/images/cropped-WhatsApp-Image-2026-08-17-at-12.53.05-32x32.jpeg" alt="Logo" style="width:32px;height:32px;border-radius:6px;border:1px solid var(--line);">
+            <div><span>Clarified </span><b>South Africa</b></div>
+        </a>
+        <button type="button" class="mobile-nav-toggle" id="mobile-nav-toggle" aria-label="Toggle navigation menu" onclick="document.getElementById('dashboard-sidebar').classList.toggle('mobile-open')">
+            <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2">
+                <line x1="3" y1="12" x2="21" y2="12"></line>
+                <line x1="3" y1="6" x2="21" y2="6"></line>
+                <line x1="3" y1="18" x2="21" y2="18"></line>
+            </svg>
+        </button>
+    </div>
+
+    <!-- Mobile Quick-Nav Bar (1-Tap Direct Links on Mobile) -->
+    <div class="mobile-quick-nav">
+        <a href="index.html" class="mq-btn active">
+            <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7"></rect><rect x="14" y="3" width="7" height="7"></rect><rect x="14" y="14" width="7" height="7"></rect><rect x="3" y="14" width="7" height="7"></rect></svg>
+            Dashboard
+        </a>
+        <a href="articles.html" class="mq-btn">
+            <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline></svg>
+            Articles
+        </a>
+        <a href="editor.html" class="mq-btn">
+            <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
+            New Article
+        </a>
+        <a href="/dashboard/mcp.html" class="mq-btn">
+            <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"></circle><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path></svg>
+            AI & MCP
+        </a>
+        <button type="button" onclick="if(window.dashboardLogout){window.dashboardLogout();}else{window.location.href='/dashboard/login.html';}" class="mq-btn mq-btn-danger">
+            Sign out
+        </button>
+    </div>
     <nav class="nav-menu">
 
         <details class="nav-group" open>
@@ -101,7 +133,7 @@
 
     </nav>
 
-    <div style="padding: 16px; border-top: 1px solid var(--line); margin-top: auto;">
+    <div class="sidebar-footer" style="padding: 16px; border-top: 1px solid var(--line); margin-top: auto;">
         <a href="/" target="_blank" class="nav-sub-item" style="display:flex;align-items:center;gap:8px;color:var(--muted);">
             <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"></path><polyline points="15 3 21 3 21 9"></polyline><line x1="10" y1="14" x2="21" y2="3"></line></svg>
             View live site
