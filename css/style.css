@@ -1747,9 +1747,13 @@ a:hover .ui-arrow {
 }
 
 .article-share .share-btn svg {
-  width: 15px;
-  height: 15px;
+  width: 16px !important;
+  height: 16px !important;
+  max-width: 16px !important;
+  max-height: 16px !important;
   flex-shrink: 0;
+  display: inline-block;
+  vertical-align: middle;
 }
 
 .article-share .share-btn:hover {
@@ -1777,6 +1781,9 @@ a:hover .ui-arrow {
 
 .article-share .share-btn.share-x {
   color: #0f1419;
+  padding: 8px 10px !important;
+  min-width: 36px;
+  justify-content: center;
 }
 .article-share .share-btn.share-x:hover {
   background: #000000;
