@@ -603,7 +603,7 @@ function regenerateSite() {
 
         const jsonLd = {
             "@context": "https://schema.org",
-            "@type": a.articleType || "NewsArticle",
+            "@type": a.articleType || "Article",
             "mainEntityOfPage": {
                 "@type": "WebPage",
                 "@id": absoluteUrl
@@ -619,7 +619,7 @@ function regenerateSite() {
                 "url": "https://clarified.co.za/about.html"
             },
             "publisher": {
-                "@type": "NewsMediaOrganization",
+                "@type": "Organization",
                 "name": "Clarified",
                 "url": "https://clarified.co.za",
                 "logo": {
@@ -751,7 +751,7 @@ ${JSON.stringify(jsonLd, null, 2)}
         'sport': 'Sport',
         'education': 'Education',
         'genz-youth': 'GenZ & Youth',
-        'africa-news': 'Africa News',
+        'africa-news': 'Africa',
         'lifestyle': 'Lifestyle',
         'automotive': 'Automotive'
     };
@@ -1692,7 +1692,7 @@ const TOOLS = [
                     type: 'string',
                     enum: ['standard', 'top_story', 'editors_pick', 'must_read', 'hero_side', 'latest', 'business', 'sport'],
                     default: 'standard',
-                    description: 'Where this article should be placed on the homepage: top_story (main hero), editors_pick (editorial banner), must_read (featured section), hero_side (side of hero), latest (latest news grid), business (business spotlight), sport (sport spotlight), or standard (feed & category only).'
+                    description: 'Where this article should be placed on the homepage: top_story (main hero), editors_pick (editorial banner), must_read (featured section), hero_side (side of hero), latest (latest articles grid), business (business spotlight), sport (sport spotlight), or standard (feed & category only).'
                 },
                 seoTitle: { type: 'string', description: 'Under 60 chars' },
                 metaDesc: { type: 'string', description: 'Under 160 chars' },
@@ -1783,7 +1783,7 @@ const TOOLS = [
                 heroSide: { type: 'array', items: { type: 'string' }, description: 'Array of up to 2 article IDs or slugs for hero side stories.' },
                 editorsPick: { type: 'string', description: 'Article ID or slug for the Editor\'s Pick banner.' },
                 mustRead: { type: 'array', items: { type: 'string' }, description: 'Array of up to 3 article IDs or slugs for Must Read / Featured grid (1 large + 2 compact).' },
-                latest: { type: 'array', items: { type: 'string' }, description: 'Array of up to 4 article IDs or slugs for the Latest News grid.' },
+                latest: { type: 'array', items: { type: 'string' }, description: 'Array of up to 4 article IDs or slugs for the Latest Articles grid.' },
                 business: { type: 'string', description: 'Article ID or slug for the Business spotlight.' },
                 sport: { type: 'string', description: 'Article ID or slug for the Sport spotlight.' },
                 resetOthers: { type: 'boolean', description: 'If true, clears homepage placements of articles not in this list to standard.' }
@@ -1918,8 +1918,8 @@ function readResource(uri) {
                 mimeType: 'application/json',
                 text: JSON.stringify([
                     'South Africa',
-                    'Africa News',
-                    'World News',
+                    'Africa',
+                    'World',
                     'Business & Finance',
                     'Technology & AI',
                     'Sport',

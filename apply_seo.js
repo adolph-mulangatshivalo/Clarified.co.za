@@ -47,8 +47,8 @@ if (!editorHtml.includes('f-indexing')) {
                         <div>
                             <label style="display:block;margin-bottom:6px;color:#5f696c;font-weight:600;font-size:14px;">Article Type</label>
                             <select id="f-articletype" style="width:100%;padding:10px 14px;border:1px solid var(--line);border-radius:7px;outline:none;font-size:14px;box-sizing:border-box;">
+                                <option value="Article" selected>Article</option>
                                 <option value="NewsArticle">NewsArticle</option>
-                                <option value="Article">Article</option>
                             </select>
                         </div>`;
     editorHtml = editorHtml.replace(/(<input id="f-canonical"[^>]+>\s*<\/div>\s*<\/div>)/, `$1\n${extraSeoHtml}`);
@@ -73,7 +73,7 @@ if (!editorHtml.includes("document.getElementById('f-secondarykw').value")) {
         if (document.getElementById('f-imgalt')) document.getElementById('f-imgalt').value = article.imgAlt || '';
         if (document.getElementById('f-indexing')) document.getElementById('f-indexing').value = article.indexing || 'index';
         if (document.getElementById('f-followlinks')) document.getElementById('f-followlinks').value = article.followLinks || 'follow';
-        if (document.getElementById('f-articletype')) document.getElementById('f-articletype').value = article.articleType || 'NewsArticle';`);
+        if (document.getElementById('f-articletype')) document.getElementById('f-articletype').value = article.articleType || 'Article';`);
 }
 fs.writeFileSync(EDITOR_PATH, editorHtml);
 
@@ -89,7 +89,7 @@ if (!serverJs.includes('secondaryKw:')) {
                     imgAlt: data.imgAlt || '',
                     indexing: data.indexing || 'index',
                     followLinks: data.followLinks || 'follow',
-                    articleType: data.articleType || 'NewsArticle',`);
+                    articleType: data.articleType || 'Article',`);
 }
 
 // Replace alt text in generated image
@@ -120,7 +120,7 @@ const seoCode = `
         
         const jsonLd = {
             "@context": "https://schema.org",
-            "@type": a.articleType || "NewsArticle",
+            "@type": a.articleType || "Article",
             "headline": seoTitle,
             "image": absoluteImg ? [absoluteImg] : [],
             "datePublished": isoDate,

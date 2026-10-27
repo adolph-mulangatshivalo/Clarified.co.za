@@ -33,7 +33,7 @@ Whenever researching, drafting, editing, or publishing content for Clarified.co.
 ## 6. Technical SEO, Googlebot Crawling & Sitemaps
 * **High-CTR Titles**: Under 60 characters, with focus keyword, concrete numbers, or current year (2026).
 * **Compelling Meta Description**: 120–155 characters with a clear summary and call to action.
-* **Schema.org Structured Data**: Output valid `NewsArticle` or `Article` JSON-LD schema with dates, author, and publisher logo.
+* **Schema.org Structured Data**: Output valid `Article` JSON-LD schema with dates, author, and publisher logo.
 * **Sitemap Auto-Update**: Ensure `sitemap.xml` is regenerated with `<lastmod>` ISO dates, `<priority>` ratings, image tags, and category hub pages.
 * **Robots.txt Crawl Efficiency**: Ensure `robots.txt` whitelists content while disallowing `/dashboard/` and `/api/` to maximize Googlebot crawl budget.
 

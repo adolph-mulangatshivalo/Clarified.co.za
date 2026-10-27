@@ -1,6 +1,6 @@
 # Clarified.co.za &mdash; AI Pair Programming & Editorial Guidelines
 
-Welcome to the **Clarified.co.za** codebase and publishing platform. Clarified is a modern South African digital news, careers, finance, and technology publication.
+Welcome to the **Clarified.co.za** codebase and publishing platform. Clarified is an independent South African articles platform exploring technology, education, business, lifestyle, and culture through thoughtful perspectives and insights.
 
 ---
 
@@ -44,7 +44,7 @@ Welcome to the **Clarified.co.za** codebase and publishing platform. Clarified i
 ## 5. Technical SEO, Googlebot Crawling & Sitemaps
 * **High-CTR Titles:** Under 60 characters, with focus keyword, concrete numbers, or current year (2026).
 * **Compelling Meta Description:** 120–155 characters with a clear summary and call to action.
-* **Schema.org Structured Data:** Valid `NewsArticle` or `Article` JSON-LD schema with dates, author, and publisher logo.
+* **Schema.org Structured Data:** Valid `Article` JSON-LD schema with dates, author, and publisher logo.
 * **Sitemap Auto-Update:** `sitemap.xml` is automatically regenerated with ISO `<lastmod>` timestamps, `<priority>` ratings, image tags, and category hub pages.
 * **Robots.txt Crawl Efficiency:** Explicitly allow articles, images, and category pages while disallowing `/dashboard/` and `/api/` to maximize Googlebot crawl budget.
 

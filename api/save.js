@@ -103,7 +103,7 @@ export default async function handler(req, res) {
                 imgAlt:        data.imgAlt   || '',
                 indexing:      data.indexing || 'index',
                 followLinks:   data.followLinks || 'follow',
-                articleType:   data.articleType || 'NewsArticle',
+                articleType:   data.articleType || 'Article',
                 canonical:     data.canonical || '',
                 featuredImage: featuredImageUrl,
                 date:          article.date || Date.now(),
@@ -136,7 +136,7 @@ export default async function handler(req, res) {
                 imgAlt:        data.imgAlt   || '',
                 indexing:      data.indexing || 'index',
                 followLinks:   data.followLinks || 'follow',
-                articleType:   data.articleType || 'NewsArticle',
+                articleType:   data.articleType || 'Article',
                 canonical:     data.canonical || '',
                 featuredImage: featuredImageUrl,
                 date:          Date.now(),
@@ -300,7 +300,7 @@ export default async function handler(req, res) {
 
             const jsonLd = {
                 "@context": "https://schema.org",
-                "@type": article.articleType || "NewsArticle",
+                "@type": article.articleType || "Article",
                 "mainEntityOfPage": {
                     "@type": "WebPage",
                     "@id": absoluteUrl
@@ -316,7 +316,7 @@ export default async function handler(req, res) {
                     "url": "https://clarified.co.za/about.html"
                 },
                 "publisher": {
-                    "@type": "NewsMediaOrganization",
+                    "@type": "Organization",
                     "name": "Clarified",
                     "url": "https://clarified.co.za",
                     "logo": {

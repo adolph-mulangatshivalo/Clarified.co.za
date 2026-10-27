@@ -80,7 +80,7 @@
 
     <form class="search-form" onsubmit="performSearch(event)">
       <label for="search-input" style="display:none;">Search</label>
-      <input type="search" id="search-input" placeholder="Search for news, topics, or authors..." required>
+      <input type="search" id="search-input" placeholder="Search for articles, topics, or authors..." required>
       <button type="submit">Search</button>
     </form>
 
@@ -126,7 +126,7 @@
   </div>
   <div class="container footer-bottom">
     <span>© <span id="year"></span> Clarified</span>
-    <span>Thoughtful stories, perspectives and insights.</span>
+    <span>Thoughtful articles, perspectives and insights.</span>
   </div>
 </footer>
 
@@ -201,7 +201,7 @@ async function performSearch(e) {
         <div class="eyebrow" style="margin-top:10px;">${a.category || ''}</div>
         <h3><a href="${articleUrl(a)}">${a.title}</a></h3>
         <p>${formatExcerpt(a.excerpt, 100)}</p>
-        <a class="read-meta" href="${articleUrl(a)}">Read story →</a>
+        <a class="read-meta" href="${articleUrl(a)}">Read article →</a>
       </article>
     `).join('');
 

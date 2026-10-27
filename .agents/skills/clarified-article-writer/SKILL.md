@@ -9,7 +9,7 @@ description: >-
 
 # Clarified Editorial, Writing & SEO Master Skill
 
-Clarified.co.za is a modern, independent South African news, careers, finance, and tech publication. Our editorial mission is to make important information **crystal clear, engaging, and genuinely useful** for readers of all ages and backgrounds—from high school matriculants and university students to young professionals, parents, and everyday South Africans.
+Clarified.co.za is an independent South African articles platform exploring technology, education, business, lifestyle, and culture. Our editorial mission is to spark curiosity, explore ideas, share knowledge, and make interesting subjects **crystal clear, engaging, and genuinely useful** for readers of all ages and backgrounds—from high school matriculants and university students to young professionals, parents, and curious minds across South Africa.
 
 ---
 
@@ -166,7 +166,7 @@ To rank #1 on Google and achieve high Click-Through Rates (CTR), follow these pr
 * **Hierarchical `<h2>` and `<h3>`:** Divide the body into logical sections. Never skip heading levels.
 
 ### 4. Schema.org JSON-LD Structured Data
-* Every article must output valid `NewsArticle` or `Article` JSON-LD schema with `headline`, `datePublished`, `dateModified`, `author`, `publisher`, and `image` metadata. Google uses this for Rich Snippets and Google News inclusion.
+* Every article must output valid `Article` JSON-LD schema with `headline`, `datePublished`, `dateModified`, `author`, `publisher`, and `image` metadata. Google uses this for Rich Snippets and articles discovery.
 
 ### 5. Sitemaps & Googlebot Crawling
 * Every publication or edit must automatically update `sitemap.xml` with:

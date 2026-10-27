@@ -262,7 +262,7 @@ ${absoluteImg ? `<meta name="twitter:image" content="${absoluteImg}">` : ''}
         
         const jsonLd = {
             "@context": "https://schema.org",
-            "@type": a.articleType || "NewsArticle",
+            "@type": a.articleType || "Article",
             "headline": seoTitle,
             "image": absoluteImg ? [absoluteImg] : [],
             "datePublished": isoDate,
@@ -296,7 +296,7 @@ ${absoluteImg ? `<meta name="twitter:image" content="${absoluteImg}">` : ''}
         'sport': 'Sport',
         'education': 'Education',
         'genz-youth': 'GenZ & Youth',
-        'africa-news': 'Africa News',
+        'africa-news': 'Africa',
         'lifestyle': 'Lifestyle',
         'automotive': 'Automotive'
     };
@@ -688,7 +688,7 @@ const server = http.createServer(async (req, res) => {
                     imgAlt: data.imgAlt || '',
                     indexing: data.indexing || 'index',
                     followLinks: data.followLinks || 'follow',
-                    articleType: data.articleType || 'NewsArticle',
+                    articleType: data.articleType || 'Article',
                     canonical: data.canonical || '',
                     featuredImage: data.featuredImage || '',
                     date:     article.date || Date.now(),
@@ -722,7 +722,7 @@ const server = http.createServer(async (req, res) => {
                     imgAlt: data.imgAlt || '',
                     indexing: data.indexing || 'index',
                     followLinks: data.followLinks || 'follow',
-                    articleType: data.articleType || 'NewsArticle',
+                    articleType: data.articleType || 'Article',
                     canonical: data.canonical || '',
                     featuredImage: data.featuredImage || '',
                     date:     Date.now(),

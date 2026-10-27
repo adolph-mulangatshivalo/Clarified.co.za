@@ -215,7 +215,7 @@
                     <a href="articles.html?cat=Sport" class="nav-sub-item">Sport</a>
                     <a href="articles.html?cat=Education" class="nav-sub-item">Education</a>
                     <a href="articles.html?cat=GenZ+%26+Youth" class="nav-sub-item">Youth</a>
-                    <a href="articles.html?cat=Africa+News" class="nav-sub-item">Africa</a>
+                    <a href="articles.html?cat=Africa" class="nav-sub-item">Africa</a>
                     <a href="articles.html?cat=Lifestyle" class="nav-sub-item">Lifestyle</a>
                     <a href="articles.html?cat=Automotive" class="nav-sub-item">Auto</a>
                 </div>
@@ -474,8 +474,8 @@
                                     Type</label>
                                 <select id="f-articletype"
                                     style="width:100%;padding:10px 14px;border:1px solid var(--line);border-radius:7px;outline:none;font-size:14px;box-sizing:border-box;">
+                                    <option value="Article" selected>Article</option>
                                     <option value="NewsArticle">NewsArticle</option>
-                                    <option value="Article">Article</option>
                                 </select>
                             </div>
 
@@ -541,7 +541,7 @@
                                     <option value="editors_pick">Editor's Pick (Featured Banner)</option>
                                     <option value="must_read">Must Read (Featured Grid)</option>
                                     <option value="hero_side">Hero Side Story</option>
-                                    <option value="latest">Latest News Grid</option>
+                                    <option value="latest">Latest Articles Grid</option>
                                     <option value="business">Business Spotlight</option>
                                     <option value="sport">Sport Spotlight</option>
                                 </select>
@@ -578,7 +578,7 @@
                                     <label style="display:flex;align-items:center;gap:6px;cursor:pointer;"><input
                                             type="checkbox" value="GenZ & Youth" class="cat-cb"> GenZ & Youth</label>
                                     <label style="display:flex;align-items:center;gap:6px;cursor:pointer;"><input
-                                            type="checkbox" value="Africa News" class="cat-cb"> Africa News</label>
+                                            type="checkbox" value="Africa" class="cat-cb"> Africa</label>
                                     <label style="display:flex;align-items:center;gap:6px;cursor:pointer;"><input
                                             type="checkbox" value="Lifestyle" class="cat-cb"> Lifestyle</label>
                                     <label style="display:flex;align-items:center;gap:6px;cursor:pointer;"><input
@@ -666,7 +666,7 @@
                 document.getElementById('f-imgalt').value = article.imgAlt || '';
                 document.getElementById('f-indexing').value = article.indexing || 'index';
                 document.getElementById('f-followlinks').value = article.followLinks || 'follow';
-                document.getElementById('f-articletype').value = article.articleType || 'NewsArticle';
+                document.getElementById('f-articletype').value = article.articleType || 'Article';
                 document.getElementById('f-tags').value = article.tags || '';
                 if (document.getElementById('f-placement')) {
                     document.getElementById('f-placement').value = article.homepagePlacement || 'standard';
