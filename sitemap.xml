@@ -3,67 +3,67 @@
         xmlns:image="http://www.google.com/schemas/sitemap-image/1.1">
   <url>
     <loc>https://clarified.co.za/</loc>
-    <lastmod>2026-10-21</lastmod>
+    <lastmod>2026-10-27</lastmod>
     <changefreq>daily</changefreq>
     <priority>1.0</priority>
   </url>
   <url>
     <loc>https://clarified.co.za/category-south-africa.html</loc>
-    <lastmod>2026-10-21</lastmod>
+    <lastmod>2026-10-27</lastmod>
     <changefreq>daily</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
     <loc>https://clarified.co.za/category-africa-news.html</loc>
-    <lastmod>2026-10-21</lastmod>
+    <lastmod>2026-10-27</lastmod>
     <changefreq>daily</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
     <loc>https://clarified.co.za/category-business.html</loc>
-    <lastmod>2026-10-21</lastmod>
+    <lastmod>2026-10-27</lastmod>
     <changefreq>daily</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
     <loc>https://clarified.co.za/category-technology.html</loc>
-    <lastmod>2026-10-21</lastmod>
+    <lastmod>2026-10-27</lastmod>
     <changefreq>daily</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
     <loc>https://clarified.co.za/category-sport.html</loc>
-    <lastmod>2026-10-21</lastmod>
+    <lastmod>2026-10-27</lastmod>
     <changefreq>daily</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
     <loc>https://clarified.co.za/category-education.html</loc>
-    <lastmod>2026-10-21</lastmod>
+    <lastmod>2026-10-27</lastmod>
     <changefreq>daily</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
     <loc>https://clarified.co.za/category-genz-youth.html</loc>
-    <lastmod>2026-10-21</lastmod>
+    <lastmod>2026-10-27</lastmod>
     <changefreq>daily</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
     <loc>https://clarified.co.za/category-lifestyle.html</loc>
-    <lastmod>2026-10-21</lastmod>
+    <lastmod>2026-10-27</lastmod>
     <changefreq>daily</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
     <loc>https://clarified.co.za/category-automotive.html</loc>
-    <lastmod>2026-10-21</lastmod>
+    <lastmod>2026-10-27</lastmod>
     <changefreq>daily</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
     <loc>https://clarified.co.za/category-world.html</loc>
-    <lastmod>2026-10-21</lastmod>
+    <lastmod>2026-10-27</lastmod>
     <changefreq>daily</changefreq>
     <priority>0.7</priority>
   </url>
@@ -203,7 +203,7 @@
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
     <image:image>
-      <image:loc>https://clarified.co.za/images/big-4.png</image:loc>
+      <image:loc>https://clarified.co.za/images/big-4.jpg</image:loc>
       <image:title>Eskom Data Centres: It Has Power to Spare. Now It Wants Amazon, Microsoft and Google to Buy It</image:title>
     </image:image>
   </url>
@@ -213,7 +213,7 @@
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
     <image:image>
-      <image:loc>https://clarified.co.za/images/springboks.png</image:loc>
+      <image:loc>https://clarified.co.za/images/springboks.jpg</image:loc>
       <image:title>Springboks vs All Blacks: THE BIG GAME</image:title>
     </image:image>
   </url>
@@ -223,7 +223,7 @@
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
     <image:image>
-      <image:loc>https://clarified.co.za/images/sundowns-vs-marumo-gallants.png</image:loc>
+      <image:loc>https://clarified.co.za/images/sundowns-vs-marumo-gallants.jpg</image:loc>
       <image:title>Mamelodi Sundowns vs Marumo Gallants: 2026 Kick-off Time and Preview</image:title>
     </image:image>
   </url>
@@ -233,7 +233,7 @@
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
     <image:image>
-      <image:loc>https://clarified.co.za/images/MTN-AI-JOB.png</image:loc>
+      <image:loc>https://clarified.co.za/images/MTN-AI-JOB.jpg</image:loc>
       <image:title>MTN Launches AI Job Board for African Youth</image:title>
     </image:image>
   </url>
@@ -243,7 +243,7 @@
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
     <image:image>
-      <image:loc>https://clarified.co.za/images/sadc-summit-durban-2026.png</image:loc>
+      <image:loc>https://clarified.co.za/images/sadc-summit-durban-2026.jpg</image:loc>
       <image:title>SADC Summit 2026: Ramaphosa Takes Over as Chair in Durban</image:title>
     </image:image>
   </url>
@@ -253,7 +253,7 @@
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
     <image:image>
-      <image:loc>https://clarified.co.za/images/DSTV.png</image:loc>
+      <image:loc>https://clarified.co.za/images/DSTV.jpg</image:loc>
       <image:title>DStv Premium Channel Cuts: 4 Channels Closing in September 2026</image:title>
     </image:image>
   </url>
@@ -263,7 +263,7 @@
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
     <image:image>
-      <image:loc>https://clarified.co.za/images/29733010-d28c-4d47-a5c5-7d75b0037eb6.png</image:loc>
+      <image:loc>https://clarified.co.za/images/29733010-d28c-4d47-a5c5-7d75b0037eb6.jpg</image:loc>
       <image:title>Colombia Earthquake 2026: What We Know So Far</image:title>
     </image:image>
   </url>
@@ -279,19 +279,19 @@
   </url>
   <url>
     <loc>https://clarified.co.za/about.html</loc>
-    <lastmod>2026-10-21</lastmod>
+    <lastmod>2026-10-27</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.5</priority>
   </url>
   <url>
     <loc>https://clarified.co.za/contact.html</loc>
-    <lastmod>2026-10-21</lastmod>
+    <lastmod>2026-10-27</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.5</priority>
   </url>
   <url>
     <loc>https://clarified.co.za/privacy.html</loc>
-    <lastmod>2026-10-21</lastmod>
+    <lastmod>2026-10-27</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.5</priority>
   </url>

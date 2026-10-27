@@ -683,6 +683,51 @@ ${JSON.stringify(jsonLd, null, 2)}
         fs.writeFileSync(path.join(PROJECT_ROOT, 'index.html'), idx, 'utf8');
     }
 
+    // Generate static category pages cleanly
+    const catMap = {
+        'south-africa': 'South Africa',
+        'world': 'World',
+        'technology': 'Technology',
+        'business': 'Business',
+        'sport': 'Sport',
+        'education': 'Education',
+        'genz-youth': 'GenZ & Youth',
+        'africa-news': 'Africa News',
+        'lifestyle': 'Lifestyle',
+        'automotive': 'Automotive'
+    };
+    Object.keys(catMap).forEach(catSlug => {
+        const catName = catMap[catSlug];
+        const catMatches = published.filter(a => {
+            if (!a.category) return false;
+            return a.category.split(',').some(c => {
+                const s = c.trim().toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, '');
+                return s === catSlug || (catSlug === 'genz-youth' && (s === 'gen-z-youth' || s === 'genz-youth'));
+            });
+        });
+
+        const cardsHtml = catMatches.length > 0 
+            ? catMatches.map(cardHTML).join('\n')
+            : '<div class="empty-state" style="grid-column: 1 / -1;"><h2>No articles yet</h2><p>Check back soon for updates.</p></div>';
+
+        const mainBlock = `<main>
+  <section class="container page-head">
+    <h1>${catName}</h1>
+    <p>Latest articles in ${catName}</p>
+  </section>
+  <section class="container section">
+    <div class="category-grid" id="cat-grid">
+      ${cardsHtml}
+    </div>
+  </section>
+</main>`;
+
+        let out = template.replace(/<main>[\s\S]*?<\/main>/, mainBlock);
+        out = out.replace(/<title>.*?<\/title>/, `<title>${catName} &mdash; Clarified</title>`);
+        out = out.replace(/href="style\.css"/g, 'href="/style.css"');
+        fs.writeFileSync(path.join(PROJECT_ROOT, `category-${catSlug}.html`), out, 'utf8');
+    });
+
     // Update sitemap.xml with full Google-compliant attributes (lastmod, priority, changefreq, image tags)
     function escapeXml(str) {
         if (!str) return '';

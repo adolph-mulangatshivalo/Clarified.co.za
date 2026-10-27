@@ -273,51 +273,6 @@ ${absoluteImg ? `<meta name="twitter:image" content="${absoluteImg}">` : ''}
   <section class="container section">
     <div class="category-grid" id="cat-grid">
       ${cardsHtml}
-      <script>
-        document.addEventListener('DOMContentLoaded', async () => {
-          try {
-            let articles = [];
-            try {
-              const res = await fetch('/api/articles');
-              if (res.ok) articles = await res.json();
-              else throw new Error('not ok');
-            } catch(e) {
-              const res = await fetch('/dashboard/db.json').catch(() => fetch('/Clarified%20Dashboard/db.json'));
-              const db = await res.json();
-              articles = (db.articles || []).filter(a => a.status === 'published');
-            }
-            
-            const catMatches = articles.filter(a => {
-              if (!a.category) return false;
-              return a.category.split(',').some(c => {
-                const s = c.trim().toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, '');
-                return s === '${catSlug}' || ('${catSlug}' === 'genz-youth' && (s === 'gen-z-youth' || s === 'genz-youth'));
-              });
-            });
-            const grid = document.getElementById('cat-grid');
-            
-            if (catMatches.length === 0) {
-              grid.innerHTML = '<div class="empty-state" style="grid-column: 1 / -1;"><h2>No articles yet</h2><p>Check back soon for updates.</p></div>';
-              return;
-            }
-            
-            grid.innerHTML = catMatches.map(a => {
-              const slug = a.slug || a.title.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, '');
-              const url = '/articles/' + slug + '.html';
-              const img = a.featuredImage ? '/' + a.featuredImage.replace(/^\\//, '') : '';
-              return \`<article class="card">
-                <a href="\${url}"><img src="\${img}" alt="\${a.title}" style="height:190px;border-radius:9px;object-fit:cover;width:100%;"></a>
-                <div class="eyebrow" style="margin-top:10px;">\${(a.category || '').split(',')[0].trim()}</div>
-                <h3><a href="\${url}">\${a.title}</a></h3>
-                <p>\${(a.excerpt || '').substring(0, 100)}\${(a.excerpt || '').length > 100 ? '…' : ''}</p>
-                <a class="read-meta" href="\${url}">Read story →</a>
-              </article>\`;
-            }).join('');
-          } catch (e) {
-            console.error(e);
-          }
-        });
-      </script>
     </div>
   </section>
 </main>`;

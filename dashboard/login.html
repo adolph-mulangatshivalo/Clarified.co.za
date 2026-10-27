@@ -215,7 +215,9 @@ import {
     signInWithPopup, 
     GoogleAuthProvider, 
     sendPasswordResetEmail,
-    onAuthStateChanged 
+    setPersistence,
+    browserSessionPersistence,
+    signOut
 } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
 import { firebaseConfig, ALLOWED_ADMIN_EMAILS } from "./firebase-config.js";
 
@@ -232,17 +234,15 @@ if (!isConfigured) {
     showAlert("Setup Notice: To activate Firebase Authentication, paste your Firebase web config into 'dashboard/firebase-config.js'.", false);
 }
 
+// Always clear any active session flag when opening login page
+sessionStorage.removeItem('clarified_admin_session');
+
 let auth = null;
 if (isConfigured) {
     const app = initializeApp(firebaseConfig);
     auth = getAuth(app);
-
-    // If user is already authenticated and authorized, redirect straight to index
-    onAuthStateChanged(auth, user => {
-        if (user) {
-            checkAuthAndRedirect(user);
-        }
-    });
+    // Explicitly sign out to ensure credentials are never remembered or auto-redirected
+    signOut(auth).catch(() => {});
 }
 
 async function hashString(str) {
@@ -261,11 +261,13 @@ async function checkAuthAndRedirect(user) {
         });
         if (!isAllowed) {
             showAlert(`Access Denied: ${user.email} is not authorized to access this dashboard.`, true);
-            auth.signOut();
+            sessionStorage.removeItem('clarified_admin_session');
+            if (auth) signOut(auth).catch(() => {});
             return;
         }
     }
 
+    sessionStorage.setItem('clarified_admin_session', 'active_' + Date.now());
     const params = new URLSearchParams(window.location.search);
     const returnUrl = params.get('returnUrl') || '/dashboard';
     window.location.replace(returnUrl);
@@ -286,6 +288,7 @@ window.handleEmailLogin = async function(e) {
     btn.innerHTML = 'Signing in…';
 
     try {
+        await setPersistence(auth, browserSessionPersistence);
         const cred = await signInWithEmailAndPassword(auth, email, pass);
         checkAuthAndRedirect(cred.user);
     } catch(err) {
@@ -309,6 +312,7 @@ window.handleGoogleLogin = async function() {
     provider.setCustomParameters({ prompt: 'select_account' });
 
     try {
+        await setPersistence(auth, browserSessionPersistence);
         const cred = await signInWithPopup(auth, provider);
         checkAuthAndRedirect(cred.user);
     } catch(err) {
