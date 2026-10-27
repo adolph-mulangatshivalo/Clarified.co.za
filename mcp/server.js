@@ -286,8 +286,8 @@ function cardHTML(a) {
     const url = `/articles/${slug}.html`;
     const imgSrc = resolveImgUrl(a.featuredImage);
     const img = imgSrc
-        ? `<a href="${url}"><img src="${imgSrc}" alt="${a.imgAlt || a.title}" style="height:190px;border-radius:9px;object-fit:cover;width:100%;"></a>`
-        : `<a href="${url}" style="display:block;height:190px;border-radius:9px;background:var(--soft);"></a>`;
+        ? `<a href="${url}"><img src="${imgSrc}" alt="${a.imgAlt || a.title}" loading="lazy" decoding="async"></a>`
+        : `<a href="${url}" style="display:block;aspect-ratio:16/9;border-radius:9px;background:var(--soft);"></a>`;
     return `<article class="card">
         ${img}
         <div class="eyebrow" style="margin-top:10px;">${(a.category || '').split(',')[0].trim()}</div>

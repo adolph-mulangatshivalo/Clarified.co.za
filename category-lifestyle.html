@@ -82,14 +82,14 @@
   <section class="container section">
     <div class="category-grid" id="cat-grid">
       <article class="card">
-            <a href="/articles/how-your-phone-tracks-you.html"><img src="/images/photo-1541560052-3744e48ab80b.avif" alt="Why Your Phone Knows So Much About You" style="height:190px;border-radius:9px;object-fit:cover;width:100%;"></a>
+            <a href="/articles/how-your-phone-tracks-you.html"><img src="/images/photo-1541560052-3744e48ab80b.avif" alt="Why Your Phone Knows So Much About You" loading="eager" fetchpriority="high" decoding="async"></a>
             <div class="eyebrow" style="margin-top:10px;">GenZ & Youth</div>
             <h3><a href="/articles/how-your-phone-tracks-you.html">Why Your Phone Knows So Much About You</a></h3>
             <p>Your phone knows where you go, what you search for and what you watch. Here's how phones, apps and s…</p>
             <a class="read-meta" href="/articles/how-your-phone-tracks-you.html">Read story →</a>
         </article>
 <article class="card">
-            <a href="/articles/why-petrol-prices-increase-south-africa.html"><img src="/images/petrol-2.jpeg" alt="Petrol station pump" style="height:190px;border-radius:9px;object-fit:cover;width:100%;"></a>
+            <a href="/articles/why-petrol-prices-increase-south-africa.html"><img src="/images/petrol-2.jpeg" alt="Petrol station pump" loading="eager" fetchpriority="high" decoding="async"></a>
             <div class="eyebrow" style="margin-top:10px;">Africa News</div>
             <h3><a href="/articles/why-petrol-prices-increase-south-africa.html">No Man, Why Is Petrol So Expensive? Here’s Why</a></h3>
             <p>Here’s what international prices, the rand, taxes and other costs have to do with what you pay at th…</p>
@@ -139,7 +139,7 @@
               const url = '/articles/' + slug + '.html';
               const img = a.featuredImage ? '/' + a.featuredImage.replace(/^\//, '') : '';
               return `<article class="card">
-                <a href="${url}"><img src="${img}" alt="${a.title}" style="height:190px;border-radius:9px;object-fit:cover;width:100%;"></a>
+                <a href="${url}"><img src="${img}" alt="${a.title}" loading="lazy" decoding="async"></a>
                 <div class="eyebrow" style="margin-top:10px;">${(a.category || '').split(',')[0].trim()}</div>
                 <h3><a href="${url}">${a.title}</a></h3>
                 <p>${formatExcerpt(a.excerpt, 100)}</p>

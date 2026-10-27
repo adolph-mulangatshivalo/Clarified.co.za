@@ -784,7 +784,8 @@ button, input { font: inherit; }
     grid-template-columns: 1fr;
   }
 
-  .card img { height: 190px; }
+  .news-grid .card img,
+  .small-grid .card img { height: 190px; }
 
   .compact-story {
     grid-template-columns: 120px 1fr;
@@ -1095,6 +1096,7 @@ button, input { font: inherit; }
 .category-grid .card > a:first-child {
   display: block;
   width: 100%;
+  aspect-ratio: 16 / 9;
   overflow: hidden;
   border-radius: 10px;
   background: #eef4f5;
@@ -1102,9 +1104,11 @@ button, input { font: inherit; }
 
 .category-grid .card img {
   display: block;
-  width: 100%;
-  height: 190px;
-  object-fit: cover;
+  width: 100% !important;
+  height: 100% !important;
+  aspect-ratio: 16 / 9 !important;
+  object-fit: cover !important;
+  object-position: center !important;
   border-radius: 10px;
   transition: transform .2s ease;
 }
@@ -1139,12 +1143,12 @@ button, input { font: inherit; }
 @media (max-width: 700px) {
   .category-grid {
     grid-template-columns: 1fr;
-    gap: 18px;
+    gap: 16px;
   }
 
   .category-grid .card {
     display: grid;
-    grid-template-columns: 132px minmax(0, 1fr);
+    grid-template-columns: 124px minmax(0, 1fr);
     column-gap: 14px;
     align-items: flex-start;
     padding: 0 0 16px;
@@ -1152,15 +1156,27 @@ button, input { font: inherit; }
 
   .category-grid .card > a:first-child {
     grid-row: 1 / span 4;
-    width: 132px;
-    height: 92px;
-    border-radius: 9px;
+    width: 124px !important;
+    height: 78px !important;
+    aspect-ratio: 16 / 10 !important;
+    border-radius: 9px !important;
+    overflow: hidden !important;
+    display: block !important;
+    background: #eef4f5;
+    flex-shrink: 0 !important;
+    align-self: flex-start;
   }
 
   .category-grid .card img {
-    width: 132px;
-    height: 92px;
-    border-radius: 9px;
+    width: 100% !important;
+    height: 100% !important;
+    max-width: 100% !important;
+    max-height: 100% !important;
+    aspect-ratio: 16 / 10 !important;
+    object-fit: cover !important;
+    object-position: center !important;
+    border-radius: 9px !important;
+    display: block !important;
   }
 
   .category-grid .card .eyebrow {

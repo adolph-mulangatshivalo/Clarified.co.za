@@ -82,21 +82,21 @@
   <section class="container section">
     <div class="category-grid" id="cat-grid">
       <article class="card">
-            <a href="/articles/springboks-vs-all-blacks-22-august-2026.html"><img src="/images/springboks.png" alt="Springboks rugby match under golden skies" style="height:190px;border-radius:9px;object-fit:cover;width:100%;"></a>
+            <a href="/articles/springboks-vs-all-blacks-22-august-2026.html"><img src="/images/springboks.jpg" alt="Springboks rugby match under golden skies" loading="eager" fetchpriority="high" decoding="async"></a>
             <div class="eyebrow" style="margin-top:10px;">Sport</div>
             <h3><a href="/articles/springboks-vs-all-blacks-22-august-2026.html">Springboks vs All Blacks: THE BIG GAME</a></h3>
             <p>The Springboks and All Blacks collide at Ellis Park on 22 August in the opening chapter of a four-Te…</p>
             <a class="read-meta" href="/articles/springboks-vs-all-blacks-22-august-2026.html">Read story →</a>
         </article>
 <article class="card">
-            <a href="/articles/mamelodi-sundowns-vs-marumo-gallants-19-august-2026.html"><img src="/images/sundowns-vs-marumo-gallants.png" alt="Mamelodi Sundowns playing against Marumo Gallants" style="height:190px;border-radius:9px;object-fit:cover;width:100%;"></a>
+            <a href="/articles/mamelodi-sundowns-vs-marumo-gallants-19-august-2026.html"><img src="/images/sundowns-vs-marumo-gallants.jpg" alt="Mamelodi Sundowns playing against Marumo Gallants" loading="eager" fetchpriority="high" decoding="async"></a>
             <div class="eyebrow" style="margin-top:10px;">Sport</div>
             <h3><a href="/articles/mamelodi-sundowns-vs-marumo-gallants-19-august-2026.html">Mamelodi Sundowns vs Marumo Gallants: 2026 Kick-off Time and Preview</a></h3>
             <p>Mamelodi Sundowns return to Loftus Versfeld for a crucial Betway Premiership clash against Marumo Ga…</p>
             <a class="read-meta" href="/articles/mamelodi-sundowns-vs-marumo-gallants-19-august-2026.html">Read story →</a>
         </article>
 <article class="card">
-            <a href="/articles/ts-galaxy-2-3-mamelodi-sundowns-mkhulise-late-brace-ends-mbombela-hoodoo.html"><img src="/images/media_1786527777606.jpg" alt="Mamelodi Sundowns crest on blue jersey" style="height:190px;border-radius:9px;object-fit:cover;width:100%;"></a>
+            <a href="/articles/ts-galaxy-2-3-mamelodi-sundowns-mkhulise-late-brace-ends-mbombela-hoodoo.html"><img src="/images/media_1786527777606.jpg" alt="Mamelodi Sundowns crest on blue jersey" loading="lazy" decoding="async"></a>
             <div class="eyebrow" style="margin-top:10px;">South Africa</div>
             <h3><a href="/articles/ts-galaxy-2-3-mamelodi-sundowns-mkhulise-late-brace-ends-mbombela-hoodoo.html">TS Galaxy 2-3 Mamelodi Sundowns: Mkhulise late brace ends Mbombela hoodoo</a></h3>
             <p>Mamelodi Sundowns came from behind to beat TS Galaxy 3-2, with Sphelele Mkhulise scoring twice late …</p>
@@ -146,7 +146,7 @@
               const url = '/articles/' + slug + '.html';
               const img = a.featuredImage ? '/' + a.featuredImage.replace(/^\//, '') : '';
               return `<article class="card">
-                <a href="${url}"><img src="${img}" alt="${a.title}" style="height:190px;border-radius:9px;object-fit:cover;width:100%;"></a>
+                <a href="${url}"><img src="${img}" alt="${a.title}" loading="lazy" decoding="async"></a>
                 <div class="eyebrow" style="margin-top:10px;">${(a.category || '').split(',')[0].trim()}</div>
                 <h3><a href="${url}">${a.title}</a></h3>
                 <p>${formatExcerpt(a.excerpt, 100)}</p>
