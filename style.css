@@ -1609,7 +1609,8 @@ a:hover .ui-arrow {
 
 /* CLARIFIED ARTICLE SYSTEM */
 .article-page {
-  max-width: 900px;
+  max-width: 1140px;
+  margin: 0 auto;
   padding-top: 62px;
 }
 .article-kicker {
@@ -1697,13 +1698,268 @@ a:hover .ui-arrow {
 .article-author strong { color:#11191b; display:block; margin-bottom:3px; }
 .article-tags { max-width:760px; margin: 18px auto; display:flex; flex-wrap:wrap; gap:7px; }
 .article-tags span { border:1px solid var(--line, #e5e8e8); border-radius:999px; padding:6px 10px; font-size:12px; color:#596467; }
-.article-share { max-width:760px; margin: 28px auto 58px; display:flex; align-items:center; gap:12px; }
-.article-share strong { margin-right:auto; }
-.article-share button { border:1px solid #cfd6d7; background:#fff; border-radius:8px; padding:10px 14px; cursor:pointer; font-weight:700; }
-.more-from-clarified { margin-top: 20px; }
-.more-from-clarified .section-heading { margin-bottom: 20px; }
-.more-from-clarified .section-heading h2 { margin: 3px 0 0; font-size: 30px; }
-.related-grid { display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:18px; }
+/* ── Article Social Share Bar ─────────────────────────────────────────── */
+.article-share {
+  max-width: 800px;
+  margin: 32px auto 48px;
+  padding: 16px 20px;
+  background: #f8fafc;
+  border: 1px solid var(--line, #e2e8f0);
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 14px;
+  flex-wrap: wrap;
+}
+
+.article-share strong {
+  font-size: 14.5px;
+  font-weight: 700;
+  color: var(--ink, #0e1516);
+  font-family: "Space Grotesk", sans-serif;
+  letter-spacing: -0.2px;
+}
+
+.article-share .share-buttons {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.article-share .share-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 8px 12px;
+  border-radius: 8px;
+  border: 1px solid #cbd5e1;
+  background: #ffffff;
+  color: #334155;
+  font-size: 13px;
+  font-weight: 600;
+  text-decoration: none;
+  cursor: pointer;
+  transition: all 0.15s ease-in-out;
+  line-height: 1;
+  font-family: inherit;
+}
+
+.article-share .share-btn svg {
+  width: 15px;
+  height: 15px;
+  flex-shrink: 0;
+}
+
+.article-share .share-btn:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 3px 8px rgba(0, 0, 0, 0.08);
+}
+
+.article-share .share-btn.share-whatsapp {
+  color: #128c7e;
+}
+.article-share .share-btn.share-whatsapp:hover {
+  background: #25D366;
+  border-color: #25D366;
+  color: #ffffff;
+}
+
+.article-share .share-btn.share-facebook {
+  color: #1877F2;
+}
+.article-share .share-btn.share-facebook:hover {
+  background: #1877F2;
+  border-color: #1877F2;
+  color: #ffffff;
+}
+
+.article-share .share-btn.share-x {
+  color: #0f1419;
+}
+.article-share .share-btn.share-x:hover {
+  background: #000000;
+  border-color: #000000;
+  color: #ffffff;
+}
+
+.article-share .share-btn.share-instagram {
+  color: #c13584;
+}
+.article-share .share-btn.share-instagram:hover {
+  background: radial-gradient(circle at 30% 107%, #fdf497 0%, #fdf497 5%, #fd5949 45%, #d6249f 60%, #285AEB 90%);
+  border-color: #d6249f;
+  color: #ffffff;
+}
+
+.article-share .share-btn.share-tiktok {
+  color: #010101;
+}
+.article-share .share-btn.share-tiktok:hover {
+  background: #010101;
+  border-color: #010101;
+  color: #ffffff;
+}
+
+.article-share .share-btn.share-copy {
+  color: var(--cyan-dark, #008080);
+}
+.article-share .share-btn.share-copy:hover {
+  background: var(--cyan-dark, #008080);
+  border-color: var(--cyan-dark, #008080);
+  color: #ffffff;
+}
+
+.article-share .share-btn.copied {
+  background: #10b981 !important;
+  border-color: #10b981 !important;
+  color: #ffffff !important;
+}
+
+@media (max-width: 768px) {
+  .article-share {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 12px;
+    padding: 16px;
+  }
+  .article-share .share-buttons {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 8px;
+    width: 100%;
+  }
+  .article-share .share-btn {
+    justify-content: center;
+    padding: 9px 8px;
+    font-size: 12px;
+  }
+}
+
+@media (max-width: 440px) {
+  .article-share .share-buttons {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+/* ── "More from Clarified" Article Section Fix ───────────────────────── */
+.article-page .section,
+.article-page section.section {
+  max-width: 100% !important;
+  width: 100% !important;
+  margin-top: 54px !important;
+  padding: 0 !important;
+}
+
+.article-page .section-head {
+  max-width: 100% !important;
+  margin-bottom: 24px !important;
+  border-bottom: 2px solid var(--ink, #0e1516);
+  padding-bottom: 12px;
+}
+
+.article-page .section-head h2 {
+  font-size: 30px !important;
+  font-family: "Space Grotesk", sans-serif !important;
+  font-weight: 700 !important;
+  letter-spacing: -0.5px !important;
+  margin-top: 4px !important;
+}
+
+.article-page .news-grid {
+  display: grid !important;
+  grid-template-columns: repeat(3, minmax(0, 1fr)) !important;
+  gap: 26px !important;
+  width: 100% !important;
+}
+
+.article-page .news-grid .card {
+  display: flex !important;
+  flex-direction: column !important;
+  background: #ffffff !important;
+  border-radius: 12px !important;
+  border: 1px solid var(--line, #e2e8f0) !important;
+  padding: 14px !important;
+  transition: transform 0.2s ease, box-shadow 0.2s ease !important;
+  height: 100% !important;
+  box-sizing: border-box !important;
+}
+
+.article-page .news-grid .card:hover {
+  transform: translateY(-3px) !important;
+  box-shadow: 0 10px 24px rgba(0, 0, 0, 0.07) !important;
+}
+
+.article-page .news-grid .card a > img,
+.article-page .news-grid .card img {
+  width: 100% !important;
+  height: auto !important;
+  aspect-ratio: 16 / 9 !important;
+  object-fit: cover !important;
+  border-radius: 8px !important;
+  display: block !important;
+  margin-bottom: 12px !important;
+}
+
+.article-page .news-grid .card .eyebrow {
+  font-size: 11.5px !important;
+  font-weight: 700 !important;
+  text-transform: uppercase !important;
+  letter-spacing: 0.08em !important;
+  color: var(--cyan-dark, #008080) !important;
+  margin-bottom: 6px !important;
+}
+
+.article-page .news-grid .card h3 {
+  font-size: 18px !important;
+  font-family: "Space Grotesk", sans-serif !important;
+  font-weight: 700 !important;
+  line-height: 1.35 !important;
+  margin: 0 0 10px 0 !important;
+}
+
+.article-page .news-grid .card h3 a {
+  color: var(--ink, #0e1516) !important;
+  text-decoration: none !important;
+}
+
+.article-page .news-grid .card h3 a:hover {
+  color: var(--cyan-dark, #008080) !important;
+}
+
+.article-page .news-grid .card p {
+  font-size: 14px !important;
+  line-height: 1.55 !important;
+  color: #4b5563 !important;
+  margin: 0 0 16px 0 !important;
+  flex-grow: 1 !important;
+}
+
+.article-page .news-grid .card .read-meta {
+  margin-top: auto !important;
+  font-size: 13.5px !important;
+  font-weight: 700 !important;
+  color: var(--cyan-dark, #008080) !important;
+  text-decoration: none !important;
+  display: inline-flex !important;
+  align-items: center !important;
+  gap: 4px !important;
+}
+
+@media (max-width: 960px) {
+  .article-page .news-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+    gap: 20px !important;
+  }
+}
+
+@media (max-width: 600px) {
+  .article-page .news-grid {
+    grid-template-columns: 1fr !important;
+    gap: 20px !important;
+  }
+}
 .article-newsletter { margin-top: 58px; }
 .muted { color:#737d80; }
 @media (max-width: 1050px) {
