@@ -105,10 +105,10 @@
       <strong>Editorial Headquarters:</strong> Clarified South Africa, Thohoyandou, Limpopo, Republic of South Africa.
     </div>
 
-    <h2 class="wp-block-heading" style="margin-top:36px;">Send Us a Direct Message</h2>
-    <p class="wp-block-paragraph">You can also leave a message directly using the form below:</p>
+    <h2 class="wp-block-heading" style="margin-top:36px;">Send Us a Message</h2>
+    <p class="wp-block-paragraph">Fill in your details below to compose your message directly to our inbox:</p>
 
-    <form id="contact-form">
+    <form id="contact-form" onsubmit="sendViaEmail(event)">
       <label for="name" style="display:none;">Name</label>
       <input type="text" id="name" name="name" placeholder="Your name" required>
 
@@ -116,13 +116,15 @@
       <input type="email" id="email" name="email" placeholder="Your email address" required>
 
       <label for="subject" style="display:none;">Subject</label>
-      <input type="text" id="subject" name="subject" placeholder="Subject" required>
+      <input type="text" id="subject" name="subject" placeholder="Subject (e.g. Story Tip, Question, Correction)" required>
 
       <label for="message" style="display:none;">Message</label>
-      <textarea id="message" name="message" placeholder="Your message" required></textarea>
+      <textarea id="message" name="message" placeholder="Write your message here..." rows="5" required></textarea>
 
-      <button type="submit" id="submit-btn">Send Message</button>
-      <div id="form-status" style="display:none;margin-top:16px;"></div>
+      <div style="display:flex;gap:12px;flex-wrap:wrap;align-items:center;margin-top:8px;">
+        <button type="submit" id="submit-btn" style="flex:1;min-width:200px;">Send via Email App &rarr;</button>
+        <button type="button" onclick="sendViaGmail()" style="background:#ea4335;color:#fff;border:none;padding:12px 20px;border-radius:6px;font-weight:600;cursor:pointer;">Open in Gmail</button>
+      </div>
     </form>
   </section>
 </main>
@@ -179,51 +181,27 @@ document.querySelector('.menu').addEventListener('click', function() {
 });
 </script>
 
-<!-- Secure Serverless Contact Form Submission -->
 <script>
-  const contactForm = document.getElementById('contact-form');
-  const submitBtn = document.getElementById('submit-btn');
-  const formStatus = document.getElementById('form-status');
+  function getFormData() {
+    const name = document.getElementById('name').value.trim();
+    const email = document.getElementById('email').value.trim();
+    const subject = document.getElementById('subject').value.trim() || 'Inquiry via Clarified.co.za';
+    const message = document.getElementById('message').value.trim();
+    const body = `From: ${name}\nEmail: ${email}\n\nMessage:\n${message}`;
+    return { name, email, subject, body };
+  }
 
-  contactForm.addEventListener('submit', async (e) => {
+  function sendViaEmail(e) {
     e.preventDefault();
-    submitBtn.disabled = true;
-    submitBtn.innerText = 'Sending message...';
-    formStatus.style.display = 'none';
+    const { subject, body } = getFormData();
+    window.location.href = `mailto:contact@clarified.co.za?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
+  }
 
-    const payload = {
-      name: document.getElementById('name').value.trim(),
-      email: document.getElementById('email').value.trim(),
-      subject: document.getElementById('subject').value.trim(),
-      message: document.getElementById('message').value.trim()
-    };
-
-    try {
-      const response = await fetch('/api/contact', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(payload)
-      });
-
-      const result = await response.json();
-
-      if (response.ok && result.success) {
-        contactForm.reset();
-        submitBtn.disabled = false;
-        submitBtn.innerText = 'Send Message';
-        formStatus.innerHTML = '<div style="background:#e6f4ea;color:#137333;border:1px solid #ceead6;padding:14px 18px;border-radius:6px;font-weight:500;">✓ Thank you! Your message has been received by our editorial team.</div>';
-        formStatus.style.display = 'block';
-      } else {
-        throw new Error(result.error || 'Server error');
-      }
-    } catch (err) {
-      console.error("Contact submission error:", err);
-      submitBtn.disabled = false;
-      submitBtn.innerText = 'Send Message';
-      formStatus.innerHTML = '<div style="background:#fce8e6;color:#c5221f;border:1px solid #fad2cf;padding:14px 18px;border-radius:6px;">Unable to submit at this moment. Please email our team directly at <a href="mailto:contact@clarified.co.za" style="color:#c5221f;text-decoration:underline;font-weight:600;">contact@clarified.co.za</a>.</div>';
-      formStatus.style.display = 'block';
-    }
-  });
+  function sendViaGmail() {
+    const { subject, body } = getFormData();
+    const gmailUrl = `https://mail.google.com/mail/?view=cm&fs=1&to=contact@clarified.co.za&su=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
+    window.open(gmailUrl, '_blank', 'noopener,noreferrer');
+  }
 </script>
 </body>
 </html>
