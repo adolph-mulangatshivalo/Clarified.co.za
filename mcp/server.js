@@ -835,7 +835,7 @@ ${JSON.stringify(jsonLd, null, 2)}
         sitemapEntries.push(`  <url>\n    <loc>https://clarified.co.za/articles/${slug}.html</loc>\n    <lastmod>${aDate}</lastmod>\n    <changefreq>weekly</changefreq>\n    <priority>${priority}</priority>${imgXml}\n  </url>`);
     });
 
-    ['about.html', 'contact.html', 'privacy.html'].forEach(page => {
+    ['about.html', 'contact.html', 'privacy.html', 'terms.html', 'disclaimer.html'].forEach(page => {
         sitemapEntries.push(`  <url>\n    <loc>https://clarified.co.za/${page}</loc>\n    <lastmod>${todayDate}</lastmod>\n    <changefreq>monthly</changefreq>\n    <priority>0.5</priority>\n  </url>`);
     });
 
