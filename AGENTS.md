@@ -4,13 +4,17 @@ Welcome to the **Clarified.co.za** codebase and publishing platform. Clarified i
 
 ---
 
-## 1. Editorial Voice & Readability (Accessible to All Ages)
-* **Simple, Everyday English:** Write clearly, warmly, and directly. Avoid bloated academic words, corporate jargon, and dense sentences.
+## 1. Editorial Voice & Readability: Simple, Straightforward South African English
+* **Keep Articles Short & Punchy:** Articles must **not be very long**. Target a focused **450 to 800 words** (2–4 minute read). Never pad articles with repetitive fluff, bloated intros, or filler text.
+* **Straight to the Point:** Answer the reader's question immediately in the first paragraph. Give direct, actionable advice without lengthy theoretical preambles.
+* **Very Simple South African English:** Write clearly, warmly, and directly in plain everyday South African English accessible to all ages:
   * Use "use" instead of "utilize"
   * Use "start" instead of "commence"
   * Use "pay" or "salary" instead of "remuneration"
   * Use "because" instead of "in light of the fact that"
-* **Bite-Sized Paragraphs:** Maximum **2 to 3 sentences** (40–60 words) per paragraph. Never write monolithic blocks of text.
+  * Use "help" instead of "facilitate"
+  * Use natural everyday South African terms where fitting (e.g. matric, bakkie, NSFAS, SASSA, side hustle, Dezemba) without forced slang.
+* **Bite-Sized Paragraphs:** Maximum **2 to 3 sentences** (30–50 words) per paragraph. Never write monolithic blocks of text.
 * **Clarify All Acronyms:** Always spell out and explain South African terms upon first mention (e.g. NSFAS, DHET, SARS, APS score, SETA, K53).
 
 ---

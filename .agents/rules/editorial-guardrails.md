@@ -2,10 +2,18 @@
 
 Whenever researching, drafting, editing, or publishing content for Clarified.co.za, strictly follow these editorial, readability, and SEO rules:
 
-## 1. Simple, Everyday English (Accessible to All Ages)
-* **Write in plain, conversational English**: Avoid dense academic jargon, bureaucratic filler, and confusing big words. If a simple word works, use it (e.g. use "use" instead of "utilize", "start" instead of "commence", "pay" instead of "remuneration").
-* **Bite-sized paragraphs**: Strictly limit paragraphs to **2 to 3 sentences** (40–60 words max). Never create giant walls of text.
-* **Explain acronyms & South African terms**: Always spell out and clarify acronyms upon first mention (NSFAS, DHET, SARS, APS score, SETA, K53).
+## 1. Short, Straightforward & Simple South African English
+* **Keep articles concise (not very long):** Target **450 to 800 words** (2–4 minute read). Never pad articles with fluff, repetitive intros, or filler paragraphs. Readers want clear answers fast.
+* **Get straight to the point:** Answer the reader's question directly in the opening lines. Avoid long-winded backstories.
+* **Very simple South African English:** Write in plain, everyday conversational English that anyone across South Africa can understand immediately.
+  * Use "use" instead of "utilize"
+  * Use "start" instead of "commence"
+  * Use "pay" or "salary" instead of "remuneration"
+  * Use "because" instead of "in light of the fact that"
+  * Use "help" instead of "facilitate"
+  * Use natural everyday South African context (matric, bakkie, NSFAS, SASSA, side hustle, Dezemba) without forced slang.
+* **Bite-sized paragraphs:** Strictly limit paragraphs to **2 to 3 sentences** (30–50 words max). Never create giant walls of text.
+* **Explain acronyms & South African terms:** Always spell out and clarify acronyms upon first mention (NSFAS, DHET, SARS, APS score, SETA, K53).
 
 ## 2. Rich, Scannable Formatting
 * Divide content with question-driven, actionable `<h2>` and `<h3>` subheadings.

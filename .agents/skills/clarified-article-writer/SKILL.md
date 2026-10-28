@@ -13,10 +13,15 @@ Clarified.co.za is an independent South African articles platform exploring tech
 
 ---
 
-## 1. Writing Style: Simple, Punchy English for All Ages
+## 1. Writing Style: Short, Straightforward & Very Simple South African English
 
-### The "Coffee Shop" Rule
-Write as if you are explaining the topic to a smart friend at a coffee shop. Be clear, warm, engaging, and direct. Avoid stuffy academic language, bloated corporate jargon, and confusing $10 words when a simple word gets the point across faster.
+### Keep Articles Concise (Not Very Long)
+* **Never write overly long articles:** Readers in South Africa browse on mobile phones with limited data and time.
+* **Target Word Count:** Keep articles tight and focused at **450 to 800 words** (2 to 4 minute read time). 
+* **Zero Fluff:** Cut straight to the point. Answer the primary question in the opening paragraph. Never pad articles with repeated advice, bloated introductory fluff, or long philosophical summaries.
+
+### The "Coffee Shop" Rule: Very Simple South African English
+Write as if you are explaining the topic directly to a friend at a local coffee shop or taxi rank. Be warm, direct, and straightforward. Use plain everyday South African English accessible to all ages (from 16-year-old matriculants to grandparents).
 
 * **Replace Complex Words with Simple Everyday Words:**
   * Instead of *utilize* &rarr; use **use**
@@ -27,13 +32,14 @@ Write as if you are explaining the topic to a smart friend at a coffee shop. Be 
   * Instead of *in light of the fact that* &rarr; use **because** or **since**
   * Instead of *terminate* &rarr; use **end** or **stop**
   * Instead of *numerous* &rarr; use **many** or **lots of**
+  * Instead of *endeavour* &rarr; use **try**
 
 ### Bite-Sized Paragraphs (Max 2–3 Sentences)
-* Never write long walls of text. Giant paragraphs intimidate readers, especially on mobile phones.
-* Keep paragraphs strictly to **2 to 3 sentences** (40–60 words max).
-* Give thoughts room to breathe with white space between paragraphs.
+* Never write long walls of text. Giant paragraphs intimidate readers, especially on mobile screens.
+* Keep paragraphs strictly to **2 to 3 sentences** (30–50 words max).
+* Give thoughts room to breathe with clear white space between paragraphs.
 
-### South African Context & Clarifying Acronyms
+### Authentic South African Context & Clarifying Acronyms
 * Always spell out and explain South African acronyms and terminology on first mention:
   * **NSFAS**: National Student Financial Aid Scheme (government student funding).
   * **DHET**: Department of Higher Education and Training.
@@ -41,7 +47,7 @@ Write as if you are explaining the topic to a smart friend at a coffee shop. Be 
   * **APS**: Admission Point Score (used by South African universities to calculate matric results).
   * **SETA**: Sector Education and Training Authority.
   * **K53**: The official South African driving licence examination standard.
-* Use authentic South African terminology naturally where appropriate (e.g., matric, bakkie, load shedding, NSFAS, SASSA, tertiary education) without descending into forced slang.
+* Use authentic South African terms naturally where appropriate (e.g., matric, bakkie, load shedding, NSFAS, SASSA, side hustle, Dezemba) without forced slang. Keep the tone practical, helpful, and down-to-earth.
 
 ---
 
@@ -183,13 +189,14 @@ To rank #1 on Google and achieve high Click-Through Rates (CTR), follow these pr
 Before publishing any article live to Clarified.co.za, run this checklist:
 
 1. [ ] **Factual Accuracy:** Verified dates, numbers, and sources via `search_web`.
-2. [ ] **Reading Level:** Written in clear, plain everyday English accessible to all ages.
-3. [ ] **Formatting:** Short 2–3 sentence paragraphs; bullet lists; mandatory responsive comparison table (`<div class="table-responsive"><table class="clarified-table">`); callout box.
-4. [ ] **Headings:** Single H1, engaging descriptive H2s and H3s; Table of Contents generated.
-5. [ ] **Outbound Links:** 2–4 verified links to official primary sources with descriptive anchor text.
-6. [ ] **Internal Links:** Strictly at most 2 subtle, natural internal links woven seamlessly into sentences (never formulaic promotional spam).
-7. [ ] **Duplicates Check:** Checked with `detect_duplicates` (no keyword cannibalization or slug collisions).
-8. [ ] **SEO Meta:** Title under 60 chars, meta description under 155 chars, keyword present in first 100 words.
-9. [ ] **Image & Alt Text:** Realistic editorial photo with descriptive `imgAlt`.
-10. [ ] **Quality Gate Pass:** Passed `validate_article_quality`.
-11. [ ] **Homepage Curation:** Assigned appropriate `homepagePlacement` (`top_story`, `editors_pick`, `must_read`, etc.) and confirmed static compilation of `index.html` and `sitemap.xml`.
+2. [ ] **Concise Length & Pacing:** Article is tight and not very long (450–800 words, 2–4 min read). Zero fluff or filler.
+3. [ ] **Reading Level:** Written in very simple, straightforward everyday South African English accessible to all ages.
+4. [ ] **Formatting:** Short 2–3 sentence paragraphs; bullet lists; mandatory responsive comparison table (`<div class="table-responsive"><table class="clarified-table">`); callout box.
+5. [ ] **Headings:** Single H1, engaging descriptive H2s and H3s; Table of Contents generated.
+6. [ ] **Outbound Links:** 1–2 verified links to official primary sources with descriptive anchor text.
+7. [ ] **Internal Links:** Strictly at most 2 subtle, natural internal links woven seamlessly into sentences (never formulaic promotional spam).
+8. [ ] **Duplicates Check:** Checked with `detect_duplicates` (no keyword cannibalization or slug collisions).
+9. [ ] **SEO Meta:** Title under 60 chars, meta description under 155 chars, keyword present in first 100 words.
+10. [ ] **Image & Alt Text:** Realistic editorial photo with descriptive `imgAlt`.
+11. [ ] **Quality Gate Pass:** Passed `validate_article_quality`.
+12. [ ] **Homepage Curation:** Assigned appropriate `homepagePlacement` (`top_story`, `editors_pick`, `must_read`, etc.) and confirmed static compilation of `index.html` and `sitemap.xml`.

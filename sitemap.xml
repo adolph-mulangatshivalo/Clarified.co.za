@@ -3,81 +3,85 @@
         xmlns:image="http://www.google.com/schemas/sitemap-image/1.1">
   <url>
     <loc>https://clarified.co.za/</loc>
-    <lastmod>2026-10-27</lastmod>
+    <lastmod>2026-10-28</lastmod>
     <changefreq>daily</changefreq>
     <priority>1.0</priority>
   </url>
   <url>
     <loc>https://clarified.co.za/category-south-africa.html</loc>
-    <lastmod>2026-10-27</lastmod>
+    <lastmod>2026-10-28</lastmod>
     <changefreq>daily</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
     <loc>https://clarified.co.za/category-africa-news.html</loc>
-    <lastmod>2026-10-27</lastmod>
+    <lastmod>2026-10-28</lastmod>
     <changefreq>daily</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
     <loc>https://clarified.co.za/category-business.html</loc>
-    <lastmod>2026-10-27</lastmod>
+    <lastmod>2026-10-28</lastmod>
     <changefreq>daily</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
     <loc>https://clarified.co.za/category-technology.html</loc>
-    <lastmod>2026-10-27</lastmod>
+    <lastmod>2026-10-28</lastmod>
     <changefreq>daily</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
     <loc>https://clarified.co.za/category-sport.html</loc>
-    <lastmod>2026-10-27</lastmod>
+    <lastmod>2026-10-28</lastmod>
     <changefreq>daily</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
     <loc>https://clarified.co.za/category-education.html</loc>
-    <lastmod>2026-10-27</lastmod>
+    <lastmod>2026-10-28</lastmod>
     <changefreq>daily</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
     <loc>https://clarified.co.za/category-genz-youth.html</loc>
-    <lastmod>2026-10-27</lastmod>
+    <lastmod>2026-10-28</lastmod>
     <changefreq>daily</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
     <loc>https://clarified.co.za/category-lifestyle.html</loc>
-    <lastmod>2026-10-27</lastmod>
+    <lastmod>2026-10-28</lastmod>
     <changefreq>daily</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
     <loc>https://clarified.co.za/category-automotive.html</loc>
-    <lastmod>2026-10-27</lastmod>
+    <lastmod>2026-10-28</lastmod>
     <changefreq>daily</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
     <loc>https://clarified.co.za/category-world.html</loc>
-    <lastmod>2026-10-27</lastmod>
+    <lastmod>2026-10-28</lastmod>
     <changefreq>daily</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
-    <loc>https://clarified.co.za/category-editors-pick.html</loc>
-    <lastmod>2026-10-27</lastmod>
-    <changefreq>daily</changefreq>
-    <priority>0.7</priority>
+    <loc>https://clarified.co.za/articles/bursaries-still-open-south-africa.html</loc>
+    <lastmod>2026-10-28</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.9</priority>
+    <image:image>
+      <image:loc>https://clarified.co.za/images/bursaries-still-open-south-africa.jpg</image:loc>
+      <image:title>Bursaries Still Open for 2027 in South Africa</image:title>
+    </image:image>
   </url>
   <url>
     <loc>https://clarified.co.za/articles/high-demand-degrees-south-africa.html</loc>
     <lastmod>2026-10-21</lastmod>
     <changefreq>weekly</changefreq>
-    <priority>0.9</priority>
+    <priority>0.8</priority>
     <image:image>
       <image:loc>https://clarified.co.za/images/highest-employment-degrees-south-africa.jpg</image:loc>
       <image:title>High-Demand Degrees in South Africa: 2026 Career Guide</image:title>
@@ -285,19 +289,19 @@
   </url>
   <url>
     <loc>https://clarified.co.za/about.html</loc>
-    <lastmod>2026-10-27</lastmod>
+    <lastmod>2026-10-28</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.5</priority>
   </url>
   <url>
     <loc>https://clarified.co.za/contact.html</loc>
-    <lastmod>2026-10-27</lastmod>
+    <lastmod>2026-10-28</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.5</priority>
   </url>
   <url>
     <loc>https://clarified.co.za/privacy.html</loc>
-    <lastmod>2026-10-27</lastmod>
+    <lastmod>2026-10-28</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.5</priority>
   </url>
