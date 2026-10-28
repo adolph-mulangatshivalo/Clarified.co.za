@@ -4,7 +4,7 @@
  * Blocks unauthorized access, hackers, and malicious bots from modifying the site.
  */
 
-const FIREBASE_API_KEY = process.env.FIREBASE_API_KEY || "AIzaSyBwNSi_ROjHpNBTlT1MjDouEMQAKeyE4cg";
+const FIREBASE_API_KEY = process.env.FIREBASE_API_KEY;
 
 // Cryptographic SHA-256 hash of authorized admin email
 const AUTHORIZED_EMAIL_HASH = "4c909297955f5107960485634d341da82f983625c43d0d4a7fdb66ee9048ab50";

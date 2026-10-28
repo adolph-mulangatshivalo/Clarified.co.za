@@ -108,7 +108,7 @@
     <h2 class="wp-block-heading" style="margin-top:36px;">Send Us a Direct Message</h2>
     <p class="wp-block-paragraph">You can also leave a message directly using the form below:</p>
 
-    <form action="mailto:contact@clarified.co.za" method="POST" enctype="text/plain" onsubmit="this.querySelector('button').innerText='Opening Email Client...';">
+    <form id="contact-form">
       <label for="name" style="display:none;">Name</label>
       <input type="text" id="name" name="name" placeholder="Your name" required>
 
@@ -121,7 +121,8 @@
       <label for="message" style="display:none;">Message</label>
       <textarea id="message" name="message" placeholder="Your message" required></textarea>
 
-      <button type="submit">Send Message</button>
+      <button type="submit" id="submit-btn">Send Message</button>
+      <div id="form-status" style="display:none;margin-top:16px;"></div>
     </form>
   </section>
 </main>
@@ -176,6 +177,53 @@ document.querySelector('.menu').addEventListener('click', function() {
   panel.classList.toggle('open');
   this.setAttribute('aria-expanded', panel.classList.contains('open'));
 });
+</script>
+
+<!-- Secure Serverless Contact Form Submission -->
+<script>
+  const contactForm = document.getElementById('contact-form');
+  const submitBtn = document.getElementById('submit-btn');
+  const formStatus = document.getElementById('form-status');
+
+  contactForm.addEventListener('submit', async (e) => {
+    e.preventDefault();
+    submitBtn.disabled = true;
+    submitBtn.innerText = 'Sending message...';
+    formStatus.style.display = 'none';
+
+    const payload = {
+      name: document.getElementById('name').value.trim(),
+      email: document.getElementById('email').value.trim(),
+      subject: document.getElementById('subject').value.trim(),
+      message: document.getElementById('message').value.trim()
+    };
+
+    try {
+      const response = await fetch('/api/contact', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload)
+      });
+
+      const result = await response.json();
+
+      if (response.ok && result.success) {
+        contactForm.reset();
+        submitBtn.disabled = false;
+        submitBtn.innerText = 'Send Message';
+        formStatus.innerHTML = '<div style="background:#e6f4ea;color:#137333;border:1px solid #ceead6;padding:14px 18px;border-radius:6px;font-weight:500;">✓ Thank you! Your message has been received by our editorial team.</div>';
+        formStatus.style.display = 'block';
+      } else {
+        throw new Error(result.error || 'Server error');
+      }
+    } catch (err) {
+      console.error("Contact submission error:", err);
+      submitBtn.disabled = false;
+      submitBtn.innerText = 'Send Message';
+      formStatus.innerHTML = '<div style="background:#fce8e6;color:#c5221f;border:1px solid #fad2cf;padding:14px 18px;border-radius:6px;">Unable to submit at this moment. Please email our team directly at <a href="mailto:contact@clarified.co.za" style="color:#c5221f;text-decoration:underline;font-weight:600;">contact@clarified.co.za</a>.</div>';
+      formStatus.style.display = 'block';
+    }
+  });
 </script>
 </body>
 </html>

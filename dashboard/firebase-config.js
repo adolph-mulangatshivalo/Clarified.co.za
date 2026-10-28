@@ -2,7 +2,7 @@
 // Replace the values below with your Firebase project configuration:
 // Firebase Console (https://console.firebase.google.com/) -> Project Settings -> General -> Your apps -> Web app
 export const firebaseConfig = {
-    apiKey: "AIzaSyBwNSi_ROjHpNBTlT1MjDouEMQAKeyE4cg",
+    apiKey: (typeof window !== 'undefined' && window.__FIREBASE_API_KEY__) || "YOUR_FIREBASE_API_KEY",
     authDomain: "clarigit-ce50e.firebaseapp.com",
     projectId: "clarigit-ce50e",
     storageBucket: "clarigit-ce50e.firebasestorage.app",
