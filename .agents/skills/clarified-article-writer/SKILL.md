@@ -189,6 +189,7 @@ To rank #1 on Google and achieve high Click-Through Rates (CTR), follow these pr
   2. The previous 1st `hero_side` card shifts into `hero_side` (card 2, lower side position).
   3. The previous 2nd `hero_side` card shifts down into `latest` (Latest Articles grid).
   4. Older articles in `latest` shift down into the standard archive feed.
+* **Balanced Business & Sport Split (No Blank Spots):** The homepage Business (`#business-grid`) and Sport (`#sport-grid`) sections use a 2-column `.small-grid` layout. Both sections MUST always be populated with exactly 2 cards each so the grid is completely balanced and never renders awkward blank white space.
 * **Zero Manual Layout Work Needed:** Every publication shifts the homepage seamlessly, guaranteeing that visitors always see the freshest content front-and-centre.
 
 ---

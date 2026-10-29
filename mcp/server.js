@@ -345,8 +345,8 @@ function resolveHomepageSlots(published) {
         latest: [],
         mustRead: [],
         editorsPick: null,
-        business: null,
-        sport: null,
+        business: [],
+        sport: [],
         briefTicker: (published || []).slice(0, 8)
     };
 
@@ -383,17 +383,17 @@ function resolveHomepageSlots(published) {
         shown.add(a.id);
     });
 
-    const explicitBusiness = published.find(a => !shown.has(a.id) && a.homepagePlacement === 'business');
-    if (explicitBusiness) {
-        slots.business = explicitBusiness;
-        shown.add(explicitBusiness.id);
-    }
+    const explicitBusiness = published.filter(a => !shown.has(a.id) && a.homepagePlacement === 'business').slice(0, 2);
+    explicitBusiness.forEach(a => {
+        slots.business.push(a);
+        shown.add(a.id);
+    });
 
-    const explicitSport = published.find(a => !shown.has(a.id) && a.homepagePlacement === 'sport');
-    if (explicitSport) {
-        slots.sport = explicitSport;
-        shown.add(explicitSport.id);
-    }
+    const explicitSport = published.filter(a => !shown.has(a.id) && a.homepagePlacement === 'sport').slice(0, 2);
+    explicitSport.forEach(a => {
+        slots.sport.push(a);
+        shown.add(a.id);
+    });
 
     // Helper to find available unassigned articles
     function getAvailable() {
@@ -456,22 +456,30 @@ function resolveHomepageSlots(published) {
         }
     }
 
-    if (!slots.business) {
-        let bus = getAvailable().find(a => a.category && a.category.split(',').some(c => c.trim().toLowerCase().replace(/[^a-z0-9]+/g, '-') === 'business'));
-        if (!bus) bus = published.find(a => a.category && a.category.split(',').some(c => c.trim().toLowerCase().replace(/[^a-z0-9]+/g, '-') === 'business'));
-        if (bus) {
-            slots.business = bus;
-            shown.add(bus.id);
+    if (slots.business.length < 2) {
+        const needed = 2 - slots.business.length;
+        let bus = getAvailable().filter(a => a.category && a.category.split(',').some(c => c.trim().toLowerCase().replace(/[^a-z0-9]+/g, '-') === 'business')).slice(0, needed);
+        if (bus.length < needed) {
+            const allBus = published.filter(a => a.category && a.category.split(',').some(c => c.trim().toLowerCase().replace(/[^a-z0-9]+/g, '-') === 'business') && !slots.business.some(b => b.id === a.id));
+            bus = bus.concat(allBus.slice(0, needed - bus.length));
         }
+        bus.forEach(a => {
+            slots.business.push(a);
+            shown.add(a.id);
+        });
     }
 
-    if (!slots.sport) {
-        let sp = getAvailable().find(a => a.category && a.category.split(',').some(c => c.trim().toLowerCase().replace(/[^a-z0-9]+/g, '-') === 'sport'));
-        if (!sp) sp = published.find(a => a.category && a.category.split(',').some(c => c.trim().toLowerCase().replace(/[^a-z0-9]+/g, '-') === 'sport'));
-        if (sp) {
-            slots.sport = sp;
-            shown.add(sp.id);
+    if (slots.sport.length < 2) {
+        const needed = 2 - slots.sport.length;
+        let sp = getAvailable().filter(a => a.category && a.category.split(',').some(c => c.trim().toLowerCase().replace(/[^a-z0-9]+/g, '-') === 'sport')).slice(0, needed);
+        if (sp.length < needed) {
+            const allSport = published.filter(a => a.category && a.category.split(',').some(c => c.trim().toLowerCase().replace(/[^a-z0-9]+/g, '-') === 'sport') && !slots.sport.some(s => s.id === a.id));
+            sp = sp.concat(allSport.slice(0, needed - sp.length));
         }
+        sp.forEach(a => {
+            slots.sport.push(a);
+            shown.add(a.id);
+        });
     }
 
     return slots;
@@ -780,12 +788,12 @@ ${JSON.stringify(jsonLd, null, 2)}
                 idx = idx.replace(/<section class="container section" id="editors-pick-section"[^>]*>[\s\S]*?<\/section>/, epHtml);
             }
 
-            // 6. Business & Sport
-            if (slots.business) {
-                idx = idx.replace(/<div class="small-grid" id="business-grid">[\s\S]*?<\/div>/, `<div class="small-grid" id="business-grid">\n${cardHTML(slots.business)}\n</div>`);
+            // 6. Business & Sport (Fills 2 cards each to eliminate blank space in the 2-column grid)
+            if (slots.business && slots.business.length) {
+                idx = idx.replace(/<div class="small-grid" id="business-grid">[\s\S]*?<\/div>/, `<div class="small-grid" id="business-grid">\n${slots.business.map(cardHTML).join('\n')}\n</div>`);
             }
-            if (slots.sport) {
-                idx = idx.replace(/<div class="small-grid" id="sport-grid">[\s\S]*?<\/div>/, `<div class="small-grid" id="sport-grid">\n${cardHTML(slots.sport)}\n</div>`);
+            if (slots.sport && slots.sport.length) {
+                idx = idx.replace(/<div class="small-grid" id="sport-grid">[\s\S]*?<\/div>/, `<div class="small-grid" id="sport-grid">\n${slots.sport.map(cardHTML).join('\n')}\n</div>`);
             }
         }
 
@@ -1382,8 +1390,8 @@ function handleGetHomepageLayout() {
         latestArticles: slots.latest.map(formatArticleSummary),
         mustRead: slots.mustRead.map(formatArticleSummary),
         editorsPick: formatArticleSummary(slots.editorsPick),
-        businessSpotlight: formatArticleSummary(slots.business),
-        sportSpotlight: formatArticleSummary(slots.sport),
+        businessSpotlight: Array.isArray(slots.business) ? slots.business.map(formatArticleSummary) : formatArticleSummary(slots.business),
+        sportSpotlight: Array.isArray(slots.sport) ? slots.sport.map(formatArticleSummary) : formatArticleSummary(slots.sport),
         briefTicker: (slots.briefTicker || []).map(formatArticleSummary),
         availablePublishedArticles: published.map(a => ({
             id: a.id,

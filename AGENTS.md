@@ -58,3 +58,4 @@ Welcome to the **Clarified.co.za** codebase and publishing platform. Clarified i
 * Run `detect_duplicates` to prevent keyword cannibalization or slug collisions.
 * Run `validate_article_quality` before publishing.
 * **Automatic Top Story & Cascading Placement:** Every newly published article must ALWAYS lead as `top_story` (the main Hero card at the top of the homepage). When a new article is published, the previous `top_story` automatically shifts to `hero_side` (card 1), the previous `hero_side` card 1 shifts to `hero_side` (card 2), and the previous `hero_side` card 2 shifts down into `latest`. The newest story must ALWAYS lead the homepage without getting buried.
+* **Balanced Split Grids (No Blank Spots):** The homepage Business and Sport sections use a 2-column `.small-grid` layout. Both sections must always display 2 articles each so no blank or empty space appears on the right side of either section.

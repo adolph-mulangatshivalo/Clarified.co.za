@@ -483,20 +483,25 @@ ${absoluteImg ? `<meta name="twitter:image" content="${absoluteImg}">` : ''}
                 idx = idx.replace(/<section class="container section" id="editors-pick-section"[^>]*>[\s\S]*?<\/section>/, epHtml);
             }
 
-            // Business & Sport
-            let business = published.find(a => !shown.has(a.id) && a.category && a.category.split(',').some(c => c.trim().toLowerCase().replace(/[^a-z0-9]+/g, '-') === 'business'));
-            if (!business) business = published.find(a => a.category && a.category.split(',').some(c => c.trim().toLowerCase().replace(/[^a-z0-9]+/g, '-') === 'business'));
-
-            let sport = published.find(a => !shown.has(a.id) && a.category && a.category.split(',').some(c => c.trim().toLowerCase().replace(/[^a-z0-9]+/g, '-') === 'sport'));
-            if (!sport) sport = published.find(a => a.category && a.category.split(',').some(c => c.trim().toLowerCase().replace(/[^a-z0-9]+/g, '-') === 'sport'));
-
-            if (business) {
-                shown.add(business.id);
-                idx = idx.replace(/<div class="small-grid" id="business-grid">[\s\S]*?<\/div>/, `<div class="small-grid" id="business-grid">\n${cardHTML(business)}\n</div>`);
+            // Business & Sport (Populate 2 cards each to eliminate blank space)
+            let busArticles = published.filter(a => !shown.has(a.id) && a.category && a.category.split(',').some(c => c.trim().toLowerCase().replace(/[^a-z0-9]+/g, '-') === 'business')).slice(0, 2);
+            if (busArticles.length < 2) {
+                const extra = published.filter(a => a.category && a.category.split(',').some(c => c.trim().toLowerCase().replace(/[^a-z0-9]+/g, '-') === 'business') && !busArticles.some(b => b.id === a.id)).slice(0, 2 - busArticles.length);
+                busArticles = busArticles.concat(extra);
             }
-            if (sport) {
-                shown.add(sport.id);
-                idx = idx.replace(/<div class="small-grid" id="sport-grid">[\s\S]*?<\/div>/, `<div class="small-grid" id="sport-grid">\n${cardHTML(sport)}\n</div>`);
+            if (busArticles.length) {
+                busArticles.forEach(a => shown.add(a.id));
+                idx = idx.replace(/<div class="small-grid" id="business-grid">[\s\S]*?<\/div>/, `<div class="small-grid" id="business-grid">\n${busArticles.map(cardHTML).join('\n')}\n</div>`);
+            }
+
+            let sportArticles = published.filter(a => !shown.has(a.id) && a.category && a.category.split(',').some(c => c.trim().toLowerCase().replace(/[^a-z0-9]+/g, '-') === 'sport')).slice(0, 2);
+            if (sportArticles.length < 2) {
+                const extra = published.filter(a => a.category && a.category.split(',').some(c => c.trim().toLowerCase().replace(/[^a-z0-9]+/g, '-') === 'sport') && !sportArticles.some(s => s.id === a.id)).slice(0, 2 - sportArticles.length);
+                sportArticles = sportArticles.concat(extra);
+            }
+            if (sportArticles.length) {
+                sportArticles.forEach(a => shown.add(a.id));
+                idx = idx.replace(/<div class="small-grid" id="sport-grid">[\s\S]*?<\/div>/, `<div class="small-grid" id="sport-grid">\n${sportArticles.map(cardHTML).join('\n')}\n</div>`);
             }
         }
         
