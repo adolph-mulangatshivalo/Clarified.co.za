@@ -15,7 +15,7 @@
       "imgAlt": "South African professional footballers in action during a high-stakes match on a sunny stadium pitch",
       "featuredImage": "/images/rise-of-south-african-football.jpg",
       "status": "published",
-      "homepagePlacement": "sport",
+      "homepagePlacement": "latest",
       "date": 1793312832159
     },
     {
@@ -33,7 +33,7 @@
       "imgAlt": "South African university students checking bursary and funding application portals on campus",
       "featuredImage": "/images/bursaries-still-open-south-africa.jpg",
       "status": "published",
-      "homepagePlacement": "top_story",
+      "homepagePlacement": "hero_side",
       "date": 1793200201556
     },
     {
@@ -51,7 +51,7 @@
       "imgAlt": "Diverse South African university students celebrating their graduation and career opportunities on campus",
       "featuredImage": "images/highest-employment-degrees-south-africa.jpg",
       "status": "published",
-      "homepagePlacement": "standard",
+      "homepagePlacement": "latest",
       "date": 1792601502371
     },
     {
@@ -96,7 +96,7 @@
       "indexing": "index",
       "followLinks": "follow",
       "articleType": "Article",
-      "homepagePlacement": "standard"
+      "homepagePlacement": "latest"
     },
     {
       "id": "403",
@@ -117,7 +117,8 @@
       "imgAlt": "Which Degrees Lead to the Highest-Paying Jobs in South Africa? 2026 Guide",
       "indexing": "index",
       "followLinks": "follow",
-      "articleType": "Article"
+      "articleType": "Article",
+      "homepagePlacement": "latest"
     },
     {
       "id": "399",
@@ -202,7 +203,8 @@
       "imgAlt": "Highest-paying engineering jobs in South Africa",
       "indexing": "index",
       "followLinks": "follow",
-      "articleType": "Article"
+      "articleType": "Article",
+      "homepagePlacement": "hero_side"
     },
     {
       "id": "324",
@@ -351,7 +353,8 @@
       "imgAlt": "Springboks rugby match under golden skies",
       "indexing": "index",
       "followLinks": "follow",
-      "articleType": "Article"
+      "articleType": "Article",
+      "homepagePlacement": "sport"
     },
     {
       "id": "225",
