@@ -68,10 +68,20 @@
     <priority>0.7</priority>
   </url>
   <url>
-    <loc>https://clarified.co.za/articles/rise-of-south-african-football.html</loc>
+    <loc>https://clarified.co.za/articles/start-business-r500-south-africa.html</loc>
     <lastmod>2026-10-29</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.9</priority>
+    <image:image>
+      <image:loc>https://clarified.co.za/images/start-business-r500-south-africa.jpg</image:loc>
+      <image:title>Starting a Business in South Africa With Just R500: Is It Actually Possible?</image:title>
+    </image:image>
+  </url>
+  <url>
+    <loc>https://clarified.co.za/articles/rise-of-south-african-football.html</loc>
+    <lastmod>2026-10-29</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
     <image:image>
       <image:loc>https://clarified.co.za/images/rise-of-south-african-football.jpg</image:loc>
       <image:title>The Rise of South African Football: Are We Becoming a Global Force?</image:title>
