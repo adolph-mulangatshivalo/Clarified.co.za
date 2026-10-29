@@ -182,6 +182,15 @@ To rank #1 on Google and achieve high Click-Through Rates (CTR), follow these pr
   * All 10 category hub pages.
 * `robots.txt` must explicitly allow articles, images, and category pages while disallowing `/dashboard/` and `/api/` to maximize Googlebot crawl budget.
 
+### 6. Automated Homepage Hero & Cascading Placement
+* **New Articles Must Always Lead the Homepage:** The latest published article must ALWAYS be assigned `homepagePlacement: 'top_story'` to take the main Hero spot at the very top of `clarified.co.za`. Never leave a newly published article buried in `standard` or category-only feeds.
+* **Automatic Cascading Shift:** Whenever a new article takes `top_story`, the system automatically cascades existing homepage articles down:
+  1. The previous `top_story` shifts into `hero_side` (card 1, top side position).
+  2. The previous 1st `hero_side` card shifts into `hero_side` (card 2, lower side position).
+  3. The previous 2nd `hero_side` card shifts down into `latest` (Latest Articles grid).
+  4. Older articles in `latest` shift down into the standard archive feed.
+* **Zero Manual Layout Work Needed:** Every publication shifts the homepage seamlessly, guaranteeing that visitors always see the freshest content front-and-centre.
+
 ---
 
 ## 7. Pre-Flight Quality Gate Checklist
@@ -199,4 +208,4 @@ Before publishing any article live to Clarified.co.za, run this checklist:
 9. [ ] **SEO Meta:** Title under 60 chars, meta description under 155 chars, keyword present in first 100 words.
 10. [ ] **Image & Alt Text:** Realistic editorial photo with descriptive `imgAlt`.
 11. [ ] **Quality Gate Pass:** Passed `validate_article_quality`.
-12. [ ] **Homepage Curation:** Assigned appropriate `homepagePlacement` (`top_story`, `editors_pick`, `must_read`, etc.) and confirmed static compilation of `index.html` and `sitemap.xml`.
+12. [ ] **Homepage Hero & Shift:** Default to `top_story` so the newest article leads the homepage hero, automatically shifting previous articles to `hero_side` and `latest`. Confirmed static compilation of `index.html` and `sitemap.xml`.

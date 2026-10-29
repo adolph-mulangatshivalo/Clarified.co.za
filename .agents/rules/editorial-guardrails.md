@@ -45,7 +45,7 @@ Whenever researching, drafting, editing, or publishing content for Clarified.co.
 * **Sitemap Auto-Update**: Ensure `sitemap.xml` is regenerated with `<lastmod>` ISO dates, `<priority>` ratings, image tags, and category hub pages.
 * **Robots.txt Crawl Efficiency**: Ensure `robots.txt` whitelists content while disallowing `/dashboard/` and `/api/` to maximize Googlebot crawl budget.
 
-## 7. Pre-Flight Quality Gate & Homepage Placement
+## 7. Pre-Flight Quality Gate & Automated Homepage Cascading
 * Run `detect_duplicates` to prevent keyword cannibalization or slug collisions.
 * Run `validate_article_quality` before publishing.
-* Assign explicit `homepagePlacement` (`top_story`, `editors_pick`, `must_read`, etc.) to keep the homepage freshly curated.
+* **Automatic Top Story & Cascading Placement:** Every newly published article must ALWAYS lead as `top_story` (the main Hero card at the top of the homepage). When a new article is published, the previous `top_story` automatically shifts to `hero_side` (card 1), the previous `hero_side` card 1 shifts to `hero_side` (card 2), and the previous `hero_side` card 2 shifts down into `latest`. The newest story must ALWAYS lead the homepage without getting buried.

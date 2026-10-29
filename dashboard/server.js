@@ -31,6 +31,48 @@ function readingTime(content) {
     return Math.max(1, Math.round(words / 200));
 }
 
+function shiftHomepageArticles(articles, currentArticleId, newPlacement) {
+    if (!Array.isArray(articles)) return;
+
+    if (newPlacement === 'top_story') {
+        const previousTopStory = articles.find(a => String(a.id) !== String(currentArticleId) && a.homepagePlacement === 'top_story');
+        const existingHeroSide = articles
+            .filter(a => String(a.id) !== String(currentArticleId) && a.homepagePlacement === 'hero_side')
+            .sort((a, b) => (b.date || 0) - (a.date || 0));
+        const existingLatest = articles
+            .filter(a => String(a.id) !== String(currentArticleId) && a.homepagePlacement === 'latest')
+            .sort((a, b) => (b.date || 0) - (a.date || 0));
+
+        if (previousTopStory) {
+            previousTopStory.homepagePlacement = 'hero_side';
+            existingHeroSide.unshift(previousTopStory);
+        }
+
+        if (existingHeroSide.length > 2) {
+            const overflowHero = existingHeroSide.slice(2);
+            overflowHero.forEach(a => {
+                a.homepagePlacement = 'latest';
+                existingLatest.unshift(a);
+            });
+            existingHeroSide.slice(0, 2).forEach(a => {
+                a.homepagePlacement = 'hero_side';
+            });
+        }
+
+        if (existingLatest.length > 4) {
+            existingLatest.slice(4).forEach(a => {
+                a.homepagePlacement = 'standard';
+            });
+        }
+    } else if (['editors_pick', 'business', 'sport'].includes(newPlacement)) {
+        articles.forEach(a => {
+            if (String(a.id) !== String(currentArticleId) && a.homepagePlacement === newPlacement) {
+                a.homepagePlacement = 'standard';
+            }
+        });
+    }
+}
+
 // ─── Static site regeneration ─────────────────────────────────────────────────
 function regenerateStaticSite() {
     if (mcpEngine && typeof mcpEngine.regenerateSite === 'function') {
@@ -695,15 +737,18 @@ const server = http.createServer(async (req, res) => {
                     updatedAt: Date.now()
                 });
 
-                if (['top_story', 'editors_pick', 'business', 'sport'].includes(article.homepagePlacement)) {
-                    db.articles.forEach(a => {
-                        if (String(a.id) !== String(article.id) && a.homepagePlacement === article.homepagePlacement) {
-                            a.homepagePlacement = 'standard';
-                        }
-                    });
+                if (article.status === 'published') {
+                    if (!article.homepagePlacement || article.homepagePlacement === 'standard') {
+                        article.homepagePlacement = 'top_story';
+                    }
+                    shiftHomepageArticles(db.articles, article.id, article.homepagePlacement);
                 }
             } else {
                 // Create new
+                const placement = (data.status === 'published' && (!data.homepagePlacement || data.homepagePlacement === 'standard'))
+                    ? 'top_story'
+                    : (data.homepagePlacement || 'standard');
+
                 article = {
                     id:       Date.now().toString(),
                     title:    data.title,
@@ -714,7 +759,7 @@ const server = http.createServer(async (req, res) => {
                     tags:     data.tags     || '',
                     slug:     slug,
                     status:   data.status   || 'draft',
-                    homepagePlacement: data.homepagePlacement || 'standard',
+                    homepagePlacement: placement,
                     seoTitle: data.seoTitle || '',
                     metaDesc: data.metaDesc || '',
                     focusKw:  data.focusKw  || '',
@@ -729,12 +774,8 @@ const server = http.createServer(async (req, res) => {
                     updatedAt: Date.now()
                 };
 
-                if (['top_story', 'editors_pick', 'business', 'sport'].includes(article.homepagePlacement)) {
-                    db.articles.forEach(a => {
-                        if (a.homepagePlacement === article.homepagePlacement) {
-                            a.homepagePlacement = 'standard';
-                        }
-                    });
+                if (article.status === 'published') {
+                    shiftHomepageArticles(db.articles, article.id, article.homepagePlacement);
                 }
 
                 db.articles.push(article);

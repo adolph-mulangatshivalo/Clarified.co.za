@@ -477,6 +477,56 @@ function resolveHomepageSlots(published) {
     return slots;
 }
 
+function shiftHomepageArticles(articles, currentArticleId, newPlacement) {
+    if (!Array.isArray(articles)) return;
+
+    if (newPlacement === 'top_story') {
+        // 1. Find existing top_story (not the current article)
+        const previousTopStory = articles.find(a => String(a.id) !== String(currentArticleId) && a.homepagePlacement === 'top_story');
+
+        // 2. Find existing hero_side articles (sorted by date descending)
+        const existingHeroSide = articles
+            .filter(a => String(a.id) !== String(currentArticleId) && a.homepagePlacement === 'hero_side')
+            .sort((a, b) => (b.date || 0) - (a.date || 0));
+
+        // 3. Find existing latest articles (sorted by date descending)
+        const existingLatest = articles
+            .filter(a => String(a.id) !== String(currentArticleId) && a.homepagePlacement === 'latest')
+            .sort((a, b) => (b.date || 0) - (a.date || 0));
+
+        // 4. Shift previous top_story into hero_side (first slot)
+        if (previousTopStory) {
+            previousTopStory.homepagePlacement = 'hero_side';
+            existingHeroSide.unshift(previousTopStory);
+        }
+
+        // 5. If more than 2 in hero_side, the excess shifts down to 'latest'
+        if (existingHeroSide.length > 2) {
+            const overflowHero = existingHeroSide.slice(2);
+            overflowHero.forEach(a => {
+                a.homepagePlacement = 'latest';
+                existingLatest.unshift(a);
+            });
+            existingHeroSide.slice(0, 2).forEach(a => {
+                a.homepagePlacement = 'hero_side';
+            });
+        }
+
+        // 6. If more than 4 in latest, excess shifts down to 'standard'
+        if (existingLatest.length > 4) {
+            existingLatest.slice(4).forEach(a => {
+                a.homepagePlacement = 'standard';
+            });
+        }
+    } else if (['editors_pick', 'business', 'sport'].includes(newPlacement)) {
+        articles.forEach(a => {
+            if (String(a.id) !== String(currentArticleId) && a.homepagePlacement === newPlacement) {
+                a.homepagePlacement = 'standard';
+            }
+        });
+    }
+}
+
 function regenerateSite() {
     const db = getDB();
     const published = (db.articles || [])
@@ -1107,6 +1157,14 @@ function handlePublishArticle(params = {}) {
     const finalSeoTitle = seoTitle || (title.length > 60 ? title.substring(0, 57) + '…' : title);
     const finalMetaDesc = metaDesc || (cleanExcerpt.length > 160 ? cleanExcerpt.substring(0, 157) + '…' : cleanExcerpt);
 
+    let finalPlacement = homepagePlacement;
+    if (status === 'published' && (!finalPlacement || finalPlacement === 'standard')) {
+        finalPlacement = 'top_story';
+    }
+    if (!finalPlacement) {
+        finalPlacement = 'top_story';
+    }
+
     const articleDraft = {
         id,
         title,
@@ -1122,18 +1180,14 @@ function handlePublishArticle(params = {}) {
         imgAlt: imgAlt || title,
         featuredImage,
         status,
-        homepagePlacement: homepagePlacement || 'standard',
+        homepagePlacement: finalPlacement,
         date: id
     };
 
-    // If exclusive placement assigned, clear previous article holding this spot
-    if (['top_story', 'editors_pick', 'business', 'sport'].includes(articleDraft.homepagePlacement)) {
-        (db.articles || []).forEach(a => {
-            if (a.homepagePlacement === articleDraft.homepagePlacement && a.slug !== finalSlug) {
-                a.homepagePlacement = 'standard';
-            }
-        });
-    }
+    // Automatic homepage cascading shift:
+    // When an article is published as top_story, previous top story shifts to hero_side,
+    // and older hero_side stories shift to latest.
+    shiftHomepageArticles(db.articles, id, articleDraft.homepagePlacement);
 
     const qualityGate = runQualityGate(articleDraft, db.articles, isNew);
 
@@ -1201,12 +1255,8 @@ function handleEditArticle(params = {}) {
     const current = db.articles[idx];
     const updatedArticle = { ...current, ...updates };
 
-    if (updates.homepagePlacement && ['top_story', 'editors_pick', 'business', 'sport'].includes(updates.homepagePlacement)) {
-        db.articles.forEach(a => {
-            if (a.id !== updatedArticle.id && a.homepagePlacement === updates.homepagePlacement) {
-                a.homepagePlacement = 'standard';
-            }
-        });
+    if (updates.homepagePlacement) {
+        shiftHomepageArticles(db.articles, updatedArticle.id, updates.homepagePlacement);
     }
 
     let qualityGate = null;
