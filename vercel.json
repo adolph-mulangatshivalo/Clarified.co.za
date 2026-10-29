@@ -3,136 +3,817 @@
   "cleanUrls": true,
   "trailingSlash": false,
   "redirects": [
-    { "source": "/category/editors-pick/:path*", "destination": "/category-editors-pick", "permanent": true },
-    { "source": "/category/editors-pick", "destination": "/category-editors-pick", "permanent": true },
-    { "source": "/editors-pick/:path*", "destination": "/category-editors-pick", "permanent": true },
-    { "source": "/editors-pick", "destination": "/category-editors-pick", "permanent": true },
-    { "source": "/category/editor-pick/:path*", "destination": "/category-editors-pick", "permanent": true },
-    { "source": "/category/editor-pick", "destination": "/category-editors-pick", "permanent": true },
-    { "source": "/editor-pick/:path*", "destination": "/category-editors-pick", "permanent": true },
-    { "source": "/editor-pick", "destination": "/category-editors-pick", "permanent": true },
-    { "source": "/category/editors-picks/:path*", "destination": "/category-editors-pick", "permanent": true },
-    { "source": "/category/editors-picks", "destination": "/category-editors-pick", "permanent": true },
-    { "source": "/editors-picks/:path*", "destination": "/category-editors-pick", "permanent": true },
-    { "source": "/editors-picks", "destination": "/category-editors-pick", "permanent": true },
-    { "source": "/tag/editors-pick/:path*", "destination": "/category-editors-pick", "permanent": true },
-    { "source": "/tag/editors-pick", "destination": "/category-editors-pick", "permanent": true },
-    { "source": "/tag/editor-pick/:path*", "destination": "/category-editors-pick", "permanent": true },
-    { "source": "/tag/editor-pick", "destination": "/category-editors-pick", "permanent": true },
-    { "source": "/tag/editors-picks/:path*", "destination": "/category-editors-pick", "permanent": true },
-    { "source": "/tag/editors-picks", "destination": "/category-editors-pick", "permanent": true },
-
-    { "source": "/category/south-africa/:path*", "destination": "/category-south-africa", "permanent": true },
-    { "source": "/category/south-africa", "destination": "/category-south-africa", "permanent": true },
-    { "source": "/south-africa/:path*", "destination": "/category-south-africa", "permanent": true },
-    { "source": "/south-africa", "destination": "/category-south-africa", "permanent": true },
-
-    { "source": "/category/world/:path*", "destination": "/category-world", "permanent": true },
-    { "source": "/category/world", "destination": "/category-world", "permanent": true },
-    { "source": "/world/:path*", "destination": "/category-world", "permanent": true },
-    { "source": "/world", "destination": "/category-world", "permanent": true },
-
-    { "source": "/category/technology/:path*", "destination": "/category-technology", "permanent": true },
-    { "source": "/category/technology", "destination": "/category-technology", "permanent": true },
-    { "source": "/technology/:path*", "destination": "/category-technology", "permanent": true },
-    { "source": "/technology", "destination": "/category-technology", "permanent": true },
-    { "source": "/category/tech/:path*", "destination": "/category-technology", "permanent": true },
-    { "source": "/category/tech", "destination": "/category-technology", "permanent": true },
-    { "source": "/tech/:path*", "destination": "/category-technology", "permanent": true },
-    { "source": "/tech", "destination": "/category-technology", "permanent": true },
-
-    { "source": "/category/business/:path*", "destination": "/category-business", "permanent": true },
-    { "source": "/category/business", "destination": "/category-business", "permanent": true },
-    { "source": "/business/:path*", "destination": "/category-business", "permanent": true },
-    { "source": "/business", "destination": "/category-business", "permanent": true },
-
-    { "source": "/category/sport/:path*", "destination": "/category-sport", "permanent": true },
-    { "source": "/category/sport", "destination": "/category-sport", "permanent": true },
-    { "source": "/sport/:path*", "destination": "/category-sport", "permanent": true },
-    { "source": "/sport", "destination": "/category-sport", "permanent": true },
-    { "source": "/category/sports/:path*", "destination": "/category-sport", "permanent": true },
-    { "source": "/category/sports", "destination": "/category-sport", "permanent": true },
-    { "source": "/sports/:path*", "destination": "/category-sport", "permanent": true },
-    { "source": "/sports", "destination": "/category-sport", "permanent": true },
-
-    { "source": "/category/education/:path*", "destination": "/category-education", "permanent": true },
-    { "source": "/category/education", "destination": "/category-education", "permanent": true },
-    { "source": "/education/:path*", "destination": "/category-education", "permanent": true },
-    { "source": "/education", "destination": "/category-education", "permanent": true },
-
-    { "source": "/category/genz-youth/:path*", "destination": "/category-genz-youth", "permanent": true },
-    { "source": "/category/genz-youth", "destination": "/category-genz-youth", "permanent": true },
-    { "source": "/genz-youth/:path*", "destination": "/category-genz-youth", "permanent": true },
-    { "source": "/genz-youth", "destination": "/category-genz-youth", "permanent": true },
-    { "source": "/category/genz/:path*", "destination": "/category-genz-youth", "permanent": true },
-    { "source": "/category/genz", "destination": "/category-genz-youth", "permanent": true },
-    { "source": "/genz/:path*", "destination": "/category-genz-youth", "permanent": true },
-    { "source": "/genz", "destination": "/category-genz-youth", "permanent": true },
-
-    { "source": "/category/lifestyle/:path*", "destination": "/category-lifestyle", "permanent": true },
-    { "source": "/category/lifestyle", "destination": "/category-lifestyle", "permanent": true },
-    { "source": "/lifestyle/:path*", "destination": "/category-lifestyle", "permanent": true },
-    { "source": "/lifestyle", "destination": "/category-lifestyle", "permanent": true },
-
-    { "source": "/category/automotive/:path*", "destination": "/category-automotive", "permanent": true },
-    { "source": "/category/automotive", "destination": "/category-automotive", "permanent": true },
-    { "source": "/automotive/:path*", "destination": "/category-automotive", "permanent": true },
-    { "source": "/automotive", "destination": "/category-automotive", "permanent": true },
-    { "source": "/cars/:path*", "destination": "/category-automotive", "permanent": true },
-    { "source": "/cars", "destination": "/category-automotive", "permanent": true },
-
-    { "source": "/category/africa-news/:path*", "destination": "/category-africa-news", "permanent": true },
-    { "source": "/category/africa-news", "destination": "/category-africa-news", "permanent": true },
-    { "source": "/africa-news/:path*", "destination": "/category-africa-news", "permanent": true },
-    { "source": "/africa-news", "destination": "/category-africa-news", "permanent": true },
-    { "source": "/africa/:path*", "destination": "/category-africa-news", "permanent": true },
-    { "source": "/africa", "destination": "/category-africa-news", "permanent": true },
-
-    { "source": "/category/contact/:path*", "destination": "/contact", "permanent": true },
-    { "source": "/category/contact", "destination": "/contact", "permanent": true },
-    { "source": "/contact-us/:path*", "destination": "/contact", "permanent": true },
-    { "source": "/contact-us", "destination": "/contact", "permanent": true },
-
-    { "source": "/category/about/:path*", "destination": "/about", "permanent": true },
-    { "source": "/category/about", "destination": "/about", "permanent": true },
-    { "source": "/about-us/:path*", "destination": "/about", "permanent": true },
-    { "source": "/about-us", "destination": "/about", "permanent": true },
-
-    { "source": "/category/privacy/:path*", "destination": "/privacy", "permanent": true },
-    { "source": "/category/privacy", "destination": "/privacy", "permanent": true },
-    { "source": "/privacy-policy/:path*", "destination": "/privacy", "permanent": true },
-    { "source": "/privacy-policy", "destination": "/privacy", "permanent": true },
-
-    { "source": "/article/:slug", "destination": "/articles/:slug", "permanent": true },
-    { "source": "/article/:slug/", "destination": "/articles/:slug", "permanent": true }
+    {
+      "source": "/category/editors-pick/:path*",
+      "destination": "/category-editors-pick",
+      "permanent": true
+    },
+    {
+      "source": "/category/editors-pick",
+      "destination": "/category-editors-pick",
+      "permanent": true
+    },
+    {
+      "source": "/editors-pick/:path*",
+      "destination": "/category-editors-pick",
+      "permanent": true
+    },
+    {
+      "source": "/editors-pick",
+      "destination": "/category-editors-pick",
+      "permanent": true
+    },
+    {
+      "source": "/category/editor-pick/:path*",
+      "destination": "/category-editors-pick",
+      "permanent": true
+    },
+    {
+      "source": "/category/editor-pick",
+      "destination": "/category-editors-pick",
+      "permanent": true
+    },
+    {
+      "source": "/editor-pick/:path*",
+      "destination": "/category-editors-pick",
+      "permanent": true
+    },
+    {
+      "source": "/editor-pick",
+      "destination": "/category-editors-pick",
+      "permanent": true
+    },
+    {
+      "source": "/category/editors-picks/:path*",
+      "destination": "/category-editors-pick",
+      "permanent": true
+    },
+    {
+      "source": "/category/editors-picks",
+      "destination": "/category-editors-pick",
+      "permanent": true
+    },
+    {
+      "source": "/editors-picks/:path*",
+      "destination": "/category-editors-pick",
+      "permanent": true
+    },
+    {
+      "source": "/editors-picks",
+      "destination": "/category-editors-pick",
+      "permanent": true
+    },
+    {
+      "source": "/tag/editors-pick/:path*",
+      "destination": "/category-editors-pick",
+      "permanent": true
+    },
+    {
+      "source": "/tag/editors-pick",
+      "destination": "/category-editors-pick",
+      "permanent": true
+    },
+    {
+      "source": "/tag/editor-pick/:path*",
+      "destination": "/category-editors-pick",
+      "permanent": true
+    },
+    {
+      "source": "/tag/editor-pick",
+      "destination": "/category-editors-pick",
+      "permanent": true
+    },
+    {
+      "source": "/tag/editors-picks/:path*",
+      "destination": "/category-editors-pick",
+      "permanent": true
+    },
+    {
+      "source": "/tag/editors-picks",
+      "destination": "/category-editors-pick",
+      "permanent": true
+    },
+    {
+      "source": "/category/south-africa/:path*",
+      "destination": "/category-south-africa",
+      "permanent": true
+    },
+    {
+      "source": "/category/south-africa",
+      "destination": "/category-south-africa",
+      "permanent": true
+    },
+    {
+      "source": "/south-africa/:path*",
+      "destination": "/category-south-africa",
+      "permanent": true
+    },
+    {
+      "source": "/south-africa",
+      "destination": "/category-south-africa",
+      "permanent": true
+    },
+    {
+      "source": "/category/world/:path*",
+      "destination": "/category-world",
+      "permanent": true
+    },
+    {
+      "source": "/category/world",
+      "destination": "/category-world",
+      "permanent": true
+    },
+    {
+      "source": "/world/:path*",
+      "destination": "/category-world",
+      "permanent": true
+    },
+    {
+      "source": "/world",
+      "destination": "/category-world",
+      "permanent": true
+    },
+    {
+      "source": "/category/technology/:path*",
+      "destination": "/category-technology",
+      "permanent": true
+    },
+    {
+      "source": "/category/technology",
+      "destination": "/category-technology",
+      "permanent": true
+    },
+    {
+      "source": "/technology/:path*",
+      "destination": "/category-technology",
+      "permanent": true
+    },
+    {
+      "source": "/technology",
+      "destination": "/category-technology",
+      "permanent": true
+    },
+    {
+      "source": "/category/tech/:path*",
+      "destination": "/category-technology",
+      "permanent": true
+    },
+    {
+      "source": "/category/tech",
+      "destination": "/category-technology",
+      "permanent": true
+    },
+    {
+      "source": "/tech/:path*",
+      "destination": "/category-technology",
+      "permanent": true
+    },
+    {
+      "source": "/tech",
+      "destination": "/category-technology",
+      "permanent": true
+    },
+    {
+      "source": "/category/business/:path*",
+      "destination": "/category-business",
+      "permanent": true
+    },
+    {
+      "source": "/category/business",
+      "destination": "/category-business",
+      "permanent": true
+    },
+    {
+      "source": "/business/:path*",
+      "destination": "/category-business",
+      "permanent": true
+    },
+    {
+      "source": "/business",
+      "destination": "/category-business",
+      "permanent": true
+    },
+    {
+      "source": "/category/sport/:path*",
+      "destination": "/category-sport",
+      "permanent": true
+    },
+    {
+      "source": "/category/sport",
+      "destination": "/category-sport",
+      "permanent": true
+    },
+    {
+      "source": "/sport/:path*",
+      "destination": "/category-sport",
+      "permanent": true
+    },
+    {
+      "source": "/sport",
+      "destination": "/category-sport",
+      "permanent": true
+    },
+    {
+      "source": "/category/sports/:path*",
+      "destination": "/category-sport",
+      "permanent": true
+    },
+    {
+      "source": "/category/sports",
+      "destination": "/category-sport",
+      "permanent": true
+    },
+    {
+      "source": "/sports/:path*",
+      "destination": "/category-sport",
+      "permanent": true
+    },
+    {
+      "source": "/sports",
+      "destination": "/category-sport",
+      "permanent": true
+    },
+    {
+      "source": "/category/education/:path*",
+      "destination": "/category-education",
+      "permanent": true
+    },
+    {
+      "source": "/category/education",
+      "destination": "/category-education",
+      "permanent": true
+    },
+    {
+      "source": "/education/:path*",
+      "destination": "/category-education",
+      "permanent": true
+    },
+    {
+      "source": "/education",
+      "destination": "/category-education",
+      "permanent": true
+    },
+    {
+      "source": "/category/genz-youth/:path*",
+      "destination": "/category-genz-youth",
+      "permanent": true
+    },
+    {
+      "source": "/category/genz-youth",
+      "destination": "/category-genz-youth",
+      "permanent": true
+    },
+    {
+      "source": "/genz-youth/:path*",
+      "destination": "/category-genz-youth",
+      "permanent": true
+    },
+    {
+      "source": "/genz-youth",
+      "destination": "/category-genz-youth",
+      "permanent": true
+    },
+    {
+      "source": "/category/genz/:path*",
+      "destination": "/category-genz-youth",
+      "permanent": true
+    },
+    {
+      "source": "/category/genz",
+      "destination": "/category-genz-youth",
+      "permanent": true
+    },
+    {
+      "source": "/genz/:path*",
+      "destination": "/category-genz-youth",
+      "permanent": true
+    },
+    {
+      "source": "/genz",
+      "destination": "/category-genz-youth",
+      "permanent": true
+    },
+    {
+      "source": "/category/lifestyle/:path*",
+      "destination": "/category-lifestyle",
+      "permanent": true
+    },
+    {
+      "source": "/category/lifestyle",
+      "destination": "/category-lifestyle",
+      "permanent": true
+    },
+    {
+      "source": "/lifestyle/:path*",
+      "destination": "/category-lifestyle",
+      "permanent": true
+    },
+    {
+      "source": "/lifestyle",
+      "destination": "/category-lifestyle",
+      "permanent": true
+    },
+    {
+      "source": "/category/automotive/:path*",
+      "destination": "/category-automotive",
+      "permanent": true
+    },
+    {
+      "source": "/category/automotive",
+      "destination": "/category-automotive",
+      "permanent": true
+    },
+    {
+      "source": "/automotive/:path*",
+      "destination": "/category-automotive",
+      "permanent": true
+    },
+    {
+      "source": "/automotive",
+      "destination": "/category-automotive",
+      "permanent": true
+    },
+    {
+      "source": "/cars/:path*",
+      "destination": "/category-automotive",
+      "permanent": true
+    },
+    {
+      "source": "/cars",
+      "destination": "/category-automotive",
+      "permanent": true
+    },
+    {
+      "source": "/category/africa-news/:path*",
+      "destination": "/category-africa-news",
+      "permanent": true
+    },
+    {
+      "source": "/category/africa-news",
+      "destination": "/category-africa-news",
+      "permanent": true
+    },
+    {
+      "source": "/africa-news/:path*",
+      "destination": "/category-africa-news",
+      "permanent": true
+    },
+    {
+      "source": "/africa-news",
+      "destination": "/category-africa-news",
+      "permanent": true
+    },
+    {
+      "source": "/africa/:path*",
+      "destination": "/category-africa-news",
+      "permanent": true
+    },
+    {
+      "source": "/africa",
+      "destination": "/category-africa-news",
+      "permanent": true
+    },
+    {
+      "source": "/category/contact/:path*",
+      "destination": "/contact",
+      "permanent": true
+    },
+    {
+      "source": "/category/contact",
+      "destination": "/contact",
+      "permanent": true
+    },
+    {
+      "source": "/contact-us/:path*",
+      "destination": "/contact",
+      "permanent": true
+    },
+    {
+      "source": "/contact-us",
+      "destination": "/contact",
+      "permanent": true
+    },
+    {
+      "source": "/category/about/:path*",
+      "destination": "/about",
+      "permanent": true
+    },
+    {
+      "source": "/category/about",
+      "destination": "/about",
+      "permanent": true
+    },
+    {
+      "source": "/about-us/:path*",
+      "destination": "/about",
+      "permanent": true
+    },
+    {
+      "source": "/about-us",
+      "destination": "/about",
+      "permanent": true
+    },
+    {
+      "source": "/category/privacy/:path*",
+      "destination": "/privacy",
+      "permanent": true
+    },
+    {
+      "source": "/category/privacy",
+      "destination": "/privacy",
+      "permanent": true
+    },
+    {
+      "source": "/privacy-policy/:path*",
+      "destination": "/privacy",
+      "permanent": true
+    },
+    {
+      "source": "/privacy-policy",
+      "destination": "/privacy",
+      "permanent": true
+    },
+    {
+      "source": "/article/:slug",
+      "destination": "/articles/:slug",
+      "permanent": true
+    },
+    {
+      "source": "/article/:slug/",
+      "destination": "/articles/:slug",
+      "permanent": true
+    },
+    {
+      "source": "/sitemap_index.xml",
+      "destination": "/sitemap.xml",
+      "permanent": true
+    },
+    {
+      "source": "/sitemap_index.xml/:path*",
+      "destination": "/sitemap.xml",
+      "permanent": true
+    },
+    {
+      "source": "/category/gen-z-youth/:path*",
+      "destination": "/category-genz-youth",
+      "permanent": true
+    },
+    {
+      "source": "/category/gen-z-youth",
+      "destination": "/category-genz-youth",
+      "permanent": true
+    },
+    {
+      "source": "/highest-paying-by-degree-south-africa/:path*",
+      "destination": "/articles/highest-paying-jobs-by-degree-south-africa",
+      "permanent": true
+    },
+    {
+      "source": "/highest-paying-by-degree-south-africa",
+      "destination": "/articles/highest-paying-jobs-by-degree-south-africa",
+      "permanent": true
+    },
+    {
+      "source": "/highest-paying-degree-south-africa/:path*",
+      "destination": "/articles/highest-paying-jobs-by-degree-south-africa",
+      "permanent": true
+    },
+    {
+      "source": "/highest-paying-degree-south-africa",
+      "destination": "/articles/highest-paying-jobs-by-degree-south-africa",
+      "permanent": true
+    },
+    {
+      "source": "/which-degrees-lead-to-the-highest-paying-jobs-in-south-africa-2026-guide/:path*",
+      "destination": "/articles/highest-paying-jobs-by-degree-south-africa",
+      "permanent": true
+    },
+    {
+      "source": "/which-degrees-lead-to-the-highest-paying-jobs-in-south-africa-2026-guide",
+      "destination": "/articles/highest-paying-jobs-by-degree-south-africa",
+      "permanent": true
+    },
+    {
+      "source": "/how-to-apply-for-bursaries-in-south-africa-legit-websites-and-funding-guide/:path*",
+      "destination": "/articles/how-to-apply-for-bursaries-south-africa",
+      "permanent": true
+    },
+    {
+      "source": "/how-to-apply-for-bursaries-in-south-africa-legit-websites-and-funding-guide",
+      "destination": "/articles/how-to-apply-for-bursaries-south-africa",
+      "permanent": true
+    },
+    {
+      "source": "/7-tech-skills-south-african-companies-want-in-2026/:path*",
+      "destination": "/articles/tech-skills-south-africa-2026",
+      "permanent": true
+    },
+    {
+      "source": "/7-tech-skills-south-african-companies-want-in-2026",
+      "destination": "/articles/tech-skills-south-africa-2026",
+      "permanent": true
+    },
+    {
+      "source": "/start-business-r500-south-africa",
+      "destination": "/articles/start-business-r500-south-africa",
+      "permanent": true
+    },
+    {
+      "source": "/start-business-r500-south-africa/:path*",
+      "destination": "/articles/start-business-r500-south-africa",
+      "permanent": true
+    },
+    {
+      "source": "/rise-of-south-african-football",
+      "destination": "/articles/rise-of-south-african-football",
+      "permanent": true
+    },
+    {
+      "source": "/rise-of-south-african-football/:path*",
+      "destination": "/articles/rise-of-south-african-football",
+      "permanent": true
+    },
+    {
+      "source": "/bursaries-still-open-south-africa",
+      "destination": "/articles/bursaries-still-open-south-africa",
+      "permanent": true
+    },
+    {
+      "source": "/bursaries-still-open-south-africa/:path*",
+      "destination": "/articles/bursaries-still-open-south-africa",
+      "permanent": true
+    },
+    {
+      "source": "/high-demand-degrees-south-africa",
+      "destination": "/articles/high-demand-degrees-south-africa",
+      "permanent": true
+    },
+    {
+      "source": "/high-demand-degrees-south-africa/:path*",
+      "destination": "/articles/high-demand-degrees-south-africa",
+      "permanent": true
+    },
+    {
+      "source": "/how-to-apply-for-bursaries-south-africa",
+      "destination": "/articles/how-to-apply-for-bursaries-south-africa",
+      "permanent": true
+    },
+    {
+      "source": "/how-to-apply-for-bursaries-south-africa/:path*",
+      "destination": "/articles/how-to-apply-for-bursaries-south-africa",
+      "permanent": true
+    },
+    {
+      "source": "/how-to-pass-your-driving-test-in-south-africa",
+      "destination": "/articles/how-to-pass-your-driving-test-in-south-africa",
+      "permanent": true
+    },
+    {
+      "source": "/how-to-pass-your-driving-test-in-south-africa/:path*",
+      "destination": "/articles/how-to-pass-your-driving-test-in-south-africa",
+      "permanent": true
+    },
+    {
+      "source": "/highest-paying-jobs-by-degree-south-africa",
+      "destination": "/articles/highest-paying-jobs-by-degree-south-africa",
+      "permanent": true
+    },
+    {
+      "source": "/highest-paying-jobs-by-degree-south-africa/:path*",
+      "destination": "/articles/highest-paying-jobs-by-degree-south-africa",
+      "permanent": true
+    },
+    {
+      "source": "/bakkie-side-hustles-south-africa",
+      "destination": "/articles/bakkie-side-hustles-south-africa",
+      "permanent": true
+    },
+    {
+      "source": "/bakkie-side-hustles-south-africa/:path*",
+      "destination": "/articles/bakkie-side-hustles-south-africa",
+      "permanent": true
+    },
+    {
+      "source": "/how-your-phone-tracks-you",
+      "destination": "/articles/how-your-phone-tracks-you",
+      "permanent": true
+    },
+    {
+      "source": "/how-your-phone-tracks-you/:path*",
+      "destination": "/articles/how-your-phone-tracks-you",
+      "permanent": true
+    },
+    {
+      "source": "/tech-skills-south-africa-2026",
+      "destination": "/articles/tech-skills-south-africa-2026",
+      "permanent": true
+    },
+    {
+      "source": "/tech-skills-south-africa-2026/:path*",
+      "destination": "/articles/tech-skills-south-africa-2026",
+      "permanent": true
+    },
+    {
+      "source": "/highest-paying-engineering-jobs-south-africa",
+      "destination": "/articles/highest-paying-engineering-jobs-south-africa",
+      "permanent": true
+    },
+    {
+      "source": "/highest-paying-engineering-jobs-south-africa/:path*",
+      "destination": "/articles/highest-paying-engineering-jobs-south-africa",
+      "permanent": true
+    },
+    {
+      "source": "/how-to-pass-matric-maths",
+      "destination": "/articles/how-to-pass-matric-maths",
+      "permanent": true
+    },
+    {
+      "source": "/how-to-pass-matric-maths/:path*",
+      "destination": "/articles/how-to-pass-matric-maths",
+      "permanent": true
+    },
+    {
+      "source": "/why-chinese-cars-are-popular-in-south-africa",
+      "destination": "/articles/why-chinese-cars-are-popular-in-south-africa",
+      "permanent": true
+    },
+    {
+      "source": "/why-chinese-cars-are-popular-in-south-africa/:path*",
+      "destination": "/articles/why-chinese-cars-are-popular-in-south-africa",
+      "permanent": true
+    },
+    {
+      "source": "/master-ai-in-south-africa",
+      "destination": "/articles/master-ai-in-south-africa",
+      "permanent": true
+    },
+    {
+      "source": "/master-ai-in-south-africa/:path*",
+      "destination": "/articles/master-ai-in-south-africa",
+      "permanent": true
+    },
+    {
+      "source": "/why-petrol-prices-increase-south-africa",
+      "destination": "/articles/why-petrol-prices-increase-south-africa",
+      "permanent": true
+    },
+    {
+      "source": "/why-petrol-prices-increase-south-africa/:path*",
+      "destination": "/articles/why-petrol-prices-increase-south-africa",
+      "permanent": true
+    },
+    {
+      "source": "/bursaries-for-matriculants-2026",
+      "destination": "/articles/bursaries-for-matriculants-2026",
+      "permanent": true
+    },
+    {
+      "source": "/bursaries-for-matriculants-2026/:path*",
+      "destination": "/articles/bursaries-for-matriculants-2026",
+      "permanent": true
+    },
+    {
+      "source": "/eskom-data-centres-surplus-power",
+      "destination": "/articles/eskom-data-centres-surplus-power",
+      "permanent": true
+    },
+    {
+      "source": "/eskom-data-centres-surplus-power/:path*",
+      "destination": "/articles/eskom-data-centres-surplus-power",
+      "permanent": true
+    },
+    {
+      "source": "/springboks-vs-all-blacks-22-august-2026",
+      "destination": "/articles/springboks-vs-all-blacks-22-august-2026",
+      "permanent": true
+    },
+    {
+      "source": "/springboks-vs-all-blacks-22-august-2026/:path*",
+      "destination": "/articles/springboks-vs-all-blacks-22-august-2026",
+      "permanent": true
+    },
+    {
+      "source": "/mamelodi-sundowns-vs-marumo-gallants-19-august-2026",
+      "destination": "/articles/mamelodi-sundowns-vs-marumo-gallants-19-august-2026",
+      "permanent": true
+    },
+    {
+      "source": "/mamelodi-sundowns-vs-marumo-gallants-19-august-2026/:path*",
+      "destination": "/articles/mamelodi-sundowns-vs-marumo-gallants-19-august-2026",
+      "permanent": true
+    },
+    {
+      "source": "/mtn-ai-job-board-africa-youth-2026",
+      "destination": "/articles/mtn-ai-job-board-africa-youth-2026",
+      "permanent": true
+    },
+    {
+      "source": "/mtn-ai-job-board-africa-youth-2026/:path*",
+      "destination": "/articles/mtn-ai-job-board-africa-youth-2026",
+      "permanent": true
+    },
+    {
+      "source": "/sadc-summit-durban-2026",
+      "destination": "/articles/sadc-summit-durban-2026",
+      "permanent": true
+    },
+    {
+      "source": "/sadc-summit-durban-2026/:path*",
+      "destination": "/articles/sadc-summit-durban-2026",
+      "permanent": true
+    },
+    {
+      "source": "/dstv-premium-channel-cuts-september-2026",
+      "destination": "/articles/dstv-premium-channel-cuts-september-2026",
+      "permanent": true
+    },
+    {
+      "source": "/dstv-premium-channel-cuts-september-2026/:path*",
+      "destination": "/articles/dstv-premium-channel-cuts-september-2026",
+      "permanent": true
+    },
+    {
+      "source": "/colombia-earthquake-2026-update",
+      "destination": "/articles/colombia-earthquake-2026-update",
+      "permanent": true
+    },
+    {
+      "source": "/colombia-earthquake-2026-update/:path*",
+      "destination": "/articles/colombia-earthquake-2026-update",
+      "permanent": true
+    },
+    {
+      "source": "/ts-galaxy-2-3-mamelodi-sundowns-mkhulise-late-brace-ends-mbombela-hoodoo",
+      "destination": "/articles/ts-galaxy-2-3-mamelodi-sundowns-mkhulise-late-brace-ends-mbombela-hoodoo",
+      "permanent": true
+    },
+    {
+      "source": "/ts-galaxy-2-3-mamelodi-sundowns-mkhulise-late-brace-ends-mbombela-hoodoo/:path*",
+      "destination": "/articles/ts-galaxy-2-3-mamelodi-sundowns-mkhulise-late-brace-ends-mbombela-hoodoo",
+      "permanent": true
+    }
   ],
   "rewrites": [
-    { "source": "/login", "destination": "/dashboard/login" },
-    { "source": "/login/", "destination": "/dashboard/login" },
-    { "source": "/dashboard", "destination": "/dashboard/index.html" },
-    { "source": "/dashboard/", "destination": "/dashboard/index.html" },
-    { "source": "/Clarified%20Dashboard/:path*", "destination": "/dashboard/:path*" },
-    { "source": "/Clarified Dashboard/:path*", "destination": "/dashboard/:path*" }
+    {
+      "source": "/login",
+      "destination": "/dashboard/login"
+    },
+    {
+      "source": "/login/",
+      "destination": "/dashboard/login"
+    },
+    {
+      "source": "/dashboard",
+      "destination": "/dashboard/index.html"
+    },
+    {
+      "source": "/dashboard/",
+      "destination": "/dashboard/index.html"
+    },
+    {
+      "source": "/Clarified%20Dashboard/:path*",
+      "destination": "/dashboard/:path*"
+    },
+    {
+      "source": "/Clarified Dashboard/:path*",
+      "destination": "/dashboard/:path*"
+    }
   ],
   "headers": [
     {
       "source": "/(.*)",
       "headers": [
-        { "key": "X-Content-Type-Options", "value": "nosniff" },
-        { "key": "X-Frame-Options", "value": "DENY" },
-        { "key": "X-XSS-Protection", "value": "1; mode=block" }
+        {
+          "key": "X-Content-Type-Options",
+          "value": "nosniff"
+        },
+        {
+          "key": "X-Frame-Options",
+          "value": "DENY"
+        },
+        {
+          "key": "X-XSS-Protection",
+          "value": "1; mode=block"
+        }
       ]
     },
     {
       "source": "/images/(.*)",
       "headers": [
-        { "key": "Cache-Control", "value": "public, max-age=31536000, immutable" }
+        {
+          "key": "Cache-Control",
+          "value": "public, max-age=31536000, immutable"
+        }
       ]
     },
     {
       "source": "/(style\\.css|js/.*|dashboard/css/.*)",
       "headers": [
-        { "key": "Cache-Control", "value": "public, max-age=0, must-revalidate" }
+        {
+          "key": "Cache-Control",
+          "value": "public, max-age=0, must-revalidate"
+        }
       ]
     }
   ]

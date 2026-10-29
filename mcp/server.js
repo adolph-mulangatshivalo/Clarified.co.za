@@ -305,7 +305,7 @@ function normalizeTables(html) {
 // ── Static Site Regeneration ─────────────────────────────────────────────────
 function articleUrl(a) {
     const slug = a.slug || generateSlug(a.title);
-    return `/articles/${slug}.html`;
+    return `/articles/${slug}`;
 }
 
 function formatExcerpt(text, maxLength = 120) {
@@ -615,15 +615,15 @@ function regenerateSite() {
     <div class="article-share">
       <strong>Share this article</strong>
       <div class="share-buttons">
-        <a class="share-btn share-whatsapp" href="https://api.whatsapp.com/send?text=${encodeURIComponent(a.title)}%20${encodeURIComponent('https://clarified.co.za/articles/' + slug + '.html')}" target="_blank" rel="noopener noreferrer" aria-label="Share on WhatsApp">
+        <a class="share-btn share-whatsapp" href="https://api.whatsapp.com/send?text=${encodeURIComponent(a.title)}%20${encodeURIComponent('https://clarified.co.za/articles/' + slug)}" target="_blank" rel="noopener noreferrer" aria-label="Share on WhatsApp">
           <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor" style="width:16px;height:16px;max-width:16px;max-height:16px;display:inline-block;vertical-align:middle;flex-shrink:0;"><path d="M.057 24l1.687-6.163c-1.041-1.804-1.588-3.849-1.587-5.946.003-6.556 5.338-11.891 11.893-11.891 3.181.001 6.167 1.24 8.413 3.488 2.245 2.248 3.481 5.236 3.48 8.414-.003 6.557-5.338 11.892-11.893 11.892-1.99-.001-3.951-.5-5.688-1.448l-6.305 1.654zm6.597-3.807c1.676.995 3.276 1.591 5.392 1.592 5.448 0 9.886-4.434 9.889-9.885.002-5.462-4.415-9.89-9.881-9.892-5.452 0-9.887 4.434-9.889 9.884-.001 2.225.651 3.891 1.746 5.634l-.999 3.648 3.742-.981zm11.387-5.464c-.074-.124-.272-.198-.57-.347-.297-.149-1.758-.868-2.031-.967-.272-.099-.47-.149-.669.149-.198.297-.768.967-.941 1.165-.173.198-.347.223-.644.074-.297-.149-1.255-.462-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.297-.347.446-.521.151-.172.2-.296.3-.495.099-.198.05-.372-.025-.521-.075-.148-.669-1.611-.916-2.206-.242-.579-.487-.501-.669-.51l-.57-.01c-.198 0-.52.074-.792.372s-1.04 1.016-1.04 2.479 1.065 2.876 1.213 3.074c.149.198 2.095 3.2 5.076 4.487.709.306 1.263.489 1.694.626.712.226 1.36.194 1.872.118.571-.085 1.758-.719 2.006-1.413.248-.695.248-1.29.173-1.414z"/></svg>
           <span>WhatsApp</span>
         </a>
-        <a class="share-btn share-facebook" href="https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent('https://clarified.co.za/articles/' + slug + '.html')}" target="_blank" rel="noopener noreferrer" aria-label="Share on Facebook">
+        <a class="share-btn share-facebook" href="https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent('https://clarified.co.za/articles/' + slug)}" target="_blank" rel="noopener noreferrer" aria-label="Share on Facebook">
           <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor" style="width:16px;height:16px;max-width:16px;max-height:16px;display:inline-block;vertical-align:middle;flex-shrink:0;"><path d="M13.5 21v-7.5h2.5l.5-3h-3V8.5c0-.9.3-1.5 1.6-1.5H16.5V4.3c-.3 0-1.3-.1-2.4-.1-2.4 0-4.1 1.5-4.1 4.2V10.5H7.5v3H10V21h3.5z"/></svg>
           <span>Facebook</span>
         </a>
-        <a class="share-btn share-twitter" href="https://twitter.com/intent/tweet?url=${encodeURIComponent('https://clarified.co.za/articles/' + slug + '.html')}&text=${encodeURIComponent(a.title)}" target="_blank" rel="noopener noreferrer" aria-label="Share on Twitter">
+        <a class="share-btn share-twitter" href="https://twitter.com/intent/tweet?url=${encodeURIComponent('https://clarified.co.za/articles/' + slug)}&text=${encodeURIComponent(a.title)}" target="_blank" rel="noopener noreferrer" aria-label="Share on Twitter">
           <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor" style="width:16px;height:16px;max-width:16px;max-height:16px;display:inline-block;vertical-align:middle;flex-shrink:0;"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></svg>
           <span>Twitter</span>
         </a>
@@ -654,7 +654,7 @@ function regenerateSite() {
         out = out.replace(/href="style\.css"/g, 'href="/style.css?v=2.3"');
         out = out.replace(/href="\/style\.css(?:\?v=[^"]*)?"/g, 'href="/style.css?v=2.3"');
 
-        const absoluteUrl = `https://clarified.co.za/articles/${slug}.html`;
+        const absoluteUrl = `https://clarified.co.za/articles/${slug}`;
         const absoluteImg = resolveAbsoluteImgUrl(a.featuredImage);
         const dateIso = new Date(a.date || Date.now()).toISOString();
         const dateModifiedIso = new Date(a.updatedAt || a.date || Date.now()).toISOString();
@@ -774,7 +774,7 @@ ${JSON.stringify(jsonLd, null, 2)}
             if (slots.editorsPick) {
                 const ep = slots.editorsPick;
                 const epHtml = `<section class="container section" id="editors-pick-section">
-                  <div class="section-head"><div><span class="eyebrow">EDITORIAL</span><h2>Editor's Pick</h2></div><a href="/category-editors-pick.html">View all <span class="ui-arrow">→</span></a></div>
+                  <div class="section-head"><div><span class="eyebrow">EDITORIAL</span><h2>Editor's Pick</h2></div><a href="/category-editors-pick">View all <span class="ui-arrow">→</span></a></div>
                   <article class="editor-pick" id="editors-pick">
                     <img id="ep-img" src="${resolveImgUrl(ep.featuredImage)}" alt="${ep.title}">
                     <div class="editor-content">
@@ -861,16 +861,16 @@ ${JSON.stringify(jsonLd, null, 2)}
 
     const todayDate = new Date().toISOString().split('T')[0];
     const categorySlugs = [
-        'category-south-africa.html',
-        'category-africa-news.html',
-        'category-business.html',
-        'category-technology.html',
-        'category-sport.html',
-        'category-education.html',
-        'category-genz-youth.html',
-        'category-lifestyle.html',
-        'category-automotive.html',
-        'category-world.html'
+        'category-south-africa',
+        'category-africa-news',
+        'category-business',
+        'category-technology',
+        'category-sport',
+        'category-education',
+        'category-genz-youth',
+        'category-lifestyle',
+        'category-automotive',
+        'category-world'
     ];
 
     const sitemapEntries = [
@@ -890,10 +890,10 @@ ${JSON.stringify(jsonLd, null, 2)}
         if (absoluteImg) {
             imgXml = `\n    <image:image>\n      <image:loc>${escapeXml(absoluteImg)}</image:loc>\n      <image:title>${escapeXml(a.title)}</image:title>\n    </image:image>`;
         }
-        sitemapEntries.push(`  <url>\n    <loc>https://clarified.co.za/articles/${slug}.html</loc>\n    <lastmod>${aDate}</lastmod>\n    <changefreq>weekly</changefreq>\n    <priority>${priority}</priority>${imgXml}\n  </url>`);
+        sitemapEntries.push(`  <url>\n    <loc>https://clarified.co.za/articles/${slug}</loc>\n    <lastmod>${aDate}</lastmod>\n    <changefreq>weekly</changefreq>\n    <priority>${priority}</priority>${imgXml}\n  </url>`);
     });
 
-    ['about.html', 'contact.html', 'privacy.html', 'terms.html', 'disclaimer.html'].forEach(page => {
+    ['about', 'contact', 'privacy', 'terms', 'disclaimer'].forEach(page => {
         sitemapEntries.push(`  <url>\n    <loc>https://clarified.co.za/${page}</loc>\n    <lastmod>${todayDate}</lastmod>\n    <changefreq>monthly</changefreq>\n    <priority>0.5</priority>\n  </url>`);
     });
 
@@ -1129,7 +1129,7 @@ function suggestInternalLinks(content, currentSlug = '') {
 }
 
 // ── Tool Handlers ────────────────────────────────────────────────────────────
-function handlePublishArticle(params = {}) {
+async function handlePublishArticle(params = {}) {
     const {
         title,
         content,
@@ -1218,8 +1218,14 @@ function handlePublishArticle(params = {}) {
 
     saveDB(db);
 
+    let searchIndexing = null;
     if (actualStatus === 'published') {
         regenerateSite();
+        try {
+            searchIndexing = await submitToSearchEngines({ slug: articleDraft.slug });
+        } catch (e) {
+            console.error('Search engine submission notice:', e.message);
+        }
     }
 
     const gitResult = syncToGit(`[CMS] ${actualStatus === 'published' ? 'Publish' : 'Draft'}: ${title}`);
@@ -1233,15 +1239,16 @@ function handlePublishArticle(params = {}) {
         homepagePlacement: articleDraft.homepagePlacement,
         downgradedToDraft: Boolean(downgradeReason),
         downgradeReason,
-        url: `https://clarified.co.za/articles/${articleDraft.slug}.html`,
+        url: `https://clarified.co.za/articles/${articleDraft.slug}`,
         localPath: actualStatus === 'published' ? `articles/${articleDraft.slug}.html` : 'Saved in dashboard/db.json (Draft)',
         qualityGate,
         duplicateReport,
-        deployment: gitResult
+        deployment: gitResult,
+        searchIndexing
     };
 }
 
-function handleEditArticle(params = {}) {
+async function handleEditArticle(params = {}) {
     const { id, slug, forcePublish = false, ...updates } = params;
     if (!id && !slug) {
         throw new Error('Please specify an "id" or "slug" to locate the article to edit.');
@@ -1278,8 +1285,14 @@ function handleEditArticle(params = {}) {
     db.articles[idx] = updatedArticle;
     saveDB(db);
 
+    let searchIndexing = null;
     if (updatedArticle.status === 'published') {
         regenerateSite();
+        try {
+            searchIndexing = await submitToSearchEngines({ slug: updatedArticle.slug });
+        } catch (e) {
+            console.error('Search engine submission notice:', e.message);
+        }
     }
 
     const gitResult = syncToGit(`[CMS] Update article: ${updatedArticle.title}`);
@@ -1288,8 +1301,9 @@ function handleEditArticle(params = {}) {
         success: true,
         article: updatedArticle,
         qualityGate,
-        url: `https://clarified.co.za/articles/${updatedArticle.slug}.html`,
-        deployment: gitResult
+        url: `https://clarified.co.za/articles/${updatedArticle.slug}`,
+        deployment: gitResult,
+        searchIndexing
     };
 }
 
@@ -1546,7 +1560,7 @@ async function getGscAccessToken(creds) {
     const header = base64url(JSON.stringify({ alg: 'RS256', typ: 'JWT' }));
     const claimSet = base64url(JSON.stringify({
         iss: creds.client_email,
-        scope: 'https://www.googleapis.com/auth/webmasters.readonly',
+        scope: 'https://www.googleapis.com/auth/webmasters',
         aud: 'https://oauth2.googleapis.com/token',
         exp: now + 3600,
         iat: now
@@ -1684,6 +1698,81 @@ async function handleGetContentOpportunities(params = {}) {
         lowCtrOpportunities: lowCtr,
         strikingDistanceKeywords: strikingDistance
     };
+}
+
+// ── Automated Search Engine Submission (Google Search Console & IndexNow) ────
+async function submitToSearchEngines(params = {}) {
+    const { slug, url, siteUrl = 'https://clarified.co.za' } = params;
+    const report = {
+        timestamp: new Date().toISOString(),
+        siteUrl,
+        googleSearchConsole: null,
+        indexNow: null,
+        errors: []
+    };
+
+    // 1. Google Search Console Sitemap Submission
+    try {
+        const creds = findGscCredentials();
+        if (creds) {
+            const token = await getGscAccessToken(creds);
+            const feedpath = `${siteUrl}/sitemap.xml`;
+            const gscRes = await fetch(`https://www.googleapis.com/webmasters/v3/sites/${encodeURIComponent(siteUrl + '/')}/sitemaps/${encodeURIComponent(feedpath)}`, {
+                method: 'PUT',
+                headers: { 'Authorization': `Bearer ${token}` }
+            });
+            report.googleSearchConsole = {
+                status: gscRes.status,
+                success: gscRes.ok || gscRes.status === 204,
+                message: gscRes.status === 204 ? 'Sitemap successfully submitted to Google Search Console.' : `HTTP ${gscRes.status}`
+            };
+        } else {
+            report.errors.push('Google Search Console credentials not found; skipped sitemap submission.');
+        }
+    } catch (err) {
+        report.errors.push(`Google Search Console submission failed: ${err.message}`);
+    }
+
+    // 2. IndexNow Instant Submission (Bing, Yandex, Seznam, Naver)
+    try {
+        const key = '8bf7094258814ecb819f7cc91e5d36e2';
+        const keyFilePath = path.join(PROJECT_ROOT, `${key}.txt`);
+        if (!fs.existsSync(keyFilePath)) {
+            fs.writeFileSync(keyFilePath, key, 'utf8');
+        }
+
+        const urlList = [
+            `${siteUrl}/`,
+            `${siteUrl}/sitemap.xml`
+        ];
+        if (slug) {
+            urlList.push(`${siteUrl}/articles/${slug}`);
+        }
+        if (url && !urlList.includes(url)) {
+            urlList.push(url);
+        }
+
+        const indexNowRes = await fetch('https://api.indexnow.org/indexnow', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json; charset=utf-8' },
+            body: JSON.stringify({
+                host: 'clarified.co.za',
+                key: key,
+                keyLocation: `${siteUrl}/${key}.txt`,
+                urlList
+            })
+        });
+
+        report.indexNow = {
+            status: indexNowRes.status,
+            success: indexNowRes.status === 200 || indexNowRes.status === 202,
+            urlsSubmitted: urlList
+        };
+    } catch (err) {
+        report.errors.push(`IndexNow submission failed: ${err.message}`);
+    }
+
+    return report;
 }
 
 // ── MCP Tool Definitions ─────────────────────────────────────────────────────
@@ -1871,6 +1960,18 @@ const TOOLS = [
                 siteUrl: { type: 'string', default: 'https://clarified.co.za/' }
             }
         }
+    },
+    {
+        name: 'submit_to_search_engines',
+        description: 'Automatically and immediately submit the sitemap and clean article URLs to Google Search Console and IndexNow (Bing, Yandex, Seznam).',
+        inputSchema: {
+            type: 'object',
+            properties: {
+                slug: { type: 'string', description: 'Article slug to index immediately (e.g. "start-business-r500-south-africa")' },
+                url: { type: 'string', description: 'Specific absolute URL to submit' },
+                siteUrl: { type: 'string', default: 'https://clarified.co.za' }
+            }
+        }
     }
 ];
 
@@ -1935,9 +2036,9 @@ async function executeTool(name, args = {}) {
         case 'suggest_internal_links':
             return suggestInternalLinks(args.content, args.currentSlug);
         case 'publish_article':
-            return handlePublishArticle(args);
+            return await handlePublishArticle(args);
         case 'edit_article':
-            return handleEditArticle(args);
+            return await handleEditArticle(args);
         case 'list_articles':
             return handleListArticles(args);
         case 'get_article':
@@ -1952,6 +2053,8 @@ async function executeTool(name, args = {}) {
             return await handleGetSearchAnalytics(args);
         case 'get_content_opportunities':
             return await handleGetContentOpportunities(args);
+        case 'submit_to_search_engines':
+            return await submitToSearchEngines(args);
         default:
             throw new Error(`Tool not found: ${name}`);
     }
@@ -2418,6 +2521,7 @@ module.exports = {
     resolveHomepageSlots,
     handleGetSearchAnalytics,
     handleGetContentOpportunities,
+    submitToSearchEngines,
     getDB,
     saveDB,
     regenerateSite,
