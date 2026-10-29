@@ -33,7 +33,7 @@
       "imgAlt": "South African professional footballers in action during a high-stakes match on a sunny stadium pitch",
       "featuredImage": "/images/rise-of-south-african-football.jpg",
       "status": "published",
-      "homepagePlacement": "standard",
+      "homepagePlacement": "hero_side",
       "date": 1793312832159
     },
     {
@@ -158,7 +158,7 @@
       "indexing": "index",
       "followLinks": "follow",
       "articleType": "Article",
-      "homepagePlacement": "latest"
+      "homepagePlacement": "standard"
     },
     {
       "id": "371",
@@ -223,7 +223,7 @@
       "indexing": "index",
       "followLinks": "follow",
       "articleType": "Article",
-      "homepagePlacement": "hero_side"
+      "homepagePlacement": "latest"
     },
     {
       "id": "324",
