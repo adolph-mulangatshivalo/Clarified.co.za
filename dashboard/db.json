@@ -15,7 +15,7 @@
       "imgAlt": "South African professional footballers in action during a high-stakes match on a sunny stadium pitch",
       "featuredImage": "/images/rise-of-south-african-football.jpg",
       "status": "published",
-      "homepagePlacement": "latest",
+      "homepagePlacement": "top_story",
       "date": 1793312832159
     },
     {
@@ -139,7 +139,8 @@
       "imgAlt": "Bakkie being used for a side hustle in South Africa",
       "indexing": "index",
       "followLinks": "follow",
-      "articleType": "Article"
+      "articleType": "Article",
+      "homepagePlacement": "latest"
     },
     {
       "id": "371",
