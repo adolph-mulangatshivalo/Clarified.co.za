@@ -1,9 +1,64 @@
 /**
  * Clarified.co.za - Article Page Interactive Features
- * Handles Social Share Buttons (WhatsApp, Facebook, X [icon only], Instagram, TikTok, Copy Link)
+ * Handles Social Share Buttons (WhatsApp, Facebook, Twitter, Instagram, TikTok, Copy Link)
  */
 (function () {
   'use strict';
+
+  var svgStyle = 'width:16px;height:16px;max-width:16px;max-height:16px;display:inline-block;vertical-align:middle;flex-shrink:0;';
+  var checkSvg = '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" style="' + svgStyle + '"><path d="M20 6L9 17l-5-5"/></svg>';
+
+  function fallbackCopy(text, callback) {
+    var successful = false;
+    try {
+      var textArea = document.createElement('textarea');
+      textArea.value = text;
+      textArea.style.position = 'fixed';
+      textArea.style.top = '-9999px';
+      textArea.style.left = '-9999px';
+      textArea.style.opacity = '0';
+      document.body.appendChild(textArea);
+      textArea.focus();
+      textArea.select();
+      successful = document.execCommand('copy');
+      document.body.removeChild(textArea);
+    } catch (e) {
+      successful = false;
+    }
+
+    if (successful) {
+      if (typeof callback === 'function') callback();
+    } else {
+      window.prompt('Copy article link:', text);
+    }
+  }
+
+  function copyTextToClipboard(text, callback) {
+    if (navigator.clipboard && window.isSecureContext) {
+      navigator.clipboard.writeText(text).then(function () {
+        if (typeof callback === 'function') callback();
+      }).catch(function () {
+        fallbackCopy(text, callback);
+      });
+    } else {
+      fallbackCopy(text, callback);
+    }
+  }
+
+  window.copyArticleLink = function (btn) {
+    if (!btn) return;
+    var url = window.location.href;
+    copyTextToClipboard(url, function () {
+      if (btn.classList.contains('copied')) return;
+      var originalHtml = btn.innerHTML;
+      btn.classList.add('copied');
+      btn.innerHTML = checkSvg + '<span>Copied</span>';
+      setTimeout(function () {
+        btn.classList.remove('copied');
+        btn.innerHTML = originalHtml;
+      }, 2000);
+    });
+  };
 
   function initArticleShare() {
     var shareContainers = document.querySelectorAll('.article-share');
@@ -13,8 +68,6 @@
     var title = document.title.replace(/\s*—\s*Clarified.*$/i, '').trim();
     var encUrl = encodeURIComponent(url);
     var encTitle = encodeURIComponent(title);
-
-    var svgStyle = 'width:16px;height:16px;max-width:16px;max-height:16px;display:inline-block;vertical-align:middle;flex-shrink:0;';
 
     var shareButtonsHtml = `
       <div class="share-buttons">
@@ -46,55 +99,57 @@
     `;
 
     shareContainers.forEach(function (container) {
-      container.innerHTML = '<strong>Share this article</strong>' + shareButtonsHtml;
+      if (!container.querySelector('.share-buttons')) {
+        container.innerHTML = '<strong>Share this article</strong>' + shareButtonsHtml;
+      }
 
       // Copy Link button event
       var copyBtn = container.querySelector('.share-copy');
-      if (copyBtn) {
-        copyBtn.addEventListener('click', function () {
-          navigator.clipboard.writeText(url).then(function () {
-            var originalHtml = copyBtn.innerHTML;
-            copyBtn.classList.add('copied');
-            copyBtn.innerHTML = '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" style="' + svgStyle + '"><path d="M20 6L9 17l-5-5"/></svg><span>Copied!</span>';
-            setTimeout(function () {
-              copyBtn.classList.remove('copied');
-              copyBtn.innerHTML = originalHtml;
-            }, 2200);
-          }).catch(function () {
-            window.prompt('Copy article link:', url);
-          });
+      if (copyBtn && !copyBtn.dataset.bound) {
+        copyBtn.dataset.bound = 'true';
+        copyBtn.addEventListener('click', function (e) {
+          e.preventDefault();
+          window.copyArticleLink(copyBtn);
         });
       }
 
       // Instagram button event
       var instaBtn = container.querySelector('.share-instagram');
-      if (instaBtn) {
-        instaBtn.addEventListener('click', function () {
-          navigator.clipboard.writeText(url);
-          var originalHtml = instaBtn.innerHTML;
-          instaBtn.classList.add('copied');
-          instaBtn.innerHTML = '<span>Link copied!</span>';
-          setTimeout(function () {
-            window.open('https://www.instagram.com', '_blank');
-            instaBtn.classList.remove('copied');
-            instaBtn.innerHTML = originalHtml;
-          }, 600);
+      if (instaBtn && !instaBtn.dataset.bound) {
+        instaBtn.dataset.bound = 'true';
+        instaBtn.addEventListener('click', function (e) {
+          e.preventDefault();
+          copyTextToClipboard(url, function () {
+            if (instaBtn.classList.contains('copied')) return;
+            var originalHtml = instaBtn.innerHTML;
+            instaBtn.classList.add('copied');
+            instaBtn.innerHTML = '<span>Link copied!</span>';
+            setTimeout(function () {
+              window.open('https://www.instagram.com', '_blank');
+              instaBtn.classList.remove('copied');
+              instaBtn.innerHTML = originalHtml;
+            }, 600);
+          });
         });
       }
 
       // TikTok button event
       var tiktokBtn = container.querySelector('.share-tiktok');
-      if (tiktokBtn) {
-        tiktokBtn.addEventListener('click', function () {
-          navigator.clipboard.writeText(url);
-          var originalHtml = tiktokBtn.innerHTML;
-          tiktokBtn.classList.add('copied');
-          tiktokBtn.innerHTML = '<span>Link copied!</span>';
-          setTimeout(function () {
-            window.open('https://www.tiktok.com', '_blank');
-            tiktokBtn.classList.remove('copied');
-            tiktokBtn.innerHTML = originalHtml;
-          }, 600);
+      if (tiktokBtn && !tiktokBtn.dataset.bound) {
+        tiktokBtn.dataset.bound = 'true';
+        tiktokBtn.addEventListener('click', function (e) {
+          e.preventDefault();
+          copyTextToClipboard(url, function () {
+            if (tiktokBtn.classList.contains('copied')) return;
+            var originalHtml = tiktokBtn.innerHTML;
+            tiktokBtn.classList.add('copied');
+            tiktokBtn.innerHTML = '<span>Link copied!</span>';
+            setTimeout(function () {
+              window.open('https://www.tiktok.com', '_blank');
+              tiktokBtn.classList.remove('copied');
+              tiktokBtn.innerHTML = originalHtml;
+            }, 600);
+          });
         });
       }
     });

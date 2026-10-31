@@ -705,6 +705,9 @@ ${JSON.stringify(jsonLd, null, 2)}
 </script>`;
 
         out = out.replace('</head>', `${seoMeta}\n</head>`);
+        if (!out.includes('/js/article.js')) {
+            out = out.replace('</body>', '<script src="/js/article.js" defer></script>\n</body>');
+        }
         fs.writeFileSync(path.join(ARTICLES_DIR, `${slug}.html`), out, 'utf8');
     });
 

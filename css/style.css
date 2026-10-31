@@ -2181,6 +2181,10 @@ a:hover .ui-arrow {
   color: #ffffff !important;
 }
 
+.article-share .share-btn.copied svg {
+  stroke: #ffffff !important;
+}
+
 @media (max-width: 768px) {
   .article-share {
     flex-direction: column;

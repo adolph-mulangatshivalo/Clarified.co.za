@@ -323,6 +323,9 @@ ${absoluteImg ? `<meta name="twitter:image" content="${absoluteImg}">` : ''}
         seoMeta += `<script type="application/ld+json">\n${JSON.stringify(jsonLd, null, 2)}\n</script>\n`;
 
         out = out.replace('</head>', seoMeta + '</head>');
+        if (!out.includes('/js/article.js')) {
+            out = out.replace('</body>', '<script src="/js/article.js" defer></script>\n</body>');
+        }
 
         const dir = path.join(SITE_ROOT, 'articles');
         if (!fs.existsSync(dir)) fs.mkdirSync(dir, { recursive: true });
